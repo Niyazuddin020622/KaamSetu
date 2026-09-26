@@ -1,7 +1,7 @@
 import React from 'react';
 import { Hammer, ShieldCheck, Phone, Mail, MapPin, ExternalLink, Heart } from 'lucide-react';
 
-export default function Footer({ onSelectCategory, onOpenAdmin }) {
+export default function Footer({ onSelectCategory }) {
   const categories = [
     'Plumber', 
     'Welder', 
@@ -120,17 +120,8 @@ export default function Footer({ onSelectCategory, onOpenAdmin }) {
         <div className="pt-6 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
           <p>© {new Date().getFullYear()} KaamSetu. सभी अधिकार सुरक्षित।</p>
           
-          {/* Developer Credit & Admin Link */}
+          {/* Developer Credit */}
           <div className="flex flex-wrap items-center gap-4 text-slate-300 font-medium">
-            {onOpenAdmin && (
-              <button
-                onClick={onOpenAdmin}
-                className="text-[11px] text-slate-500 hover:text-amber-400 transition-colors flex items-center gap-1"
-              >
-                <span>🔐 एडमिन पोर्टल (Admin)</span>
-              </button>
-            )}
-
             <div className="flex items-center gap-1.5">
               <span>Developed by</span>
               <a 

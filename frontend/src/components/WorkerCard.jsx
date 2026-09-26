@@ -89,10 +89,18 @@ export default function WorkerCard({ worker, onSelectWorker, onBookWorker }) {
             <span className="font-black text-white">{worker.rating}</span>
             <span className="text-slate-400 text-[11px]">({worker.reviewCount} रेटिंग)</span>
           </div>
-          <div className="flex items-center gap-1 text-slate-400 text-[11px]">
-            <Briefcase className="w-3 h-3 text-slate-400" />
-            <span>{worker.completedJobs} काम किए</span>
-          </div>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelectWorker({ ...worker, defaultTab: 'history' });
+            }}
+            className="flex items-center gap-1 text-amber-300 hover:text-amber-200 bg-amber-500/10 hover:bg-amber-500/20 px-2 py-0.5 rounded-lg border border-amber-500/30 text-[11px] font-semibold transition-all"
+            title="कार्य इतिहास देखें"
+          >
+            <Briefcase className="w-3 h-3 text-amber-400" />
+            <span>{worker.completedJobs} काम किए (इतिहास)</span>
+          </button>
         </div>
 
         {/* Location */}

@@ -8,7 +8,6 @@ import WorkerDetailModal from './components/WorkerDetailModal';
 import BookingModal from './components/BookingModal';
 import WorkerRegisterModal from './components/WorkerRegisterModal';
 import MyBookingsModal from './components/MyBookingsModal';
-import AdminDashboard from './components/AdminDashboard';
 import MobileBottomNav from './components/MobileBottomNav';
 import TrustSection from './components/TrustSection';
 import Footer from './components/Footer';
@@ -42,7 +41,6 @@ export default function App() {
   const [selectedWorkerForBooking, setSelectedWorkerForBooking] = useState(null);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showMyBookingsModal, setShowMyBookingsModal] = useState(false);
-  const [showAdminDashboard, setShowAdminDashboard] = useState(false);
 
 
   // App notification toast
@@ -157,7 +155,6 @@ export default function App() {
         onCityChange={(city) => setSelectedCity(city)}
         onOpenRegister={() => setShowRegisterModal(true)}
         onOpenMyBookings={() => setShowMyBookingsModal(true)}
-        onOpenAdmin={() => setShowAdminDashboard(true)}
         bookingCount={bookingCount}
       />
 
@@ -324,7 +321,6 @@ export default function App() {
           setSelectedCategory(cat);
           scrollToWorkers();
         }}
-        onOpenAdmin={() => setShowAdminDashboard(true)}
       />
 
       {/* Mobile Bottom Navigation Bar (1-Thumb Navigation for Smartphones) */}
@@ -340,6 +336,7 @@ export default function App() {
       {selectedWorkerDetail && (
         <WorkerDetailModal
           worker={selectedWorkerDetail}
+          initialTab={selectedWorkerDetail.defaultTab || 'about'}
           onClose={() => setSelectedWorkerDetail(null)}
           onBookWorker={(w) => {
             setSelectedWorkerDetail(null);
@@ -368,14 +365,6 @@ export default function App() {
         <MyBookingsModal
           onClose={() => setShowMyBookingsModal(false)}
           activePhone={lastBookingPhone}
-        />
-      )}
-
-      {/* Admin Dashboard */}
-      {showAdminDashboard && (
-        <AdminDashboard
-          onClose={() => setShowAdminDashboard(false)}
-          onOpenRegisterWorker={() => setShowRegisterModal(true)}
         />
       )}
 

@@ -74,10 +74,14 @@ async function checkAndAutoSeed() {
     if (workerCount === 0) {
       console.log('Database is empty. Auto-seeding initial workers and demo bookings...');
       const createdWorkers = await Worker.insertMany(sampleWorkers);
-      sampleBookings[0].worker = createdWorkers[0]._id;
-      sampleBookings[1].worker = createdWorkers[1]._id;
-      await Booking.insertMany(sampleBookings);
-      console.log(`Auto-seeded ${createdWorkers.length} workers successfully.`);
+      const workerMap = new Map();
+      createdWorkers.forEach(w => workerMap.set(w.name, w._id));
+      const enrichedBookings = sampleBookings.map(b => ({
+        ...b,
+        worker: workerMap.get(b.workerName) || createdWorkers[0]._id
+      }));
+      await Booking.insertMany(enrichedBookings);
+      console.log(`Auto-seeded ${createdWorkers.length} workers and ${enrichedBookings.length} bookings successfully.`);
     } else {
       console.log(`Database already has ${workerCount} workers loaded.`);
     }

@@ -407,11 +407,11 @@ const sampleWorkers = [
 ];
 
 const sampleBookings = [
-
   {
     workerName: 'Rajesh Kumar Mistri',
     workerCategory: 'Plumber',
     workerPhone: '+91 98765 43210',
+    workerAvatar: 'https://images.unsplash.com/photo-1541888946425-d0fbb18f15f6?w=600&auto=format&fit=crop&q=80',
     customerName: 'Prashant Mishra',
     customerPhone: '+91 99100 23456',
     customerAddress: 'Flat 402, Lotus Apartments, Lajpat Nagar 4',
@@ -420,6 +420,7 @@ const sampleBookings = [
     serviceRequired: 'Plumbing Service',
     jobDescription: 'Kitchen sink pipe leaking continuously under counter, needs urgent gasket and pipe replacement.',
     preferredDate: '2026-03-24',
+    preferredDay: 'मंगलवार (Tuesday)',
     preferredTimeSlot: 'Morning (9 AM - 12 PM)',
     urgency: 'Today',
     status: 'accepted',
@@ -427,22 +428,171 @@ const sampleBookings = [
     notes: 'Please bring standard 1.5 inch flexible waste pipe.'
   },
   {
+    workerName: 'Rajesh Kumar Mistri',
+    workerCategory: 'Plumber',
+    workerPhone: '+91 98765 43210',
+    workerAvatar: 'https://images.unsplash.com/photo-1541888946425-d0fbb18f15f6?w=600&auto=format&fit=crop&q=80',
+    customerName: 'Aakash Verma',
+    customerPhone: '+91 98101 22334',
+    customerAddress: 'B-12, Ground Floor, Defence Colony',
+    city: 'New Delhi',
+    area: 'Defence Colony',
+    serviceRequired: 'Bathroom Sanitary & Tap Leakage',
+    jobDescription: 'Master bathroom mixer tap replacement and overhead tank ball-valve repair.',
+    preferredDate: '2026-03-20',
+    preferredDay: 'शुक्रवार (Friday)',
+    preferredTimeSlot: 'Morning (10:00 AM - 01:00 PM)',
+    urgency: 'Emergency (Within 2 Hours)',
+    status: 'completed',
+    completedDate: '2026-03-20',
+    estimatedCost: 450,
+    notes: 'Work completed smoothly. Replaced 2 brass valves.'
+  },
+  {
+    workerName: 'Rajesh Kumar Mistri',
+    workerCategory: 'Plumber',
+    workerPhone: '+91 98765 43210',
+    workerAvatar: 'https://images.unsplash.com/photo-1541888946425-d0fbb18f15f6?w=600&auto=format&fit=crop&q=80',
+    customerName: 'Pooja Mehra',
+    customerPhone: '+91 98711 44556',
+    customerAddress: 'House 88, Near Metro Pillar 42, South Ext 1',
+    city: 'New Delhi',
+    area: 'South Ext 1',
+    serviceRequired: 'Water Motor Pump Repair',
+    jobDescription: 'Crompton 1 HP water booster pump making buzzing sound and not pulling water to rooftop.',
+    preferredDate: '2026-03-15',
+    preferredDay: 'रविवार (Sunday)',
+    preferredTimeSlot: 'Afternoon (12 PM - 3 PM)',
+    urgency: 'Today',
+    status: 'completed',
+    completedDate: '2026-03-15',
+    estimatedCost: 650,
+    notes: 'Replaced condenser and restored water flow.'
+  },
+  {
     workerName: 'Amit Sharma',
     workerCategory: 'Welder',
     workerPhone: '+91 98112 87654',
+    workerAvatar: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&auto=format&fit=crop&q=80',
     customerName: 'Kunal Grover',
     customerPhone: '+91 98111 67890',
     customerAddress: 'House 14B, Sector 9, Rohini',
     city: 'New Delhi',
     area: 'Rohini',
-    serviceRequired: 'Welder Service',
-    jobDescription: 'Main parking iron gate bottom hinge cracked and dragging on the road. Need re-welding.',
+    serviceRequired: 'Main Parking Gate Re-welding',
+    jobDescription: 'Main parking iron gate bottom hinge cracked and dragging on the road. Need heavy re-welding.',
     preferredDate: '2026-03-25',
+    preferredDay: 'बुधवार (Wednesday)',
     preferredTimeSlot: 'Afternoon (12 PM - 3 PM)',
     urgency: 'Tomorrow / Scheduled',
-    status: 'pending',
-    estimatedCost: 499,
+    status: 'in_progress',
+    estimatedCost: 550,
     notes: 'Power outlet is available in the driveway.'
+  },
+  {
+    workerName: 'Amit Sharma',
+    workerCategory: 'Welder',
+    workerPhone: '+91 98112 87654',
+    workerAvatar: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&auto=format&fit=crop&q=80',
+    customerName: 'Sunil Gupta',
+    customerPhone: '+91 98105 88990',
+    customerAddress: 'Plot 45, Near Aggarwal Sweets, Pitampura',
+    city: 'New Delhi',
+    area: 'Pitampura',
+    serviceRequired: 'Window Safety Grill Modification',
+    jobDescription: 'Added 4 extra iron safety bars and anti-theft locks on ground floor window frames.',
+    preferredDate: '2026-03-18',
+    preferredDay: 'बुधवार (Wednesday)',
+    preferredTimeSlot: 'Morning (9 AM - 12 PM)',
+    urgency: 'Today',
+    status: 'completed',
+    completedDate: '2026-03-18',
+    estimatedCost: 950,
+    notes: 'Arc welding completed with red-oxide primer coating.'
+  },
+  {
+    workerName: 'Vikram Solanki',
+    workerCategory: 'Plumber',
+    workerPhone: '+91 98250 12345',
+    workerAvatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&auto=format&fit=crop&q=80',
+    customerName: 'Ramesh Patel',
+    customerPhone: '+91 98251 77665',
+    customerAddress: '401, Shivalik Heights, Opp. Iscon Temple, SG Highway',
+    city: 'Ahmedabad',
+    area: 'SG Highway',
+    serviceRequired: 'Bathroom Concealed Pipe Leakage',
+    jobDescription: 'Wall seepage near shower area. Located leak with pressure test and replaced broken elbow joint.',
+    preferredDate: '2026-03-22',
+    preferredDay: 'रविवार (Sunday)',
+    preferredTimeSlot: 'Morning (9 AM - 12 PM)',
+    urgency: 'Emergency (Within 2 Hours)',
+    status: 'completed',
+    completedDate: '2026-03-22',
+    estimatedCost: 750,
+    notes: 'Fixed CPVC joint and sealed tile gaps.'
+  },
+  {
+    workerName: 'Vikram Solanki',
+    workerCategory: 'Plumber',
+    workerPhone: '+91 98250 12345',
+    workerAvatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&auto=format&fit=crop&q=80',
+    customerName: 'Chirag Dave',
+    customerPhone: '+91 97240 55678',
+    customerAddress: 'B-7, Tulsi Bungalows, Judges Bungalow Road, Bodakdev',
+    city: 'Ahmedabad',
+    area: 'Bodakdev',
+    serviceRequired: 'Underground Water Tank Motor Air-lock',
+    jobDescription: 'Submersible water pump air-lock removal and float valve replacement in overhead tank.',
+    preferredDate: '2026-03-15',
+    preferredDay: 'रविवार (Sunday)',
+    preferredTimeSlot: 'Morning (8:30 AM - 11 AM)',
+    urgency: 'Today',
+    status: 'completed',
+    completedDate: '2026-03-15',
+    estimatedCost: 400,
+    notes: 'Punctual service, air-lock cleared in 20 minutes.'
+  },
+  {
+    workerName: 'Mohammad Farooq',
+    workerCategory: 'Welder',
+    workerPhone: '+91 97180 54321',
+    workerAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80',
+    customerName: 'Deepak Saxena',
+    customerPhone: '+91 98990 11223',
+    customerAddress: 'Shop 12, Main Market, Sector 62',
+    city: 'Noida',
+    area: 'Sector 62',
+    serviceRequired: 'Commercial Metal Shutter Repair',
+    jobDescription: 'Rolling shutter spring replacement and side rail welding for sweet shop entrance.',
+    preferredDate: '2026-03-21',
+    preferredDay: 'शनिवार (Saturday)',
+    preferredTimeSlot: 'Evening (4 PM - 7 PM)',
+    urgency: 'Emergency (Within 2 Hours)',
+    status: 'completed',
+    completedDate: '2026-03-21',
+    estimatedCost: 1200,
+    notes: 'Heavy duty spring replaced. Shutter working smooth.'
+  },
+  {
+    workerName: 'Sanjay Prajapati',
+    workerCategory: 'Mason (Mistri)',
+    workerPhone: '+91 97241 23456',
+    workerAvatar: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=600&auto=format&fit=crop&q=80',
+    customerName: 'Vikram Shah',
+    customerPhone: '+91 98240 33445',
+    customerAddress: 'Plot 104, Pushkar Tenements, Maninagar East',
+    city: 'Ahmedabad',
+    area: 'Maninagar',
+    serviceRequired: 'Flooring & Plaster Renovation',
+    jobDescription: 'Balcony tile leveling and waterproofing plaster work on outer damp wall.',
+    preferredDate: '2026-03-19',
+    preferredDay: 'गुरुवार (Thursday)',
+    preferredTimeSlot: 'Full Day (9 AM - 6 PM)',
+    urgency: 'Tomorrow / Scheduled',
+    status: 'completed',
+    completedDate: '2026-03-19',
+    estimatedCost: 1800,
+    notes: 'Dr. Fixit waterproofing chemical used with cement paste.'
   }
 ];
 
@@ -459,12 +609,20 @@ async function seedData() {
     const createdWorkers = await Worker.insertMany(sampleWorkers);
     console.log(`Successfully seeded ${createdWorkers.length} Workers.`);
 
-    // Attach worker ID to sample bookings
-    sampleBookings[0].worker = createdWorkers[0]._id;
-    sampleBookings[1].worker = createdWorkers[1]._id;
+    // Map sampleBookings to corresponding workers by name
+    const workerMap = new Map();
+    createdWorkers.forEach(w => workerMap.set(w.name, w._id));
 
-    await Booking.insertMany(sampleBookings);
-    console.log(`Successfully seeded sample bookings.`);
+    const enrichedBookings = sampleBookings.map(b => {
+      const matchedWorkerId = workerMap.get(b.workerName) || createdWorkers[0]._id;
+      return {
+        ...b,
+        worker: matchedWorkerId
+      };
+    });
+
+    await Booking.insertMany(enrichedBookings);
+    console.log(`Successfully seeded ${enrichedBookings.length} rich sample bookings with complete work & hiring history.`);
 
     console.log('Seeding completed successfully!');
     process.exit(0);

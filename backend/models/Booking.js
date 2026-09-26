@@ -9,6 +9,7 @@ const bookingSchema = new mongoose.Schema({
   workerName: { type: String, required: true },
   workerCategory: { type: String, required: true },
   workerPhone: { type: String, required: true },
+  workerAvatar: { type: String, default: '' },
   
   customerName: { type: String, required: true, trim: true },
   customerPhone: { type: String, required: true, trim: true },
@@ -19,6 +20,7 @@ const bookingSchema = new mongoose.Schema({
   serviceRequired: { type: String, required: true },
   jobDescription: { type: String, default: '' },
   preferredDate: { type: String, required: true },
+  preferredDay: { type: String, default: '' },
   preferredTimeSlot: { type: String, default: 'Morning (9 AM - 12 PM)' },
   urgency: { 
     type: String, 
@@ -32,6 +34,7 @@ const bookingSchema = new mongoose.Schema({
     default: 'pending' 
   },
   estimatedCost: { type: Number },
+  completedDate: { type: String, default: '' },
   notes: { type: String, default: '' }
 }, { timestamps: true });
 

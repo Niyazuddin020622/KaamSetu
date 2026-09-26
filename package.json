@@ -1,0 +1,15 @@
+{
+  "name": "kaamsetu-workspace",
+  "version": "1.0.0",
+  "private": true,
+  "description": "KaamSetu - India's Trusted Trade Workers Network & Admin Control Center",
+  "scripts": {
+    "start:backend": "npm --prefix backend start",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev:admin": "npm --prefix admin-dashboard run dev",
+    "build:frontend": "npm --prefix frontend run build",
+    "build:admin": "npm --prefix admin-dashboard run build",
+    "seed": "node backend/seed.js"
+  }
+}

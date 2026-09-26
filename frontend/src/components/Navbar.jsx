@@ -6,7 +6,6 @@ export default function Navbar({
   onCityChange, 
   onOpenRegister, 
   onOpenMyBookings,
-  onOpenAdmin,
   bookingCount = 0 
 }) {
 
@@ -80,23 +79,13 @@ export default function Navbar({
               <span>+91 8825135461</span>
             </a>
 
-            {/* Admin Control Dashboard Button */}
-            <button
-              onClick={onOpenAdmin}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition-all"
-              title="Admin Control Dashboard"
-            >
-              <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
-              <span>एडमिन</span>
-            </button>
-
-            {/* My Bookings Button */}
+            {/* My Bookings / Hiring History Button */}
             <button
               onClick={onOpenMyBookings}
               className="relative flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-semibold text-slate-300 bg-slate-900/80 hover:bg-slate-800 border border-slate-700/60 transition-all hover:text-white"
             >
               <ClipboardList className="w-4 h-4 text-sky-400" />
-              <span>My Bookings</span>
+              <span>काम का इतिहास (History)</span>
               {bookingCount > 0 && (
                 <span className="px-1.5 py-0.2 text-xs font-bold bg-sky-500 text-slate-950 rounded-full">
                   {bookingCount}
@@ -114,17 +103,19 @@ export default function Navbar({
             </button>
           </div>
 
-          {/* Mobile Admin Shortcut Icon */}
+          {/* Mobile Quick Action */}
           <div className="flex md:hidden items-center gap-2">
             <button
-              onClick={onOpenAdmin}
-              className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-amber-400 text-xs font-bold"
-              title="Admin Panel"
+              onClick={onOpenMyBookings}
+              className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-sky-400 text-xs font-bold relative"
+              title="काम का इतिहास (History)"
             >
-              <ShieldCheck className="w-4 h-4" />
+              <ClipboardList className="w-4 h-4" />
+              {bookingCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-sky-400 rounded-full" />
+              )}
             </button>
           </div>
-
 
         </div>
       </div>
