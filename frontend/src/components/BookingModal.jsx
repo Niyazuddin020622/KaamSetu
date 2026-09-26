@@ -144,17 +144,17 @@ export default function BookingModal({ worker, onClose, onBookingSuccess }) {
               कारीगर थोड़ी देर में आपको सीधे कॉल करेगा। या आप अभी खुद भी कॉल कर सकते हैं:
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-2.5 justify-center pt-2">
+            <div className="flex flex-col sm:flex-row gap-2.5 justify-center pt-2 w-full">
               <a
                 href={`tel:${worker.phone}`}
-                className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm shadow-md active:scale-95"
+                className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs sm:text-sm shadow-md active:scale-95 truncate"
               >
-                <Phone className="w-4 h-4 fill-current" />
-                <span>कारीगर को तुरंत कॉल करें ({worker.phone})</span>
+                <Phone className="w-4 h-4 fill-current shrink-0" />
+                <span className="truncate">कारीगर को तुरंत कॉल करें ({worker.phone})</span>
               </a>
               <button
                 onClick={onClose}
-                className="px-5 py-3 rounded-xl border border-slate-700 text-slate-300 hover:text-white text-xs font-bold"
+                className="px-5 py-2.5 sm:py-3 rounded-xl border border-slate-700 text-slate-300 hover:text-white text-xs font-bold"
               >
                 बंद करें (Close)
               </button>
@@ -301,11 +301,11 @@ export default function BookingModal({ worker, onClose, onBookingSuccess }) {
             </div>
 
             {/* Action Buttons */}
-            <div className="pt-2 flex items-center justify-end gap-3">
+            <div className="pt-2 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-2 sm:gap-3">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-3 rounded-xl border border-slate-700 text-slate-300 hover:text-white text-xs font-bold"
+                className="w-full sm:w-auto px-4 py-2.5 sm:py-3 rounded-xl border border-slate-700 text-slate-300 hover:text-white text-xs font-bold"
               >
                 रद्द करें
               </button>
@@ -313,9 +313,9 @@ export default function BookingModal({ worker, onClose, onBookingSuccess }) {
               <button
                 type="submit"
                 disabled={loading}
-                className="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-amber-500/20 transition-all flex items-center gap-2 active:scale-95"
+                className="w-full sm:w-auto px-5 sm:px-6 py-3 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-2 active:scale-95"
               >
-                <CheckCircle2 className="w-4 h-4" />
+                <CheckCircle2 className="w-4 h-4 shrink-0" />
                 <span>{loading ? 'रिक्वेस्ट जा रही है...' : 'कारीगर को बुक करें (Confirm)'}</span>
               </button>
             </div>

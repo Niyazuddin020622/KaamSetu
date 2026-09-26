@@ -66,28 +66,28 @@ export default function WorkerCard({ worker, onSelectWorker, onBookWorker }) {
         </div>
 
         {/* Worker Name & Trade Category */}
-        <div className="mb-2">
-          <div className="flex items-center gap-1.5">
-            <h3 className="text-base sm:text-lg font-black text-white group-hover:text-amber-300 transition-colors">
+        <div className="mb-2 min-w-0">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <h3 className="text-base sm:text-lg font-black text-white group-hover:text-amber-300 transition-colors truncate">
               {worker.name}
             </h3>
             {worker.isVerified && (
               <CheckCircle className="w-4 h-4 text-sky-400 shrink-0" title="Verified Worker" />
             )}
           </div>
-          <p className="text-xs sm:text-sm font-bold text-amber-400 flex items-center gap-1.5 mt-0.5">
-            <span>{worker.category}</span>
-            <span className="text-slate-600">•</span>
-            <span className="text-slate-400 text-xs font-semibold">{worker.experienceYears}+ साल का अनुभव</span>
+          <p className="text-xs sm:text-sm font-bold text-amber-400 flex items-center gap-1.5 mt-0.5 min-w-0">
+            <span className="truncate">{worker.category}</span>
+            <span className="text-slate-600 shrink-0">•</span>
+            <span className="text-slate-400 text-xs font-semibold shrink-0">{worker.experienceYears}+ साल अनुभव</span>
           </p>
         </div>
 
         {/* Ratings & Completed Jobs */}
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-300 mb-2.5">
-          <div className="flex items-center gap-1">
-            <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-slate-300 mb-2.5">
+          <div className="flex items-center gap-1 shrink-0">
+            <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400 shrink-0" />
             <span className="font-black text-white">{worker.rating}</span>
-            <span className="text-slate-400 text-[11px]">({worker.reviewCount} रेटिंग)</span>
+            <span className="text-slate-400 text-[11px]">({worker.reviewCount})</span>
           </div>
           <button
             type="button"
@@ -95,16 +95,16 @@ export default function WorkerCard({ worker, onSelectWorker, onBookWorker }) {
               e.stopPropagation();
               onSelectWorker({ ...worker, defaultTab: 'history' });
             }}
-            className="flex items-center gap-1 text-amber-300 hover:text-amber-200 bg-amber-500/10 hover:bg-amber-500/20 px-2 py-0.5 rounded-lg border border-amber-500/30 text-[11px] font-semibold transition-all"
+            className="flex items-center gap-1 text-amber-300 hover:text-amber-200 bg-amber-500/10 hover:bg-amber-500/20 px-2 py-0.5 rounded-lg border border-amber-500/30 text-[11px] font-semibold transition-all truncate"
             title="कार्य इतिहास देखें"
           >
-            <Briefcase className="w-3 h-3 text-amber-400" />
-            <span>{worker.completedJobs} काम किए (इतिहास)</span>
+            <Briefcase className="w-3 h-3 text-amber-400 shrink-0" />
+            <span className="truncate">{worker.completedJobs} काम किए</span>
           </button>
         </div>
 
         {/* Location */}
-        <div className="flex items-center gap-1.5 text-xs text-slate-300 mb-3">
+        <div className="flex items-center gap-1.5 text-xs text-slate-300 mb-3 min-w-0">
           <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0" />
           <span className="truncate font-medium">{worker.area}, {worker.city}</span>
         </div>
@@ -114,13 +114,13 @@ export default function WorkerCard({ worker, onSelectWorker, onBookWorker }) {
           {worker.subSkills && worker.subSkills.slice(0, 3).map((skill, idx) => (
             <span 
               key={idx}
-              className="text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700/60"
+              className="text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700/60 truncate max-w-[140px]"
             >
               {skill}
             </span>
           ))}
           {worker.subSkills && worker.subSkills.length > 3 && (
-            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-lg bg-slate-800/60 text-slate-400">
+            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-lg bg-slate-800/60 text-slate-400 shrink-0">
               +{worker.subSkills.length - 3}
             </span>
           )}
@@ -129,17 +129,17 @@ export default function WorkerCard({ worker, onSelectWorker, onBookWorker }) {
 
       {/* Bottom: Pricing & Big Mobile Action Buttons */}
       <div className="pt-3 border-t border-slate-800/80 mt-auto">
-        <div className="flex items-baseline justify-between mb-3">
-          <div>
-            <span className="text-[10px] text-slate-400 block font-medium">विजिटिंग चार्ज / Rate:</span>
+        <div className="flex items-baseline justify-between mb-3 min-w-0">
+          <div className="min-w-0">
+            <span className="text-[10px] text-slate-400 block font-medium truncate">विजिटिंग चार्ज:</span>
             <div className="text-base sm:text-lg font-black text-white">
               ₹{worker.hourlyRate}
               <span className="text-xs font-normal text-slate-400"> / घंटा</span>
             </div>
           </div>
           {worker.dailyRate && (
-            <div className="text-right">
-              <span className="text-[10px] text-slate-400 block font-medium">पूरा दिन (8 घंटे):</span>
+            <div className="text-right min-w-0">
+              <span className="text-[10px] text-slate-400 block font-medium truncate">पूरा दिन (8 घंटे):</span>
               <div className="text-xs sm:text-sm font-bold text-slate-300">
                 ₹{worker.dailyRate}
               </div>
@@ -153,22 +153,22 @@ export default function WorkerCard({ worker, onSelectWorker, onBookWorker }) {
           <button
             type="button"
             onClick={handleCall}
-            className="flex items-center justify-center gap-1 py-3 px-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold shadow-md shadow-emerald-950 transition-all active:scale-95"
+            className="flex items-center justify-center gap-1 py-2.5 sm:py-3 px-1 sm:px-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] sm:text-xs font-extrabold shadow-md shadow-emerald-950 transition-all active:scale-95"
             title="सीधे फोन करें"
           >
-            <Phone className="w-4 h-4 shrink-0 fill-current" />
-            <span>कॉल</span>
+            <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 fill-current" />
+            <span className="truncate">कॉल</span>
           </button>
 
           {/* WhatsApp Button */}
           <button
             type="button"
             onClick={handleWhatsApp}
-            className="flex items-center justify-center gap-1 py-3 px-2 rounded-xl bg-emerald-950 border border-emerald-500/40 hover:bg-emerald-900 text-emerald-300 text-xs font-bold transition-all active:scale-95"
+            className="flex items-center justify-center gap-1 py-2.5 sm:py-3 px-1 sm:px-2 rounded-xl bg-emerald-950 border border-emerald-500/40 hover:bg-emerald-900 text-emerald-300 text-[11px] sm:text-xs font-bold transition-all active:scale-95"
             title="व्हाट्सएप पर बात करें"
           >
-            <MessageCircle className="w-4 h-4 shrink-0" />
-            <span>व्हाट्सएप</span>
+            <MessageCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+            <span className="truncate">व्हाट्सएप</span>
           </button>
 
           {/* Book Button */}
@@ -178,11 +178,11 @@ export default function WorkerCard({ worker, onSelectWorker, onBookWorker }) {
               e.stopPropagation();
               onBookWorker(worker);
             }}
-            className="flex items-center justify-center gap-1 py-3 px-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-black shadow-md shadow-amber-500/20 transition-all active:scale-95"
+            className="flex items-center justify-center gap-1 py-2.5 sm:py-3 px-1 sm:px-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-[11px] sm:text-xs font-black shadow-md shadow-amber-500/20 transition-all active:scale-95"
             title="अपॉइंटमेंट बुक करें"
           >
-            <Calendar className="w-4 h-4 shrink-0" />
-            <span>बुक करें</span>
+            <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+            <span className="truncate">बुक करें</span>
           </button>
         </div>
       </div>

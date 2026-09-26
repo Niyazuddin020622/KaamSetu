@@ -116,14 +116,14 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="px-5 py-4 bg-gradient-to-r from-amber-500/20 via-orange-500/10 to-slate-900 border-b border-slate-800 flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-bold shrink-0">
-              <UserCheck className="w-5 h-5" />
+        <div className="px-4 sm:px-5 py-3 sm:py-4 bg-gradient-to-r from-amber-500/20 via-orange-500/10 to-slate-900 border-b border-slate-800 flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-bold shrink-0">
+              <UserCheck className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
-            <div>
-              <h2 className="text-base sm:text-lg font-black text-white">कारीगर रजिस्ट्रेशन (Join as Worker)</h2>
-              <p className="text-[11px] text-slate-400">
+            <div className="min-w-0">
+              <h2 className="text-sm xs:text-base sm:text-lg font-black text-white truncate">कारीगर रजिस्ट्रेशन (Join as Worker)</h2>
+              <p className="text-[10px] sm:text-[11px] text-slate-400 truncate">
                 सीधे ग्राहकों से काम पाएं • 0% कमीशन • तुरंत शुरुआत
               </p>
             </div>
@@ -131,7 +131,7 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
 
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition-colors"
+            className="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition-colors shrink-0 ml-2"
           >
             <X className="w-4 h-4" />
           </button>
@@ -139,7 +139,7 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
 
         {/* Success Screen */}
         {registeredSuccess ? (
-          <div className="p-8 text-center space-y-4">
+          <div className="p-6 sm:p-8 text-center space-y-4">
             <div className="w-16 h-16 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 rounded-full flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/20">
               <CheckCircle2 className="w-10 h-10" />
             </div>
@@ -158,7 +158,7 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
           </div>
         ) : (
           /* Form */
-          <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1">
+          <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-3.5 sm:space-y-4 overflow-y-auto flex-1">
             {error && (
               <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
@@ -167,22 +167,22 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
             )}
 
             {/* Profile Photo Uploader Section */}
-            <div className="p-3.5 rounded-2xl bg-slate-800/60 border border-slate-700/80">
+            <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-800/60 border border-slate-700/80">
               <label className="text-xs font-bold text-amber-400 block mb-2">
                 📸 कारीगर की प्रोफाइल फोटो (Worker Profile Photo) *
               </label>
 
-              <div className="flex items-center gap-4">
+              <div className="flex flex-col xs:flex-row items-start xs:items-center gap-3 sm:gap-4">
                 <img
                   src={formData.avatar}
                   alt="Profile Preview"
                   className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border-2 border-amber-400/80 shadow bg-slate-900 shrink-0"
                 />
 
-                <div className="flex-1 space-y-2">
-                  <label className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs cursor-pointer shadow transition-all active:scale-95">
-                    <Camera className="w-4 h-4" />
-                    <span>कैमरा या गैलरी से फोटो अपलोड करें</span>
+                <div className="flex-1 space-y-1.5 sm:space-y-2 w-full min-w-0">
+                  <label className="inline-flex items-center justify-center gap-2 px-3 sm:px-3.5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs cursor-pointer shadow transition-all active:scale-95 w-full xs:w-auto">
+                    <Camera className="w-4 h-4 shrink-0" />
+                    <span>फोटो अपलोड करें</span>
                     <input
                       type="file"
                       accept="image/*"
@@ -200,7 +200,7 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
               {/* Ready-made avatar presets */}
               <div className="mt-3 pt-2.5 border-t border-slate-700/60">
                 <span className="text-[10px] text-slate-400 block mb-1.5 font-medium">या इनमें से कोई फोटो चुनें:</span>
-                <div className="flex gap-2 overflow-x-auto pb-1">
+                <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
                   {PRESET_AVATARS.map((av, idx) => (
                     <button
                       type="button"
@@ -388,11 +388,11 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
             </div>
 
             {/* Submit */}
-            <div className="pt-3 flex items-center justify-end gap-3 border-t border-slate-800">
+            <div className="pt-3 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-2.5 sm:gap-3 border-t border-slate-800">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2.5 rounded-xl border border-slate-700 text-slate-300 hover:text-white text-xs font-semibold"
+                className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-700 text-slate-300 hover:text-white text-xs font-semibold"
               >
                 रद्द करें (Cancel)
               </button>
@@ -400,9 +400,9 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
               <button
                 type="submit"
                 disabled={loading}
-                className="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-amber-500/20 transition-all flex items-center gap-2 active:scale-95"
+                className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-2 active:scale-95"
               >
-                <Sparkles className="w-4 h-4" />
+                <Sparkles className="w-4 h-4 shrink-0" />
                 <span>{loading ? 'जमा हो रहा है...' : 'प्रोफाइल बनाएं (Register)'}</span>
               </button>
             </div>

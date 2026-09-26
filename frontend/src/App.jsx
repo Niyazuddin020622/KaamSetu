@@ -17,9 +17,7 @@ import {
   AlertCircle, 
   CheckCircle2, 
   RefreshCw, 
-  Search,
-  Sparkles,
-  PhoneCall
+  Search
 } from 'lucide-react';
 
 export default function App() {
@@ -131,7 +129,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-amber-500 selection:text-slate-950 pb-16 md:pb-0">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-amber-500 selection:text-slate-950 pb-24 md:pb-0 overflow-x-hidden">
       
       {/* Dynamic SEO Meta Tags via Helmet */}
       <SEO 
@@ -141,10 +139,10 @@ export default function App() {
 
       {/* Floating Toast Notification */}
       {toast && (
-        <div className="fixed top-20 right-4 sm:right-6 z-50 animate-bounce">
-          <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-amber-400 text-slate-950 font-black text-xs sm:text-sm shadow-2xl shadow-amber-500/40 border border-amber-300">
-            <CheckCircle2 className="w-5 h-5 text-slate-950 shrink-0" />
-            <span>{toast.message}</span>
+        <div className="fixed top-16 sm:top-20 right-3 sm:right-6 z-50 animate-bounce max-w-[90vw]">
+          <div className="flex items-center gap-2 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-2xl bg-amber-400 text-slate-950 font-black text-xs sm:text-sm shadow-2xl shadow-amber-500/40 border border-amber-300">
+            <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-slate-950 shrink-0" />
+            <span className="truncate">{toast.message}</span>
           </div>
         </div>
       )}
@@ -172,7 +170,7 @@ export default function App() {
       />
 
       {/* Main Directory Area */}
-      <main id="workers-directory" className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
+      <main id="workers-directory" className="flex-1 max-w-7xl w-full mx-auto px-2.5 sm:px-6 lg:px-8 py-3 sm:py-8">
         
         {/* Category Selector Chips */}
         <CategoryChips
@@ -183,47 +181,47 @@ export default function App() {
         />
 
         {/* Directory Header & Sorting Controls */}
-        <div className="mt-4 sm:mt-8 mb-4 sm:mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 sm:p-4 rounded-2xl bg-slate-900/60 border border-slate-800">
-          <div>
-            <h2 className="text-base sm:text-xl font-black text-white flex items-center gap-2">
+        <div className="mt-3 sm:mt-8 mb-4 sm:mb-6 flex flex-col md:flex-row md:items-center justify-between gap-3 p-3 sm:p-4 rounded-2xl bg-slate-900/60 border border-slate-800">
+          <div className="min-w-0">
+            <h2 className="text-sm xs:text-base sm:text-xl font-black text-white flex flex-wrap items-center gap-1.5 sm:gap-2">
               <span>{selectedCategory === 'All' ? 'उपलब्ध कारीगर (Available Workers)' : `${selectedCategory} कारीगर`}</span>
-              <span className="text-xs px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300 font-bold border border-amber-500/30">
-                {workers.length} कारीगर हाजिर
+              <span className="text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300 font-bold border border-amber-500/30 shrink-0">
+                {workers.length} हाजिर
               </span>
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-[11px] sm:text-xs text-slate-400 mt-0.5">
               {selectedCity !== 'All' ? `स्थान: ${selectedCity}` : 'सभी शहरों में'}
             </p>
           </div>
 
           {/* Quick Filters & Sorting */}
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
             {/* Available Today toggle */}
             <button
               onClick={() => setAvailableOnly(!availableOnly)}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border transition-all active:scale-95 ${
+              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs font-bold border transition-all active:scale-95 shrink-0 ${
                 availableOnly
                   ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300'
                   : 'bg-slate-800 border-slate-700 text-slate-300 hover:text-white'
               }`}
             >
               <span className={`w-2 h-2 rounded-full ${availableOnly ? 'bg-emerald-400' : 'bg-slate-500'}`} />
-              <span>अभी खाली हैं (Available)</span>
+              <span className="text-[11px] sm:text-xs">अभी खाली (Available)</span>
             </button>
 
             {/* Sort Selector */}
-            <div className="flex items-center gap-1 bg-slate-800 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs">
+            <div className="flex items-center gap-1 bg-slate-800 border border-slate-700 rounded-xl px-2 sm:px-2.5 py-1.5 text-xs shrink-0 max-w-[170px] xs:max-w-none">
               <ArrowUpDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="bg-transparent text-white font-bold focus:outline-none cursor-pointer text-xs"
+                className="bg-transparent text-white font-bold focus:outline-none cursor-pointer text-[11px] sm:text-xs truncate w-full"
               >
-                <option value="rating" className="bg-slate-900">⭐ सबसे अच्छी रेटिंग (Rating)</option>
-                <option value="rate_asc" className="bg-slate-900">₹ कम रेट पहले (Lowest Rate)</option>
-                <option value="rate_desc" className="bg-slate-900">₹ ज्यादा रेट (Highest Rate)</option>
-                <option value="experience" className="bg-slate-900">अनुभव के अनुसार (Experience)</option>
-                <option value="completed" className="bg-slate-900">ज्यादा काम किए (Most Jobs)</option>
+                <option value="rating" className="bg-slate-900">⭐ रेटिंग (Rating)</option>
+                <option value="rate_asc" className="bg-slate-900">₹ कम रेट (Lowest)</option>
+                <option value="rate_desc" className="bg-slate-900">₹ ज्यादा रेट (Highest)</option>
+                <option value="experience" className="bg-slate-900">अनुभव (Experience)</option>
+                <option value="completed" className="bg-slate-900">ज्यादा काम (Jobs)</option>
               </select>
             </div>
 
@@ -231,7 +229,7 @@ export default function App() {
             <button
               onClick={fetchData}
               title="रिफ्रेश करें"
-              className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
+              className="p-1.5 sm:p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors shrink-0"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             </button>

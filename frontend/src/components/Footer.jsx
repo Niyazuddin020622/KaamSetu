@@ -14,9 +14,9 @@ export default function Footer({ onSelectCategory }) {
   ];
 
   return (
-    <footer className="border-t border-slate-800 bg-slate-950 text-slate-400 text-sm pb-20 md:pb-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+    <footer className="border-t border-slate-800 bg-slate-950 text-slate-400 text-sm pb-28 md:pb-10">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-8">
           
           {/* Brand Info */}
           <div className="space-y-3">

@@ -91,13 +91,13 @@ export default function TrustSection({ onSelectCategory, onOpenRegister }) {
         </div>
 
         {/* Join as Worker Banner */}
-        <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-r from-amber-500/20 via-orange-500/15 to-amber-600/10 border border-amber-500/30 p-6 sm:p-10 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="space-y-2 text-center md:text-left">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-400/20 text-amber-300">
+        <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-r from-amber-500/20 via-orange-500/15 to-amber-600/10 border border-amber-500/30 p-5 sm:p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-5 sm:gap-6">
+          <div className="space-y-2 text-center md:text-left min-w-0">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold bg-amber-400/20 text-amber-300">
               <Users className="w-3.5 h-3.5" />
               <span>कारीगर भाइयों के लिए (For Tradesmen)</span>
             </div>
-            <h3 className="text-xl sm:text-3xl font-black text-white">
+            <h3 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-black text-white">
               क्या आप प्लंबर, वेल्डर या मिस्त्री हैं? KaamSetu से जुड़ें
             </h3>
             <p className="text-xs sm:text-sm text-slate-300 max-w-xl">
@@ -107,7 +107,7 @@ export default function TrustSection({ onSelectCategory, onOpenRegister }) {
 
           <button
             onClick={onOpenRegister}
-            className="w-full sm:w-auto px-8 py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-black text-sm tracking-wide shadow-xl shadow-amber-500/25 transition-all transform active:scale-95 shrink-0"
+            className="w-full md:w-auto px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-black text-xs sm:text-sm tracking-wide shadow-xl shadow-amber-500/25 transition-all transform active:scale-95 shrink-0 text-center"
           >
             कारीगर बनें (Join as Worker)
           </button>

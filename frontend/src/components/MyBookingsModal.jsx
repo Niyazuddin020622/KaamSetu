@@ -130,24 +130,24 @@ export default function MyBookingsModal({ onClose, activePhone = '' }) {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="px-5 py-4 bg-gradient-to-r from-sky-600/25 via-slate-850 to-slate-900 border-b border-slate-800 flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold">
+        <div className="px-4 sm:px-5 py-3 sm:py-4 bg-gradient-to-r from-sky-600/25 via-slate-850 to-slate-900 border-b border-slate-800 flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold shrink-0">
               <ClipboardList className="w-5 h-5" />
             </div>
-            <div>
-              <h2 className="text-base sm:text-lg font-black text-white">
-                काम पर बुलाने का इतिहास (Employer Hiring History)
+            <div className="min-w-0">
+              <h2 className="text-sm xs:text-base sm:text-lg font-black text-white truncate">
+                काम पर बुलाने का इतिहास (Hiring History)
               </h2>
-              <p className="text-[11px] text-slate-400">
-                आपने कब, किस तारीख को, किस दिन, किसको और किस काम के लिए बुलाया
+              <p className="text-[10px] sm:text-[11px] text-slate-400 truncate">
+                आपने कब, किस तारीख को, किस कारीगर को बुलाया
               </p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition-colors"
+            className="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition-colors shrink-0 ml-2"
           >
             <X className="w-4 h-4" />
           </button>
@@ -161,22 +161,22 @@ export default function MyBookingsModal({ onClose, activePhone = '' }) {
         )}
 
         {/* Search by Phone Header */}
-        <div className="p-3 sm:p-4 bg-slate-950/80 border-b border-slate-800 space-y-2.5 shrink-0">
-          <div className="flex items-center gap-2">
-            <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-xs">
+        <div className="p-3 sm:p-4 bg-slate-950/80 border-b border-slate-800 space-y-2 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="flex-1 flex items-center gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-slate-800 border border-slate-700 text-xs min-w-0">
               <Search className="w-4 h-4 text-slate-400 shrink-0" />
               <input
                 type="text"
                 value={phoneFilter}
                 onChange={(e) => setPhoneFilter(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && fetchBookings(phoneFilter)}
-                placeholder="अपना फोन नंबर डालकर अपनी हायरिंग हिस्ट्री खोजें..."
-                className="bg-transparent text-white placeholder-slate-500 focus:outline-none w-full text-xs"
+                placeholder="फोन नंबर से खोजें..."
+                className="bg-transparent text-white placeholder-slate-500 focus:outline-none w-full text-xs min-w-0"
               />
             </div>
             <button
               onClick={() => fetchBookings(phoneFilter)}
-              className="px-4 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs shadow active:scale-95 flex items-center gap-1.5"
+              className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs shadow active:scale-95 flex items-center gap-1 shrink-0"
             >
               <span>खोजें</span>
             </button>
@@ -186,18 +186,18 @@ export default function MyBookingsModal({ onClose, activePhone = '' }) {
                   setPhoneFilter('');
                   fetchBookings('');
                 }}
-                className="px-3 py-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white text-xs font-semibold"
+                className="px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white text-xs font-semibold shrink-0"
               >
-                सभी देखें
+                सभी
               </button>
             )}
           </div>
 
           {/* Status Filter Tabs */}
-          <div className="flex items-center gap-1.5 overflow-x-auto text-xs pt-1">
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar whitespace-nowrap text-xs pt-1">
             <button
               onClick={() => setStatusFilter('all')}
-              className={`px-3 py-1 rounded-lg font-bold transition-all ${
+              className={`px-3 py-1 rounded-lg font-bold transition-all shrink-0 ${
                 statusFilter === 'all'
                   ? 'bg-sky-500 text-slate-950'
                   : 'bg-slate-800/80 text-slate-400 hover:text-white'
@@ -369,20 +369,20 @@ export default function MyBookingsModal({ onClose, activePhone = '' }) {
                   {/* Bottom Row Actions */}
                   <div className="pt-2 flex flex-wrap items-center justify-between gap-2 border-t border-slate-800 text-xs">
                     {/* Direct Contact कारीगर से बात करें */}
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap sm:flex-nowrap">
                       <a
                         href={`tel:${booking.workerPhone}`}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow active:scale-95"
+                        className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow active:scale-95 shrink-0"
                       >
-                        <Phone className="w-3.5 h-3.5 fill-current" />
-                        <span>कॉल करें ({booking.workerPhone})</span>
+                        <Phone className="w-3.5 h-3.5 fill-current shrink-0" />
+                        <span>कॉल <span className="hidden xs:inline">({booking.workerPhone})</span></span>
                       </a>
 
                       <button
                         onClick={() => handleWhatsApp(booking)}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-950 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-900 text-xs font-bold active:scale-95"
+                        className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-emerald-950 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-900 text-xs font-bold active:scale-95 shrink-0"
                       >
-                        <MessageCircle className="w-3.5 h-3.5" />
+                        <MessageCircle className="w-3.5 h-3.5 shrink-0" />
                         <span>व्हाट्सएप</span>
                       </button>
                     </div>
