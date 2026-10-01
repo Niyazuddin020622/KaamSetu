@@ -503,8 +503,12 @@ export default function WorkerDetailModal({
               <h4 className="text-xs font-bold text-white mb-2">{worker.name} के काम को रेटिंग दें</h4>
               <form onSubmit={handleReviewSubmit} className="space-y-2.5">
                 <input
+                  id="reviewCustomerName"
+                  name="customerName"
                   type="text"
                   required
+                  autoComplete="name"
+                  aria-label="आपका नाम (Your Name)"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                   placeholder="आपका नाम..."
@@ -520,6 +524,7 @@ export default function WorkerDetailModal({
                         key={star}
                         onClick={() => setRating(star)}
                         className="text-amber-400"
+                        aria-label={`${star} स्टार रेटिंग`}
                       >
                         <Star className={`w-4 h-4 ${star <= rating ? 'fill-amber-400' : 'text-slate-600'}`} />
                       </button>
@@ -528,8 +533,11 @@ export default function WorkerDetailModal({
                 </div>
 
                 <textarea
+                  id="reviewComment"
+                  name="reviewComment"
                   required
                   rows="2"
+                  aria-label="समीक्षा टिप्पणी (Review description)"
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                   placeholder="कारीगर का काम कैसा लगा? बताएं..."

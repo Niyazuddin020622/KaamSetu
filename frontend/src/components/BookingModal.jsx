@@ -213,10 +213,12 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
             {/* Date & Time Slot */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1">
+                <label htmlFor="preferredDate" className="text-xs font-bold text-slate-300 block mb-1">
                   तारीख चुनें (Select Date)
                 </label>
                 <input
+                  id="preferredDate"
+                  name="preferredDate"
                   type="date"
                   required
                   value={preferredDate}
@@ -226,10 +228,12 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1">
+                <label htmlFor="preferredTimeSlot" className="text-xs font-bold text-slate-300 block mb-1">
                   पसंदीदा समय (Time Slot)
                 </label>
                 <select
+                  id="preferredTimeSlot"
+                  name="preferredTimeSlot"
                   value={preferredTimeSlot}
                   onChange={(e) => setPreferredTimeSlot(e.target.value)}
                   className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white focus:outline-none focus:border-amber-400 font-semibold"
@@ -244,10 +248,12 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
 
             {/* Problem Description */}
             <div>
-              <label className="text-xs font-bold text-slate-300 block mb-1">
+              <label htmlFor="jobDescription" className="text-xs font-bold text-slate-300 block mb-1">
                 काम क्या है? (Describe the problem)
               </label>
               <textarea
+                id="jobDescription"
+                name="jobDescription"
                 rows="2"
                 value={jobDescription}
                 onChange={(e) => setJobDescription(e.target.value)}
@@ -264,10 +270,13 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1">आपका नाम (Your Name) *</label>
+                  <label htmlFor="bookingCustomerName" className="text-xs font-bold text-slate-300 block mb-1">आपका नाम (Your Name) *</label>
                   <input
+                    id="bookingCustomerName"
+                    name="customerName"
                     type="text"
                     required
+                    autoComplete="name"
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
                     placeholder="उदा. राहुल शर्मा"
@@ -276,23 +285,29 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1">मोबाइल नंबर (Phone Number) *</label>
+                  <label htmlFor="bookingCustomerPhone" className="text-xs font-bold text-slate-300 block mb-1">मोबाइल नंबर (Phone Number) *</label>
                   <input
+                    id="bookingCustomerPhone"
+                    name="customerPhone"
                     type="tel"
                     required
+                    autoComplete="tel"
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
-                    placeholder="उदा. +91 98765 43210"
+                    placeholder="उदा. 9876543210"
                     className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1">घर का पूरा पता (Full Address) *</label>
+                <label htmlFor="bookingCustomerAddress" className="text-xs font-bold text-slate-300 block mb-1">घर का पूरा पता (Full Address) *</label>
                 <input
+                  id="bookingCustomerAddress"
+                  name="customerAddress"
                   type="text"
                   required
+                  autoComplete="street-address"
                   value={customerAddress}
                   onChange={(e) => setCustomerAddress(e.target.value)}
                   placeholder="मकान नंबर, गली/मोहल्ला, लैंडमार्क..."

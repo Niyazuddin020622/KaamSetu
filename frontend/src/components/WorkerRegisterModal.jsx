@@ -228,13 +228,15 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
             {/* Basic Info */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1">
+                <label htmlFor="workerRegName" className="text-xs font-bold text-slate-300 block mb-1">
                   पूरा नाम (Full Name) *
                 </label>
                 <input
+                  id="workerRegName"
                   type="text"
                   name="name"
                   required
+                  autoComplete="name"
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="उदा. रमेश भाई पटेल"
@@ -243,29 +245,33 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1">
+                <label htmlFor="workerRegPhone" className="text-xs font-bold text-slate-300 block mb-1">
                   मोबाइल नंबर (Phone Number) *
                 </label>
                 <input
+                  id="workerRegPhone"
                   type="tel"
                   name="phone"
                   required
+                  autoComplete="tel"
                   value={formData.phone}
                   onChange={handleChange}
-                  placeholder="उदा. +91 98765 43210"
+                  placeholder="उदा. 9876543210"
                   className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-bold text-amber-300 block mb-1">
+                <label htmlFor="workerRegPin" className="text-xs font-bold text-amber-300 block mb-1">
                   4-अंकों का गुप्त PIN (Login PIN) *
                 </label>
                 <input
+                  id="workerRegPin"
                   type="password"
                   name="pin"
                   required
                   maxLength={6}
+                  autoComplete="new-password"
                   value={formData.pin}
                   onChange={handleChange}
                   placeholder="उदा. 2468 (डैशबोर्ड लॉगिन के लिए)"
@@ -277,10 +283,11 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
             {/* Trade & Experience */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1">
+                <label htmlFor="workerRegCategory" className="text-xs font-bold text-slate-300 block mb-1">
                   काम का प्रकार (Trade Category) *
                 </label>
                 <select
+                  id="workerRegCategory"
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
@@ -293,10 +300,11 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1">
+                <label htmlFor="workerRegExp" className="text-xs font-bold text-slate-300 block mb-1">
                   कितने साल का अनुभव है? (Years of Exp) *
                 </label>
                 <input
+                  id="workerRegExp"
                   type="number"
                   name="experienceYears"
                   min="0"
@@ -312,10 +320,11 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
             {/* Rates */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1">
+                <label htmlFor="workerRegHourly" className="text-xs font-bold text-slate-300 block mb-1">
                   1 घंटे का चार्ज (₹ / hour) *
                 </label>
                 <input
+                  id="workerRegHourly"
                   type="number"
                   name="hourlyRate"
                   min="100"
@@ -328,10 +337,11 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1">
+                <label htmlFor="workerRegDaily" className="text-xs font-bold text-slate-300 block mb-1">
                   पूरे दिन (8 घंटे) का रेट (₹ / day)
                 </label>
                 <input
+                  id="workerRegDaily"
                   type="number"
                   name="dailyRate"
                   min="500"
@@ -346,10 +356,11 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
             {/* City & Area - Ahmedabad Included */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1">
+                <label htmlFor="workerRegCity" className="text-xs font-bold text-slate-300 block mb-1">
                   शहर (City) *
                 </label>
                 <select
+                  id="workerRegCity"
                   name="city"
                   value={formData.city}
                   onChange={handleChange}
@@ -367,10 +378,11 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1">
+                <label htmlFor="workerRegArea" className="text-xs font-bold text-slate-300 block mb-1">
                   इलाका / मोहल्ला (Area / Locality) *
                 </label>
                 <input
+                  id="workerRegArea"
                   type="text"
                   name="area"
                   required

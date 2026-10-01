@@ -1,7 +1,14 @@
 import axios from 'axios';
 
-// Support VITE_API_BASE_URL from .env (e.g. Render live URL or local)
-const API_BASE = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:5000/api' : '/api');
+// Smart environment detection:
+// When running locally in browser (localhost / 127.0.0.1), automatically connect to local backend (http://localhost:5000/api)
+// When deployed, connect to VITE_API_BASE_URL (Render backend)
+const isBrowserLocal = typeof window !== 'undefined' && 
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+const API_BASE = isBrowserLocal
+  ? (import.meta.env.VITE_LOCAL_API_URL || 'http://localhost:5000/api')
+  : (import.meta.env.VITE_API_BASE_URL || 'https://kaamsetu-nyud.onrender.com/api');
 
 export const api = axios.create({
   baseURL: API_BASE,

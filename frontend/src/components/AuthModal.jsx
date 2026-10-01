@@ -276,17 +276,20 @@ export default function AuthModal({
                 </button>
               </div>
 
-              <form onSubmit={handleCustomerSubmit} className="space-y-3.5">
+              <form onSubmit={handleCustomerSubmit} className="space-y-3.5" noValidate={false}>
                 {mode === 'register' && (
                   <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1">
+                    <label htmlFor="customerName" className="block text-xs font-medium text-slate-300 mb-1">
                       आपका पूरा नाम <span className="text-rose-400">*</span>
                     </label>
                     <div className="relative">
                       <User className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
                       <input
+                        id="customerName"
+                        name="customerName"
                         type="text"
                         required
+                        autoComplete="name"
                         value={customerName}
                         onChange={(e) => setCustomerName(e.target.value)}
                         placeholder="जैसे: राहुल शर्मा"
@@ -297,15 +300,18 @@ export default function AuthModal({
                 )}
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">
+                  <label htmlFor="customerPhone" className="block text-xs font-medium text-slate-300 mb-1">
                     मोबाइल नंबर <span className="text-rose-400">*</span>
                   </label>
                   <div className="relative">
                     <Phone className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
                     <input
+                      id="customerPhone"
+                      name="customerPhone"
                       type="tel"
                       required
                       maxLength={10}
+                      autoComplete="tel"
                       value={customerPhone}
                       onChange={(e) => setCustomerPhone(e.target.value.replace(/[^0-9]/g, ''))}
                       placeholder="10 अंकों का मोबाइल नंबर"
@@ -315,15 +321,18 @@ export default function AuthModal({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">
+                  <label htmlFor="customerPin" className="block text-xs font-medium text-slate-300 mb-1">
                     4-अंकों का गुप्त PIN <span className="text-rose-400">*</span>
                   </label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
                     <input
+                      id="customerPin"
+                      name="customerPin"
                       type={showPin ? 'text' : 'password'}
                       required
                       maxLength={6}
+                      autoComplete={mode === 'register' ? 'new-password' : 'current-password'}
                       value={customerPin}
                       onChange={(e) => setCustomerPin(e.target.value.replace(/[^0-9]/g, ''))}
                       placeholder={mode === 'register' ? 'अपना 4-अंकों का PIN बनाएं (उदा. 1234)' : 'अपना 4-अंकों का PIN दर्ज करें'}
@@ -333,6 +342,7 @@ export default function AuthModal({
                       type="button"
                       onClick={() => setShowPin(!showPin)}
                       className="absolute right-3 top-3 text-slate-400 hover:text-slate-200"
+                      aria-label={showPin ? "PIN छुपाएं" : "PIN देखें"}
                     >
                       {showPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -347,13 +357,16 @@ export default function AuthModal({
                 {mode === 'register' && (
                   <>
                     <div>
-                      <label className="block text-xs font-medium text-slate-300 mb-1">
+                      <label htmlFor="customerAddress" className="block text-xs font-medium text-slate-300 mb-1">
                         घर / ऑफिस का पता (वैकल्पिक)
                       </label>
                       <div className="relative">
                         <MapPin className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
                         <input
+                          id="customerAddress"
+                          name="customerAddress"
                           type="text"
+                          autoComplete="street-address"
                           value={customerAddress}
                           onChange={(e) => setCustomerAddress(e.target.value)}
                           placeholder="फ्लैट नं, सोसायटी, सड़क..."
@@ -394,17 +407,20 @@ export default function AuthModal({
                 </span>
               </div>
 
-              <form onSubmit={handleWorkerSubmit} className="space-y-3.5">
+              <form onSubmit={handleWorkerSubmit} className="space-y-3.5" noValidate={false}>
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">
+                  <label htmlFor="workerPhone" className="block text-xs font-medium text-slate-300 mb-1">
                     कारीगर मोबाइल नंबर <span className="text-rose-400">*</span>
                   </label>
                   <div className="relative">
                     <Phone className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
                     <input
+                      id="workerPhone"
+                      name="workerPhone"
                       type="tel"
                       required
                       maxLength={10}
+                      autoComplete="tel"
                       disabled={needsWorkerPinSetup}
                       value={workerPhone}
                       onChange={(e) => setWorkerPhone(e.target.value.replace(/[^0-9]/g, ''))}
@@ -416,14 +432,17 @@ export default function AuthModal({
 
                 {!needsWorkerPinSetup ? (
                   <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1">
+                    <label htmlFor="workerPin" className="block text-xs font-medium text-slate-300 mb-1">
                       4-अंकों का कारीगर PIN
                     </label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
                       <input
+                        id="workerPin"
+                        name="workerPin"
                         type={showPin ? 'text' : 'password'}
                         maxLength={6}
+                        autoComplete="current-password"
                         value={workerPin}
                         onChange={(e) => setWorkerPin(e.target.value.replace(/[^0-9]/g, ''))}
                         placeholder="आपका 4-अंकों का गुप्त PIN"
@@ -433,6 +452,7 @@ export default function AuthModal({
                         type="button"
                         onClick={() => setShowPin(!showPin)}
                         className="absolute right-3 top-3 text-slate-400 hover:text-slate-200"
+                        aria-label={showPin ? "PIN छुपाएं" : "PIN देखें"}
                       >
                         {showPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
@@ -443,15 +463,18 @@ export default function AuthModal({
                   </div>
                 ) : (
                   <div>
-                    <label className="block text-xs font-medium text-amber-300 mb-1">
+                    <label htmlFor="newWorkerPin" className="block text-xs font-medium text-amber-300 mb-1">
                       नया 4-अंकों का PIN बनाएं <span className="text-rose-400">*</span>
                     </label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-3 w-4 h-4 text-amber-400" />
                       <input
+                        id="newWorkerPin"
+                        name="newWorkerPin"
                         type={showPin ? 'text' : 'password'}
                         required
                         maxLength={6}
+                        autoComplete="new-password"
                         value={newWorkerPin}
                         onChange={(e) => setNewWorkerPin(e.target.value.replace(/[^0-9]/g, ''))}
                         placeholder="जैसे: 2468"
@@ -461,6 +484,7 @@ export default function AuthModal({
                         type="button"
                         onClick={() => setShowPin(!showPin)}
                         className="absolute right-3 top-3 text-slate-400 hover:text-slate-200"
+                        aria-label={showPin ? "PIN छुपाएं" : "PIN देखें"}
                       >
                         {showPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>

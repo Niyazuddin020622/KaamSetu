@@ -81,14 +81,17 @@ export default function LoginView({ onLoginSuccess }) {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+              <label htmlFor="adminPin" className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
                 <KeyRound className="w-3.5 h-3.5 text-amber-400" />
                 <span>Admin PIN</span>
               </label>
               <input
+                id="adminPin"
+                name="adminPin"
                 type="password"
                 required
                 autoFocus
+                autoComplete="current-password"
                 value={pin}
                 onChange={(e) => setPin(e.target.value)}
                 placeholder="Enter PIN (e.g. admin123)..."

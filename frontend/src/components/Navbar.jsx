@@ -71,6 +71,9 @@ export default function Navbar({
           <div className="flex items-center bg-slate-900/90 border border-slate-800 rounded-full px-2 sm:px-3 py-1 sm:py-1.5 gap-1 sm:gap-1.5 shadow-inner max-w-[120px] xs:max-w-[150px] sm:max-w-[200px] md:max-w-xs shrink min-w-0">
             <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0" />
             <select
+              id="citySelector"
+              name="city"
+              aria-label="शहर चुनें (Select City)"
               value={selectedCity}
               onChange={(e) => onCityChange(e.target.value)}
               className="bg-transparent text-[11px] sm:text-xs md:text-sm font-semibold text-slate-200 focus:outline-none cursor-pointer truncate w-full"

@@ -57,7 +57,11 @@ export default function Hero({
             <div className="w-full flex-1 flex items-center gap-2.5 px-3 py-2 md:py-0 min-w-0">
               <Search className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400 shrink-0" />
               <input
+                id="heroSearchInput"
+                name="searchQuery"
                 type="text"
+                autoComplete="off"
+                aria-label="कारीगर या काम खोजें (Search trade workers)"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="खोजें: प्लंबर, वेल्डर, पाइप लीकेज, गेट..."
@@ -67,6 +71,7 @@ export default function Hero({
                 <button
                   type="button"
                   onClick={() => setSearchQuery('')}
+                  aria-label="सर्च साफ करें (Clear search)"
                   className="text-xs text-slate-500 hover:text-slate-300 font-bold px-1 shrink-0"
                 >
                   ✕
@@ -81,6 +86,9 @@ export default function Hero({
             <div className="w-full md:w-auto flex items-center gap-2 px-3 py-1.5 md:py-0 border-t md:border-t-0 border-slate-800/80">
               <MapPin className="w-4 h-4 text-amber-400 shrink-0" />
               <select
+                id="heroCitySelect"
+                name="city"
+                aria-label="शहर चुनें (Select City)"
                 value={selectedCity}
                 onChange={(e) => setSelectedCity(e.target.value)}
                 className="bg-transparent text-xs sm:text-sm text-slate-200 font-semibold focus:outline-none cursor-pointer w-full md:w-auto"
