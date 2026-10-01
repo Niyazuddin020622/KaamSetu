@@ -1,12 +1,28 @@
 import React from 'react';
-import { Hammer, ShieldCheck, MapPin, PlusCircle, ClipboardList, PhoneCall, Phone } from 'lucide-react';
+import { 
+  Hammer, 
+  MapPin, 
+  PlusCircle, 
+  ClipboardList, 
+  PhoneCall, 
+  Phone,
+  User,
+  Briefcase,
+  LogIn,
+  KeyRound,
+  ShieldCheck
+} from 'lucide-react';
 
 export default function Navbar({ 
   selectedCity, 
   onCityChange, 
   onOpenRegister, 
   onOpenMyBookings,
-  bookingCount = 0 
+  bookingCount = 0,
+  currentUser = null,
+  currentWorker = null,
+  onOpenAuth = () => {},
+  onOpenWorkerDashboard = () => {}
 }) {
 
   const cities = [
@@ -51,8 +67,8 @@ export default function Navbar({
             </div>
           </div>
 
-          {/* City Selector - Responsively constrained to never overflow */}
-          <div className="flex items-center bg-slate-900/90 border border-slate-800 rounded-full px-2 sm:px-3 py-1 sm:py-1.5 gap-1 sm:gap-1.5 shadow-inner max-w-[130px] xs:max-w-[160px] sm:max-w-[210px] md:max-w-xs shrink min-w-0">
+          {/* City Selector */}
+          <div className="flex items-center bg-slate-900/90 border border-slate-800 rounded-full px-2 sm:px-3 py-1 sm:py-1.5 gap-1 sm:gap-1.5 shadow-inner max-w-[120px] xs:max-w-[150px] sm:max-w-[200px] md:max-w-xs shrink min-w-0">
             <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0" />
             <select
               value={selectedCity}
@@ -80,21 +96,66 @@ export default function Navbar({
               <span className="lg:hidden text-[11px]">हेल्पलाइन</span>
             </a>
 
+            {/* If Worker Logged In: Show Worker Dashboard button */}
+            {currentWorker && (
+              <button
+                onClick={onOpenWorkerDashboard}
+                className="flex items-center gap-1.5 px-2.5 lg:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold text-sky-300 bg-sky-500/20 hover:bg-sky-500/30 border border-sky-500/40 transition-all shrink-0 shadow-md shadow-sky-500/10"
+              >
+                <Briefcase className="w-4 h-4 text-sky-400 shrink-0" />
+                <span className="max-w-[100px] truncate">{currentWorker.name}</span>
+                <span className="px-1.5 py-0.2 text-[10px] bg-sky-400 text-slate-950 rounded-full font-black">
+                  डैशबोर्ड
+                </span>
+              </button>
+            )}
+
             {/* My Bookings / Hiring History Button */}
             <button
               onClick={onOpenMyBookings}
-              className="relative flex items-center gap-1.5 px-2.5 lg:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-300 bg-slate-900/80 hover:bg-slate-800 border border-slate-700/60 transition-all hover:text-white shrink-0"
+              className={`relative flex items-center gap-1.5 px-2.5 lg:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all shrink-0 ${
+                currentUser
+                  ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30 hover:bg-amber-500/25'
+                  : 'text-slate-300 bg-slate-900/80 hover:bg-slate-800 border border-slate-700/60 hover:text-white'
+              }`}
               title="काम का इतिहास देखें"
             >
-              <ClipboardList className="w-4 h-4 text-sky-400 shrink-0" />
-              <span className="hidden md:inline">काम का इतिहास</span>
-              <span className="md:hidden text-xs">इतिहास</span>
+              <ClipboardList className={`w-4 h-4 shrink-0 ${currentUser ? 'text-amber-400' : 'text-sky-400'}`} />
+              <span className="hidden md:inline">
+                {currentUser ? `${currentUser.name} का इतिहास` : 'काम का इतिहास'}
+              </span>
+              <span className="md:hidden text-xs">
+                {currentUser ? 'मेरी बुकिंग' : 'इतिहास'}
+              </span>
               {bookingCount > 0 && (
-                <span className="px-1.5 py-0.2 text-[10px] sm:text-xs font-black bg-sky-500 text-slate-950 rounded-full">
+                <span className="px-1.5 py-0.2 text-[10px] sm:text-xs font-black bg-amber-500 text-slate-950 rounded-full">
                   {bookingCount}
                 </span>
               )}
             </button>
+
+            {/* If Not Logged In as Customer: Show Login button */}
+            {!currentUser && !currentWorker && (
+              <button
+                onClick={() => onOpenAuth('customer')}
+                className="flex items-center gap-1.5 px-2.5 lg:px-3 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-200 bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all shrink-0"
+              >
+                <LogIn className="w-3.5 h-3.5 text-amber-400" />
+                <span>लॉगिन</span>
+              </button>
+            )}
+
+            {/* If Not Logged In as Worker: Show quick Worker Login */}
+            {!currentWorker && (
+              <button
+                onClick={() => onOpenAuth('worker')}
+                className="hidden xl:flex items-center gap-1 px-2.5 py-1.5 sm:py-2 rounded-xl text-xs font-bold text-sky-400 bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 transition-all shrink-0"
+                title="कारीगर लॉगिन"
+              >
+                <KeyRound className="w-3.5 h-3.5" />
+                <span>कारीगर लॉगिन</span>
+              </button>
+            )}
 
             {/* Worker Register Button */}
             <button
@@ -118,15 +179,39 @@ export default function Navbar({
               <Phone className="w-4 h-4 fill-current" />
             </a>
 
+            {/* Worker Dashboard or Login Icon */}
+            {currentWorker ? (
+              <button
+                onClick={onOpenWorkerDashboard}
+                className="p-2 rounded-xl bg-sky-500/20 border border-sky-500/40 text-sky-300 relative"
+                title="कारीगर डैशबोर्ड"
+              >
+                <Briefcase className="w-4 h-4" />
+                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full ring-2 ring-slate-950" />
+              </button>
+            ) : !currentUser ? (
+              <button
+                onClick={() => onOpenAuth('customer')}
+                className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-amber-400"
+                title="लॉगिन करें"
+              >
+                <User className="w-4 h-4" />
+              </button>
+            ) : null}
+
             {/* My Bookings History Button */}
             <button
               onClick={onOpenMyBookings}
-              className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-sky-400 relative"
+              className={`p-2 rounded-xl border relative ${
+                currentUser 
+                  ? 'bg-amber-500/20 border-amber-500/30 text-amber-400' 
+                  : 'bg-slate-900 border-slate-800 text-sky-400'
+              }`}
               title="काम का इतिहास (History)"
             >
               <ClipboardList className="w-4 h-4" />
-              {bookingCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-sky-400 rounded-full ring-2 ring-slate-950" />
+              {currentUser && (
+                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-400 rounded-full ring-2 ring-slate-950" />
               )}
             </button>
 

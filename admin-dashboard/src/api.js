@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+// Support VITE_API_BASE_URL from .env (e.g. Render live URL or local)
 const API_BASE = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:5000/api' : '/api');
 
 export const api = axios.create({

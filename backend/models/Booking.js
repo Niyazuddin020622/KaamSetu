@@ -10,7 +10,11 @@ const bookingSchema = new mongoose.Schema({
   workerCategory: { type: String, required: true },
   workerPhone: { type: String, required: true },
   workerAvatar: { type: String, default: '' },
-  
+  customer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
+  },
   customerName: { type: String, required: true, trim: true },
   customerPhone: { type: String, required: true, trim: true },
   customerAddress: { type: String, required: true },

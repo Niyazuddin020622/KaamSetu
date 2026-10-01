@@ -27,7 +27,7 @@ export default function DashboardOverview({
     );
   }
 
-  const { workers = {}, bookings = {}, recentBookings = [] } = stats;
+  const { workers = {}, customers = {}, bookings = {}, recentBookings = [] } = stats;
 
   const kpis = [
     {
@@ -40,21 +40,21 @@ export default function DashboardOverview({
       actionTab: 'workers'
     },
     {
+      label: 'Registered Customers (PIN Users)',
+      value: customers.total || 0,
+      subtext: 'Direct App Account Hirers',
+      icon: Building2,
+      color: 'from-emerald-500 to-teal-600',
+      textColor: 'text-emerald-400',
+      actionTab: 'employers'
+    },
+    {
       label: 'Total Jobs / Bookings',
       value: bookings.total || 0,
       subtext: `${bookings.completed || 0} Completed • ${bookings.pending || 0} Pending`,
       icon: ClipboardList,
       color: 'from-sky-500 to-blue-600',
       textColor: 'text-sky-400',
-      actionTab: 'bookings'
-    },
-    {
-      label: 'Successfully Completed',
-      value: bookings.completed || 0,
-      subtext: '100% Service Fulfillment',
-      icon: CheckCircle,
-      color: 'from-emerald-500 to-teal-600',
-      textColor: 'text-emerald-400',
       actionTab: 'bookings'
     },
     {

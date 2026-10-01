@@ -1,12 +1,15 @@
 import React from 'react';
-import { Home, Users, ClipboardList, PlusCircle, PhoneCall, MessageCircle } from 'lucide-react';
+import { Home, Users, ClipboardList, PlusCircle, PhoneCall, Briefcase } from 'lucide-react';
 
 export default function MobileBottomNav({ 
   onGoHome, 
   onScrollToWorkers, 
   onOpenBookings, 
   onOpenRegister, 
-  bookingCount = 0 
+  bookingCount = 0,
+  currentWorker = null,
+  currentUser = null,
+  onOpenWorkerDashboard = () => {}
 }) {
   return (
     <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-950/95 backdrop-blur-xl border-t border-slate-800/90 shadow-[0_-8px_25px_rgba(0,0,0,0.6)] px-2 py-1.5 safe-area-pb">
@@ -41,19 +44,30 @@ export default function MobileBottomNav({
           <span className="text-[10px] font-extrabold text-amber-400 mt-1">कारीगर बनें</span>
         </button>
 
-        {/* 4. My Bookings */}
-        <button
-          onClick={onOpenBookings}
-          className="relative flex flex-col items-center justify-center py-1 text-slate-400 hover:text-sky-400 transition-colors focus:outline-none"
-        >
-          <ClipboardList className="w-5 h-5 mb-0.5" />
-          <span className="text-[10px] font-bold">बुकिंग</span>
-          {bookingCount > 0 && (
-            <span className="absolute top-0 right-3 w-4 h-4 rounded-full bg-sky-500 text-slate-950 text-[9px] font-black flex items-center justify-center">
-              {bookingCount}
-            </span>
-          )}
-        </button>
+        {/* 4. Worker Dashboard or My Bookings */}
+        {currentWorker ? (
+          <button
+            onClick={onOpenWorkerDashboard}
+            className="relative flex flex-col items-center justify-center py-1 text-sky-400 hover:text-sky-300 transition-colors focus:outline-none"
+          >
+            <Briefcase className="w-5 h-5 mb-0.5" />
+            <span className="text-[10px] font-bold">डैशबोर्ड</span>
+            <span className="absolute top-0 right-3 w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-slate-950" />
+          </button>
+        ) : (
+          <button
+            onClick={onOpenBookings}
+            className={`relative flex flex-col items-center justify-center py-1 transition-colors focus:outline-none ${
+              currentUser ? 'text-amber-400' : 'text-slate-400 hover:text-sky-400'
+            }`}
+          >
+            <ClipboardList className="w-5 h-5 mb-0.5" />
+            <span className="text-[10px] font-bold">{currentUser ? 'मेरी बुकिंग' : 'बुकिंग'}</span>
+            {currentUser && (
+              <span className="absolute top-0 right-3 w-2 h-2 rounded-full bg-amber-400 ring-2 ring-slate-950" />
+            )}
+          </button>
+        )}
 
         {/* 5. Direct Support */}
         <a

@@ -39,6 +39,7 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
+    pin: '',
     email: '',
     category: 'Plumber',
     subSkills: '',
@@ -87,6 +88,11 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
 
     if (!formData.name.trim() || !formData.phone.trim() || !formData.area.trim()) {
       setError('कृपया अपना नाम, मोबाइल नंबर और सर्विस का इलाका भरें।');
+      return;
+    }
+
+    if (!formData.pin || formData.pin.toString().trim().length < 4) {
+      setError('कृपया कम से कम 4 अंकों का गुप्त लॉगिन PIN बनाएं।');
       return;
     }
 
@@ -246,6 +252,22 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
                   onChange={handleChange}
                   placeholder="उदा. +91 98765 43210"
                   className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-amber-300 block mb-1">
+                  4-अंकों का गुप्त PIN (Login PIN) *
+                </label>
+                <input
+                  type="password"
+                  name="pin"
+                  required
+                  maxLength={6}
+                  value={formData.pin}
+                  onChange={handleChange}
+                  placeholder="उदा. 2468 (डैशबोर्ड लॉगिन के लिए)"
+                  className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-amber-500/40 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 font-mono tracking-widest"
                 />
               </div>
             </div>

@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Booking = require('../models/Booking');
 const Worker = require('../models/Worker');
+const User = require('../models/User');
+const { verifyToken, optionalToken, requireCustomer, requireWorker } = require('../middleware/auth');
 
 // Helper function to get Day of Week in Hindi and English
 const getDayName = (dateStr) => {
@@ -18,6 +20,15 @@ const getDayName = (dateStr) => {
     'शनिवार (Saturday)'
   ];
   return days[date.getDay()];
+};
+
+// Flexible regex for phone that handles spaces, dashes or country codes
+const getFlexiblePhoneRegex = (p) => {
+  if (!p) return null;
+  const digits = p.toString().replace(/[^0-9]/g, '');
+  const last10 = digits.length >= 10 ? digits.slice(-10) : digits;
+  if (!last10) return null;
+  return new RegExp(last10.split('').join('[^0-9]*'), 'i');
 };
 
 // GET /api/bookings - Get list of bookings with flexible search
@@ -54,6 +65,76 @@ router.get('/', async (req, res) => {
     res.json({ success: true, count: bookings.length, data: bookings });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to fetch bookings', error: error.message });
+  }
+});
+
+// GET /api/bookings/my-history - Secure hiring history for logged-in Customer ONLY
+router.get('/my-history', verifyToken, requireCustomer, async (req, res) => {
+  try {
+    const phoneRegex = getFlexiblePhoneRegex(req.user.phone);
+    const bookings = await Booking.find({
+      $or: [
+        { customer: req.user.id },
+        ...(phoneRegex ? [{ customerPhone: phoneRegex }] : [])
+      ]
+    }).populate('worker', 'name phone category avatar hourlyRate dailyRate rating city area').sort({ createdAt: -1 });
+
+    const totalBookings = bookings.length;
+    const completedBookings = bookings.filter(b => b.status === 'completed').length;
+    const activeBookings = bookings.filter(b => ['pending', 'accepted', 'in_progress'].includes(b.status)).length;
+    const totalSpent = bookings
+      .filter(b => b.status === 'completed')
+      .reduce((sum, b) => sum + (Number(b.estimatedCost) || 0), 0);
+
+    res.json({
+      success: true,
+      customerId: req.user.id,
+      summary: {
+        totalBookings,
+        completedBookings,
+        activeBookings,
+        totalSpent
+      },
+      data: bookings
+    });
+  } catch (error) {
+    console.error('Error fetching my-history:', error);
+    res.status(500).json({ success: false, message: 'हायरिंग हिस्ट्री लोड नहीं हो सकी।', error: error.message });
+  }
+});
+
+// GET /api/bookings/worker-history - Secure job history for logged-in Worker ONLY
+router.get('/worker-history', verifyToken, requireWorker, async (req, res) => {
+  try {
+    const phoneRegex = getFlexiblePhoneRegex(req.user.phone);
+    const bookings = await Booking.find({
+      $or: [
+        { worker: req.user.id },
+        ...(phoneRegex ? [{ workerPhone: phoneRegex }] : [])
+      ]
+    }).populate('customer', 'name phone address city area').sort({ createdAt: -1 });
+
+    const totalJobs = bookings.length;
+    const completedJobs = bookings.filter(b => b.status === 'completed').length;
+    const activeJobs = bookings.filter(b => ['pending', 'accepted', 'in_progress'].includes(b.status)).length;
+    const totalEarnings = bookings
+      .filter(b => b.status === 'completed')
+      .reduce((sum, b) => sum + (Number(b.estimatedCost) || 0), 0);
+
+    res.json({
+      success: true,
+      workerId: req.user.id,
+      summary: {
+        totalJobs,
+        completedJobs,
+        activeJobs,
+        totalEarnings
+      },
+      data: bookings
+    });
+  } catch (error) {
+    console.error('Error fetching worker-history:', error);
+    res.status(500).json({ success: false, message: 'कारीगर काम हिस्ट्री लोड नहीं हो सकी।', error: error.message });
   }
 });
 
@@ -164,7 +245,7 @@ router.get('/worker/:workerId', async (req, res) => {
 });
 
 // POST /api/bookings - Create new booking
-router.post('/', async (req, res) => {
+router.post('/', optionalToken, async (req, res) => {
   try {
     const {
       workerId,
@@ -197,12 +278,25 @@ router.post('/', async (req, res) => {
 
     const calculatedDay = preferredDay || getDayName(preferredDate);
 
+    // Resolve customer ID if logged in or auto-link with existing user phone
+    let customerId = null;
+    if (req.user && req.user.role === 'customer') {
+      customerId = req.user.id;
+    } else {
+      const cleanPhone = (customerPhone || '').replace(/[^0-9]/g, '').slice(-10);
+      if (cleanPhone) {
+        const existingUser = await User.findOne({ phone: cleanPhone });
+        if (existingUser) customerId = existingUser._id;
+      }
+    }
+
     const booking = new Booking({
       worker: worker._id,
       workerName: worker.name,
       workerCategory: worker.category,
       workerPhone: worker.phone,
       workerAvatar: worker.avatar || '',
+      customer: customerId,
       customerName,
       customerPhone,
       customerAddress,

@@ -45,12 +45,34 @@ const workerSchema = new mongoose.Schema({
   languages: [{ type: String }],
   emergencyAvailable: { type: Boolean, default: false },
   toolsProvided: { type: Boolean, default: true },
+  pin: { type: String, default: '' },
+  role: { type: String, default: 'worker' },
   portfolio: [{
     title: String,
     imageUrl: String
   }],
   reviews: [reviewSchema]
 }, { timestamps: true });
+
+// Hash PIN before saving if modified and present
+workerSchema.pre('save', async function(next) {
+  if (!this.isModified('pin') || !this.pin) return next();
+  try {
+    const bcrypt = require('bcryptjs');
+    const salt = await bcrypt.genSalt(10);
+    this.pin = await bcrypt.hash(this.pin, salt);
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Compare PIN helper method
+workerSchema.methods.comparePin = async function(candidatePin) {
+  if (!this.pin) return false;
+  const bcrypt = require('bcryptjs');
+  return await bcrypt.compare(candidatePin, this.pin);
+};
 
 // Index for high performance search
 workerSchema.index({ name: 'text', bio: 'text', subSkills: 'text', area: 'text', city: 'text' });

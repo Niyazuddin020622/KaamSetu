@@ -8,6 +8,8 @@ import WorkerDetailModal from './components/WorkerDetailModal';
 import BookingModal from './components/BookingModal';
 import WorkerRegisterModal from './components/WorkerRegisterModal';
 import MyBookingsModal from './components/MyBookingsModal';
+import AuthModal from './components/AuthModal';
+import WorkerDashboardModal from './components/WorkerDashboardModal';
 import MobileBottomNav from './components/MobileBottomNav';
 import TrustSection from './components/TrustSection';
 import Footer from './components/Footer';
@@ -26,6 +28,29 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  // Customer & Worker Authentication States
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const stored = localStorage.getItem('kaamsetu_customer_user');
+      return stored ? JSON.parse(stored) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+
+  const [currentWorker, setCurrentWorker] = useState(() => {
+    try {
+      const stored = localStorage.getItem('kaamsetu_worker_user');
+      return stored ? JSON.parse(stored) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authInitialRole, setAuthInitialRole] = useState('customer');
+  const [showWorkerDashboard, setShowWorkerDashboard] = useState(false);
+
   // Filters & Search - Default to Ahmedabad or All
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedCity, setSelectedCity] = useState('All');
@@ -40,7 +65,6 @@ export default function App() {
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showMyBookingsModal, setShowMyBookingsModal] = useState(false);
 
-
   // App notification toast
   const [toast, setToast] = useState(null);
   const [bookingCount, setBookingCount] = useState(2);
@@ -49,6 +73,27 @@ export default function App() {
   const showToast = (message, type = 'success') => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 4000);
+  };
+
+  const handleAuthSuccess = (role, data) => {
+    if (role === 'customer') {
+      setCurrentUser(data);
+      showToast(`नमस्ते ${data.name}! आपका स्वागत है।`);
+    } else if (role === 'worker') {
+      setCurrentWorker(data);
+      setShowWorkerDashboard(true);
+      showToast(`नमस्ते ${data.name}! आपका कारीगर डैशबोर्ड खुला है।`);
+    }
+  };
+
+  const handleCustomerLogout = () => {
+    setCurrentUser(null);
+    showToast('ग्राहक खाता लॉगआउट हो गया।');
+  };
+
+  const handleWorkerLogout = () => {
+    setCurrentWorker(null);
+    showToast('कारीगर खाता लॉगआउट हो गया।');
   };
 
   // Fetch initial data
@@ -154,6 +199,13 @@ export default function App() {
         onOpenRegister={() => setShowRegisterModal(true)}
         onOpenMyBookings={() => setShowMyBookingsModal(true)}
         bookingCount={bookingCount}
+        currentUser={currentUser}
+        currentWorker={currentWorker}
+        onOpenAuth={(role) => {
+          setAuthInitialRole(role || 'customer');
+          setShowAuthModal(true);
+        }}
+        onOpenWorkerDashboard={() => setShowWorkerDashboard(true)}
       />
 
 
@@ -328,6 +380,9 @@ export default function App() {
         onOpenBookings={() => setShowMyBookingsModal(true)}
         onOpenRegister={() => setShowRegisterModal(true)}
         bookingCount={bookingCount}
+        currentWorker={currentWorker}
+        currentUser={currentUser}
+        onOpenWorkerDashboard={() => setShowWorkerDashboard(true)}
       />
 
       {/* Modals */}
@@ -347,6 +402,7 @@ export default function App() {
       {selectedWorkerForBooking && (
         <BookingModal
           worker={selectedWorkerForBooking}
+          currentUser={currentUser}
           onClose={() => setSelectedWorkerForBooking(null)}
           onBookingSuccess={handleBookingSuccess}
         />
@@ -362,7 +418,31 @@ export default function App() {
       {showMyBookingsModal && (
         <MyBookingsModal
           onClose={() => setShowMyBookingsModal(false)}
-          activePhone={lastBookingPhone}
+          currentUser={currentUser}
+          onOpenAuth={(role) => {
+            setAuthInitialRole(role || 'customer');
+            setShowAuthModal(true);
+          }}
+          onCustomerLogout={handleCustomerLogout}
+        />
+      )}
+
+      {showAuthModal && (
+        <AuthModal
+          isOpen={showAuthModal}
+          initialRole={authInitialRole}
+          onClose={() => setShowAuthModal(false)}
+          onAuthSuccess={handleAuthSuccess}
+          onOpenWorkerRegister={() => setShowRegisterModal(true)}
+        />
+      )}
+
+      {showWorkerDashboard && (
+        <WorkerDashboardModal
+          isOpen={showWorkerDashboard}
+          workerUser={currentWorker}
+          onClose={() => setShowWorkerDashboard(false)}
+          onWorkerLogout={handleWorkerLogout}
         />
       )}
 

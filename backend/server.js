@@ -5,6 +5,14 @@ const morgan = require('morgan');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const dotenv = require('dotenv');
+const dns = require('dns');
+
+// Fix for Windows / ISP DNS resolving MongoDB Atlas SRV connection strings
+try {
+  dns.setServers(['8.8.8.8', '1.1.1.1']);
+} catch (e) {
+  console.warn('DNS server override warning:', e.message);
+}
 
 dotenv.config();
 
@@ -12,6 +20,7 @@ const workerRoutes = require('./routes/workerRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const authRoutes = require('./routes/authRoutes');
 const Worker = require('./models/Worker');
 const { sampleWorkers, sampleBookings } = require('./seed');
 const Booking = require('./models/Booking');
@@ -51,6 +60,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(morgan('dev'));
 
 // Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/workers', workerRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/categories', categoryRoutes);

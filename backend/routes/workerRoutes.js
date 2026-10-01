@@ -108,7 +108,8 @@ router.post('/', async (req, res) => {
       avatar,
       languages,
       emergencyAvailable,
-      toolsProvided
+      toolsProvided,
+      pin
     } = req.body;
 
     if (!name || !phone || !category || !hourlyRate || !city || !area) {
@@ -143,6 +144,7 @@ router.post('/', async (req, res) => {
     const worker = new Worker({
       name,
       phone,
+      pin: pin ? pin.toString().trim() : '',
       email: email || '',
       category,
       subSkills: parsedSkills.length ? parsedSkills : [category],

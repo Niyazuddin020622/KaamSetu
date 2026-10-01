@@ -13,12 +13,22 @@ import {
 } from 'lucide-react';
 import { createBooking } from '../api';
 
-export default function BookingModal({ worker, onClose, onBookingSuccess }) {
-  const [customerName, setCustomerName] = useState('');
-  const [customerPhone, setCustomerPhone] = useState('');
-  const [customerAddress, setCustomerAddress] = useState('');
-  const [city, setCity] = useState(worker ? worker.city : 'Ahmedabad');
-  const [area, setArea] = useState(worker ? worker.area : '');
+export default function BookingModal({ worker, onClose, onBookingSuccess, currentUser = null }) {
+  // Check localStorage if currentUser prop wasn't passed directly
+  const activeUser = currentUser || (() => {
+    try {
+      const stored = localStorage.getItem('kaamsetu_customer_user');
+      return stored ? JSON.parse(stored) : null;
+    } catch (e) {
+      return null;
+    }
+  })();
+
+  const [customerName, setCustomerName] = useState(activeUser?.name || '');
+  const [customerPhone, setCustomerPhone] = useState(activeUser?.phone || '');
+  const [customerAddress, setCustomerAddress] = useState(activeUser?.address || '');
+  const [city, setCity] = useState(activeUser?.city || (worker ? worker.city : 'Ahmedabad'));
+  const [area, setArea] = useState(activeUser?.area || (worker ? worker.area : ''));
   const [serviceRequired, setServiceRequired] = useState(
     worker ? `${worker.category} काम / सर्विस` : 'Service'
   );

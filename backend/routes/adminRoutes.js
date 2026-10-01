@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Worker = require('../models/Worker');
 const Booking = require('../models/Booking');
+const User = require('../models/User');
 
 // Admin PIN - Default is 'admin123'
 const ADMIN_PIN = process.env.ADMIN_PIN || 'admin123';
@@ -31,6 +32,7 @@ router.get('/stats', async (req, res) => {
       totalWorkers,
       verifiedWorkers,
       availableWorkers,
+      totalCustomers,
       totalBookings,
       pendingBookings,
       acceptedBookings,
@@ -44,6 +46,7 @@ router.get('/stats', async (req, res) => {
       Worker.countDocuments(),
       Worker.countDocuments({ isVerified: true }),
       Worker.countDocuments({ isAvailable: true }),
+      User.countDocuments(),
       Booking.countDocuments(),
       Booking.countDocuments({ status: 'pending' }),
       Booking.countDocuments({ status: 'accepted' }),
@@ -75,6 +78,9 @@ router.get('/stats', async (req, res) => {
           available: availableWorkers,
           byCategory: categoryCounts,
           byCity: cityCounts
+        },
+        customers: {
+          total: totalCustomers
         },
         bookings: {
           total: totalBookings,
