@@ -19,6 +19,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { addWorkerReview, getWorkerHistory } from '../api';
+import { handleImageError } from '../utils/imageHelper';
 
 export default function WorkerDetailModal({ 
   worker, 
@@ -133,9 +134,7 @@ export default function WorkerDetailModal({
             <img
               src={worker.avatar}
               alt={worker.name}
-              onError={(e) => {
-                e.target.src = 'https://images.unsplash.com/photo-1541888946425-d0fbb18f15f6?w=200&auto=format&fit=crop&q=80';
-              }}
+              onError={handleImageError}
               className="w-16 h-16 xs:w-20 xs:h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border-4 border-slate-900 shadow-xl bg-slate-800 shrink-0"
             />
             <div className="mb-0.5 sm:mb-1 min-w-0">

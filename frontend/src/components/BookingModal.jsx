@@ -12,6 +12,7 @@ import {
   Wrench
 } from 'lucide-react';
 import { createBooking } from '../api';
+import { handleImageError } from '../utils/imageHelper';
 
 export default function BookingModal({ worker, onClose, onBookingSuccess, currentUser = null }) {
   // Check localStorage if currentUser prop wasn't passed directly
@@ -99,6 +100,7 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
             <img
               src={worker.avatar}
               alt={worker.name}
+              onError={handleImageError}
               className="w-10 h-10 rounded-xl object-cover border border-amber-400"
             />
             <div>

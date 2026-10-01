@@ -27,6 +27,7 @@ import {
   toggleWorkerAvailability, 
   workerLogout 
 } from '../api';
+import { handleImageError } from '../utils/imageHelper';
 
 const STATUS_BADGES = {
   pending: {
@@ -170,6 +171,7 @@ export default function WorkerDashboardModal({
               <img 
                 src={workerUser.avatar} 
                 alt={workerUser.name} 
+                onError={handleImageError}
                 className="w-12 h-12 rounded-2xl object-cover border-2 border-sky-400/50 shadow-md shrink-0" 
               />
             ) : (

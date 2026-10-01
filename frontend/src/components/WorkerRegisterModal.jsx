@@ -12,6 +12,7 @@ import {
   AlertCircle 
 } from 'lucide-react';
 import { registerWorker } from '../api';
+import { handleImageError } from '../utils/imageHelper';
 
 const CATEGORIES = [
   'Plumber', 
@@ -182,6 +183,7 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
                 <img
                   src={formData.avatar}
                   alt="Profile Preview"
+                  onError={handleImageError}
                   className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border-2 border-amber-400/80 shadow bg-slate-900 shrink-0"
                 />
 
@@ -216,7 +218,7 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
                         formData.avatar === av.url ? 'border-amber-400 ring-2 ring-amber-400/40' : 'border-slate-700'
                       }`}
                     >
-                      <img src={av.url} alt={av.label} className="w-10 h-10 object-cover" />
+                      <img src={av.url} alt={av.label} onError={handleImageError} className="w-10 h-10 object-cover" />
                     </button>
                   ))}
                 </div>

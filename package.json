@@ -4,6 +4,8 @@
   "private": true,
   "description": "KaamSetu - India's Trusted Trade Workers Network & Admin Control Center",
   "scripts": {
+    "start": "node backend/server.js",
+    "build": "npm --prefix backend install",
     "start:backend": "npm --prefix backend start",
     "dev:backend": "npm --prefix backend run dev",
     "dev:frontend": "npm --prefix frontend run dev",

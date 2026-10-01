@@ -25,6 +25,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { getMySecureBookings, updateBookingStatus, customerLogout, getBookings } from '../api';
+import { handleImageError } from '../utils/imageHelper';
 
 const STATUS_BADGES = {
   pending: {
@@ -342,6 +343,7 @@ export default function MyBookingsModal({
                             <img 
                               src={b.workerAvatar} 
                               alt={b.workerName} 
+                              onError={handleImageError}
                               className="w-10 h-10 rounded-xl object-cover border border-slate-600 shrink-0" 
                             />
                           ) : (

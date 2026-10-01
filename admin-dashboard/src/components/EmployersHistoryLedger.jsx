@@ -16,6 +16,7 @@ import {
   IndianRupee, 
   AlertCircle 
 } from 'lucide-react';
+import { handleImageError } from '../utils/imageHelper';
 
 export default function EmployersHistoryLedger({ employers = [] }) {
   const [search, setSearch] = useState('');
@@ -216,9 +217,7 @@ export default function EmployersHistoryLedger({ employers = [] }) {
                           <img
                             src={record.workerAvatar}
                             alt={record.workerName}
-                            onError={(e) => {
-                              e.target.src = 'https://images.unsplash.com/photo-1541888946425-d0fbb18f15f6?w=100';
-                            }}
+                            onError={handleImageError}
                             className="w-12 h-12 rounded-xl object-cover border border-slate-700 bg-slate-800 shrink-0"
                           />
                         ) : (

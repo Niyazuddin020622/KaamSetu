@@ -19,6 +19,7 @@ import {
   MessageCircle, 
   X 
 } from 'lucide-react';
+import { handleImageError } from '../utils/imageHelper';
 
 export default function WorkersHistoryLedger({ 
   workers = [], 
@@ -130,9 +131,7 @@ export default function WorkersHistoryLedger({
                       <img
                         src={worker.avatar}
                         alt={worker.name}
-                        onError={(e) => {
-                          e.target.src = 'https://images.unsplash.com/photo-1541888946425-d0fbb18f15f6?w=100';
-                        }}
+                        onError={handleImageError}
                         className="w-14 h-14 rounded-2xl object-cover border-2 border-slate-700 bg-slate-800 shrink-0"
                       />
                       <div>
@@ -249,9 +248,7 @@ export default function WorkersHistoryLedger({
                 <img
                   src={selectedWorkerForHistory.avatar}
                   alt={selectedWorkerForHistory.name}
-                  onError={(e) => {
-                    e.target.src = 'https://images.unsplash.com/photo-1541888946425-d0fbb18f15f6?w=100';
-                  }}
+                  onError={handleImageError}
                   className="w-14 h-14 rounded-2xl object-cover border-2 border-slate-700 bg-slate-800 shrink-0"
                 />
                 <div>

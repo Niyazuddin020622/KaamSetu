@@ -10,6 +10,7 @@ import {
   Zap,
   MessageCircle
 } from 'lucide-react';
+import { handleImageError } from '../utils/imageHelper';
 
 export default function WorkerCard({ worker, onSelectWorker, onBookWorker }) {
   const handleWhatsApp = (e) => {
@@ -38,9 +39,7 @@ export default function WorkerCard({ worker, onSelectWorker, onBookWorker }) {
             <img
               src={worker.avatar}
               alt={worker.name}
-              onError={(e) => {
-                e.target.src = 'https://images.unsplash.com/photo-1541888946425-d0fbb18f15f6?w=200&auto=format&fit=crop&q=80';
-              }}
+              onError={handleImageError}
               className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border-2 border-slate-700 shadow-md group-hover:border-amber-400 transition-colors bg-slate-800"
             />
             {worker.isAvailable && (
