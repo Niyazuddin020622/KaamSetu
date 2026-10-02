@@ -37,6 +37,64 @@ api.interceptors.request.use((config) => {
 });
 
 // ==========================================
+// ==========================================
+// SESSION CONFIGURATION (24 HOURS)
+// ==========================================
+export const SESSION_24H_MS = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+export const getValidCustomerSession = () => {
+  try {
+    const token = localStorage.getItem('kaamsetu_customer_token');
+    const userStr = localStorage.getItem('kaamsetu_customer_user');
+    const loginTime = localStorage.getItem('kaamsetu_customer_login_time');
+
+    if (!token || !userStr) return null;
+
+    if (loginTime) {
+      const elapsed = Date.now() - Number(loginTime);
+      if (elapsed > SESSION_24H_MS) {
+        // Expired 24h session - clear
+        customerLogout();
+        return null;
+      }
+    } else {
+      // Legacy session without timestamp - set current time
+      localStorage.setItem('kaamsetu_customer_login_time', Date.now().toString());
+    }
+
+    return JSON.parse(userStr);
+  } catch (e) {
+    return null;
+  }
+};
+
+export const getValidWorkerSession = () => {
+  try {
+    const token = localStorage.getItem('kaamsetu_worker_token');
+    const workerStr = localStorage.getItem('kaamsetu_worker_user');
+    const loginTime = localStorage.getItem('kaamsetu_worker_login_time');
+
+    if (!token || !workerStr) return null;
+
+    if (loginTime) {
+      const elapsed = Date.now() - Number(loginTime);
+      if (elapsed > SESSION_24H_MS) {
+        // Expired 24h session - clear
+        workerLogout();
+        return null;
+      }
+    } else {
+      // Legacy session without timestamp - set current time
+      localStorage.setItem('kaamsetu_worker_login_time', Date.now().toString());
+    }
+
+    return JSON.parse(workerStr);
+  } catch (e) {
+    return null;
+  }
+};
+
+// ==========================================
 // 1. CUSTOMER AUTH & HISTORY API
 // ==========================================
 export const customerRegister = async (data) => {
@@ -44,6 +102,7 @@ export const customerRegister = async (data) => {
   if (response.data?.token) {
     localStorage.setItem('kaamsetu_customer_token', response.data.token);
     localStorage.setItem('kaamsetu_customer_user', JSON.stringify(response.data.user));
+    localStorage.setItem('kaamsetu_customer_login_time', Date.now().toString());
   }
   return response.data;
 };
@@ -53,6 +112,7 @@ export const customerLogin = async ({ phone, pin }) => {
   if (response.data?.token) {
     localStorage.setItem('kaamsetu_customer_token', response.data.token);
     localStorage.setItem('kaamsetu_customer_user', JSON.stringify(response.data.user));
+    localStorage.setItem('kaamsetu_customer_login_time', Date.now().toString());
   }
   return response.data;
 };
@@ -81,6 +141,7 @@ export const getMySecureBookings = async () => {
 export const customerLogout = () => {
   localStorage.removeItem('kaamsetu_customer_token');
   localStorage.removeItem('kaamsetu_customer_user');
+  localStorage.removeItem('kaamsetu_customer_login_time');
 };
 
 // ==========================================
@@ -91,6 +152,7 @@ export const workerLogin = async ({ phone, pin }) => {
   if (response.data?.token) {
     localStorage.setItem('kaamsetu_worker_token', response.data.token);
     localStorage.setItem('kaamsetu_worker_user', JSON.stringify(response.data.worker));
+    localStorage.setItem('kaamsetu_worker_login_time', Date.now().toString());
   }
   return response.data;
 };
@@ -100,6 +162,7 @@ export const workerSetPin = async ({ phone, pin }) => {
   if (response.data?.token) {
     localStorage.setItem('kaamsetu_worker_token', response.data.token);
     localStorage.setItem('kaamsetu_worker_user', JSON.stringify(response.data.worker));
+    localStorage.setItem('kaamsetu_worker_login_time', Date.now().toString());
   }
   return response.data;
 };
@@ -131,6 +194,7 @@ export const toggleWorkerAvailability = async () => {
 export const workerLogout = () => {
   localStorage.removeItem('kaamsetu_worker_token');
   localStorage.removeItem('kaamsetu_worker_user');
+  localStorage.removeItem('kaamsetu_worker_login_time');
 };
 
 // ==========================================

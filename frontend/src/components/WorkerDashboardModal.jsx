@@ -401,7 +401,11 @@ export default function WorkerDashboardModal({
                       <div className="text-[10px] text-slate-400 uppercase font-bold">काम का पता:</div>
                       <div className="text-slate-200 flex items-start gap-1.5">
                         <MapPin className="w-3.5 h-3.5 text-rose-400 shrink-0 mt-0.5" />
-                        <span>{job.customerAddress}{job.area ? `, ${job.area}` : ''}, {job.city}</span>
+                        <span>
+                          {job.customerAddress && job.city && job.customerAddress.toLowerCase().includes(job.city.toLowerCase())
+                            ? job.customerAddress
+                            : `${job.customerAddress || ''}${job.area ? `, ${job.area}` : ''}${job.city ? `, ${job.city}` : ''}`}
+                        </span>
                       </div>
                       {job.jobDescription && (
                         <div className="text-[11px] text-amber-300/90 italic mt-1">

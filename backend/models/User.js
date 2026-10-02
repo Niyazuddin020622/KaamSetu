@@ -22,6 +22,18 @@ const userSchema = new mongoose.Schema({
     default: '',
     trim: true
   },
+  addressDetails: {
+    building: { type: String, default: '' },
+    street: { type: String, default: '' },
+    city: { type: String, default: '' },
+    pincode: { type: String, default: '' },
+    country: { type: String, default: 'India' }
+  },
+  pincode: {
+    type: String,
+    default: '',
+    trim: true
+  },
   city: {
     type: String,
     default: 'Ahmedabad',

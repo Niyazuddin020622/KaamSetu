@@ -1,5 +1,6 @@
 import React from 'react';
 import { Search, ShieldCheck, Zap, PhoneCall, Clock, CheckCircle2, MapPin, Phone } from 'lucide-react';
+import { getCityOptions } from '../utils/cityMaster';
 
 export default function Hero({ 
   searchQuery, 
@@ -11,6 +12,7 @@ export default function Hero({
   onSearchSubmit,
   totalWorkersCount = 12
 }) {
+  const cityOptions = getCityOptions(true);
   const popularKeywords = ['प्लंबर (Plumber)', 'वेल्डर (Welder)', 'इलेक्ट्रीशियन (Electrician)', 'बढ़ई (Carpenter)', 'पेंटर (Painter)', 'मिस्त्री (Mason)'];
 
   const handleSubmit = (e) => {
@@ -93,15 +95,11 @@ export default function Hero({
                 onChange={(e) => setSelectedCity(e.target.value)}
                 className="bg-transparent text-xs sm:text-sm text-slate-200 font-semibold focus:outline-none cursor-pointer w-full md:w-auto"
               >
-                <option value="All" className="bg-slate-900 text-slate-200">All Cities (सभी शहर)</option>
-                <option value="Ahmedabad" className="bg-slate-900 text-slate-200">Ahmedabad (अहमदाबाद)</option>
-                <option value="New Delhi" className="bg-slate-900 text-slate-200">New Delhi (दिल्ली)</option>
-                <option value="Noida" className="bg-slate-900 text-slate-200">Noida (नोएडा)</option>
-                <option value="Gurugram" className="bg-slate-900 text-slate-200">Gurugram (गुरुग्राम)</option>
-                <option value="Faridabad" className="bg-slate-900 text-slate-200">Faridabad (फरीदाबाद)</option>
-                <option value="Ghaziabad" className="bg-slate-900 text-slate-200">Ghaziabad (गाजियाबाद)</option>
-                <option value="Mumbai" className="bg-slate-900 text-slate-200">Mumbai (मुंबई)</option>
-                <option value="Bengaluru" className="bg-slate-900 text-slate-200">Bengaluru (बेंगलुरु)</option>
+                {cityOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value} className="bg-slate-900 text-slate-200">
+                    {opt.label}
+                  </option>
+                ))}
               </select>
             </div>
 

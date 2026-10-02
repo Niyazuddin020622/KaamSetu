@@ -18,10 +18,29 @@ import {
   deleteBooking 
 } from './api';
 
+// Admin Session Duration (5 Hours)
+const ADMIN_SESSION_MS = 5 * 60 * 60 * 1000;
+
+const checkAdminSessionValid = () => {
+  const token = localStorage.getItem('kaamsetu_admin_token');
+  const loginTime = localStorage.getItem('kaamsetu_admin_login_time');
+  if (!token) return false;
+  if (!loginTime) {
+    localStorage.setItem('kaamsetu_admin_login_time', Date.now().toString());
+    return true;
+  }
+  const elapsed = Date.now() - Number(loginTime);
+  if (elapsed >= ADMIN_SESSION_MS) {
+    localStorage.removeItem('kaamsetu_admin_token');
+    localStorage.removeItem('kaamsetu_admin_login_time');
+    return false;
+  }
+  return true;
+};
+
 export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    Boolean(localStorage.getItem('kaamsetu_admin_token'))
-  );
+  const [isAuthenticated, setIsAuthenticated] = useState(checkAdminSessionValid);
+  const [sessionRemaining, setSessionRemaining] = useState('');
 
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'workers' | 'employers' | 'bookings'
   const [loading, setLoading] = useState(false);
@@ -38,6 +57,13 @@ export default function App() {
   const showToast = (message) => {
     setNotification(message);
     setTimeout(() => setNotification(''), 3500);
+  };
+
+  const handleLogout = (message = '') => {
+    localStorage.removeItem('kaamsetu_admin_token');
+    localStorage.removeItem('kaamsetu_admin_login_time');
+    setIsAuthenticated(false);
+    if (message) showToast(message);
   };
 
   const loadAllData = async () => {
@@ -68,10 +94,39 @@ export default function App() {
     }
   }, [isAuthenticated]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('kaamsetu_admin_token');
-    setIsAuthenticated(false);
-  };
+  // 5-Hour Session Active Checker
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const checkSession = () => {
+      const token = localStorage.getItem('kaamsetu_admin_token');
+      const loginTime = localStorage.getItem('kaamsetu_admin_login_time');
+      if (!token || !loginTime) {
+        handleLogout();
+        return;
+      }
+
+      const elapsed = Date.now() - Number(loginTime);
+      const remaining = ADMIN_SESSION_MS - elapsed;
+
+      if (remaining <= 0) {
+        handleLogout('सुरक्षा कारणों से 5 घंटे का एडमिन सत्र (Session) समाप्त हो गया है। कृपया पुनः लॉगिन करें।');
+      } else {
+        const hours = Math.floor(remaining / (1000 * 60 * 60));
+        const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+        setSessionRemaining(`${hours}h ${minutes}m`);
+      }
+    };
+
+    checkSession();
+    const timer = setInterval(checkSession, 30000); // Check every 30 seconds
+    window.addEventListener('focus', checkSession);
+
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener('focus', checkSession);
+    };
+  }, [isAuthenticated]);
 
   // Worker Toggles
   const handleToggleVerified = async (worker) => {
@@ -158,12 +213,13 @@ export default function App() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onOpenAddWorker={() => setShowAddWorkerModal(true)}
-        onLogout={handleLogout}
+        onLogout={() => handleLogout('एडमिन सफलतापूर्वक लॉगआउट हो गया।')}
         workersCount={workers.length}
         employersCount={employers.length}
         bookingsCount={bookings.length}
         isMobileOpen={isMobileMenuOpen}
         setIsMobileOpen={setIsMobileMenuOpen}
+        sessionTimeRemaining={sessionRemaining}
       />
 
       {/* Main Content Area - Only this container scrolls */}
@@ -176,6 +232,7 @@ export default function App() {
           loading={loading}
           onToggleMobileMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           notification={notification}
+          sessionTimeRemaining={sessionRemaining}
         />
 
         {/* Scrollable Main Content */}

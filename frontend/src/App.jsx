@@ -13,7 +13,14 @@ import WorkerDashboardModal from './components/WorkerDashboardModal';
 import MobileBottomNav from './components/MobileBottomNav';
 import TrustSection from './components/TrustSection';
 import Footer from './components/Footer';
-import { getWorkers, getCategories } from './api';
+import { 
+  getWorkers, 
+  getCategories, 
+  getValidCustomerSession, 
+  getValidWorkerSession, 
+  customerLogout, 
+  workerLogout 
+} from './api';
 import { 
   ArrowUpDown, 
   AlertCircle, 
@@ -28,24 +35,9 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Customer & Worker Authentication States
-  const [currentUser, setCurrentUser] = useState(() => {
-    try {
-      const stored = localStorage.getItem('kaamsetu_customer_user');
-      return stored ? JSON.parse(stored) : null;
-    } catch (e) {
-      return null;
-    }
-  });
-
-  const [currentWorker, setCurrentWorker] = useState(() => {
-    try {
-      const stored = localStorage.getItem('kaamsetu_worker_user');
-      return stored ? JSON.parse(stored) : null;
-    } catch (e) {
-      return null;
-    }
-  });
+  // Customer & Worker Authentication States (24-Hour Verified Sessions)
+  const [currentUser, setCurrentUser] = useState(() => getValidCustomerSession());
+  const [currentWorker, setCurrentWorker] = useState(() => getValidWorkerSession());
 
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authInitialRole, setAuthInitialRole] = useState('customer');
@@ -75,25 +67,71 @@ export default function App() {
     setTimeout(() => setToast(null), 4000);
   };
 
+  // 24-Hour Active Session Checker: Automatically logs out when 24h duration expires
+  useEffect(() => {
+    const checkActiveSessions = () => {
+      if (currentUser) {
+        const validUser = getValidCustomerSession();
+        if (!validUser) {
+          setCurrentUser(null);
+          setShowMyBookingsModal(false);
+          showToast('सुरक्षा कारणों से आपका 24 घंटे का सत्र (session) समाप्त हो गया है। कृपया पुनः लॉगिन करें।', 'info');
+        }
+      }
+
+      if (currentWorker) {
+        const validWorker = getValidWorkerSession();
+        if (!validWorker) {
+          setCurrentWorker(null);
+          setShowWorkerDashboard(false);
+          showToast('सुरक्षा कारणों से आपका 24 घंटे का कारीगर सत्र समाप्त हो गया है। कृपया पुनः लॉगिन करें।', 'info');
+        }
+      }
+    };
+
+    const interval = setInterval(checkActiveSessions, 30000); // Check every 30 seconds
+    window.addEventListener('focus', checkActiveSessions);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', checkActiveSessions);
+    };
+  }, [currentUser, currentWorker]);
+
   const handleAuthSuccess = (role, data) => {
     if (role === 'customer') {
       setCurrentUser(data);
-      showToast(`नमस्ते ${data.name}! आपका स्वागत है।`);
+      showToast(`नमस्ते ${data.name}! आपका स्वागत है (24 घंटे का सत्र सक्रिय)।`);
     } else if (role === 'worker') {
       setCurrentWorker(data);
       setShowWorkerDashboard(true);
-      showToast(`नमस्ते ${data.name}! आपका कारीगर डैशबोर्ड खुला है।`);
+      showToast(`नमस्ते ${data.name}! आपका कारीगर डैशबोर्ड खुला है (24 घंटे का सत्र सक्रिय)।`);
     }
   };
 
+  // Guard against re-opening login options when already authenticated without logging out
+  const handleOpenAuth = (role = 'customer') => {
+    if (currentUser || currentWorker) {
+      const activeName = (currentUser || currentWorker).name;
+      showToast(`आप पहले से ${activeName} के रूप में लॉगिन हैं। नया खाता इस्तेमाल करने के लिए पहले 'लॉगआउट' करें।`, 'info');
+      return;
+    }
+    setAuthInitialRole(role);
+    setShowAuthModal(true);
+  };
+
   const handleCustomerLogout = () => {
+    customerLogout();
     setCurrentUser(null);
-    showToast('ग्राहक खाता लॉगआउट हो गया।');
+    setShowMyBookingsModal(false);
+    showToast('ग्राहक खाता सफलतापूर्वक लॉगआउट हो गया।');
   };
 
   const handleWorkerLogout = () => {
+    workerLogout();
     setCurrentWorker(null);
-    showToast('कारीगर खाता लॉगआउट हो गया।');
+    setShowWorkerDashboard(false);
+    showToast('कारीगर खाता सफलतापूर्वक लॉगआउट हो गया।');
   };
 
   // Fetch initial data
@@ -192,6 +230,9 @@ export default function App() {
         </div>
       )}
 
+      {/* Dynamic SEO Meta & Structured Data */}
+      <SEO city={selectedCity} category={selectedCategory} />
+
       {/* Top Navbar */}
       <Navbar
         selectedCity={selectedCity}
@@ -201,11 +242,10 @@ export default function App() {
         bookingCount={bookingCount}
         currentUser={currentUser}
         currentWorker={currentWorker}
-        onOpenAuth={(role) => {
-          setAuthInitialRole(role || 'customer');
-          setShowAuthModal(true);
-        }}
+        onOpenAuth={handleOpenAuth}
         onOpenWorkerDashboard={() => setShowWorkerDashboard(true)}
+        onCustomerLogout={handleCustomerLogout}
+        onWorkerLogout={handleWorkerLogout}
       />
 
 
@@ -419,10 +459,7 @@ export default function App() {
         <MyBookingsModal
           onClose={() => setShowMyBookingsModal(false)}
           currentUser={currentUser}
-          onOpenAuth={(role) => {
-            setAuthInitialRole(role || 'customer');
-            setShowAuthModal(true);
-          }}
+          onOpenAuth={handleOpenAuth}
           onCustomerLogout={handleCustomerLogout}
         />
       )}
@@ -434,6 +471,10 @@ export default function App() {
           onClose={() => setShowAuthModal(false)}
           onAuthSuccess={handleAuthSuccess}
           onOpenWorkerRegister={() => setShowRegisterModal(true)}
+          currentUser={currentUser}
+          currentWorker={currentWorker}
+          onCustomerLogout={handleCustomerLogout}
+          onWorkerLogout={handleWorkerLogout}
         />
       )}
 

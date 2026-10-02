@@ -13,7 +13,8 @@ import {
   ArrowRight,
   ShieldCheck,
   Sparkles,
-  KeyRound
+  KeyRound,
+  LogOut
 } from 'lucide-react';
 import { 
   customerLogin, 
@@ -21,13 +22,19 @@ import {
   workerLogin, 
   workerSetPin 
 } from '../api';
+import AddressInputFields from './AddressInputFields';
+import { formatFullAddress } from '../utils/addressHelper';
 
 export default function AuthModal({ 
   isOpen, 
   onClose, 
   initialRole = 'customer', 
   onAuthSuccess,
-  onOpenWorkerRegister 
+  onOpenWorkerRegister,
+  currentUser = null,
+  currentWorker = null,
+  onCustomerLogout = () => {},
+  onWorkerLogout = () => {}
 }) {
   const [role, setRole] = useState(initialRole); // 'customer' | 'worker'
   const [mode, setMode] = useState('login'); // 'login' | 'register' (for customer)
@@ -38,6 +45,13 @@ export default function AuthModal({
   const [customerPin, setCustomerPin] = useState('');
   const [customerAddress, setCustomerAddress] = useState('');
   const [customerCity, setCustomerCity] = useState('Ahmedabad');
+  const [addressDetails, setAddressDetails] = useState({
+    building: '',
+    street: '',
+    city: 'Ahmedabad',
+    pincode: '',
+    country: 'India'
+  });
 
   // Worker fields
   const [workerPhone, setWorkerPhone] = useState('');
@@ -53,6 +67,72 @@ export default function AuthModal({
   const [successMsg, setSuccessMsg] = useState('');
 
   if (!isOpen) return null;
+
+  // SESSION GUARD: If already logged in, do NOT show login options without logging out
+  const activeSessionUser = currentUser || currentWorker;
+  if (activeSessionUser) {
+    const isWorker = Boolean(currentWorker);
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/85 backdrop-blur-md">
+        <div 
+          className="relative w-full max-w-md bg-slate-900 border border-slate-700/80 rounded-3xl shadow-2xl overflow-hidden p-6 sm:p-8 text-center space-y-5"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="w-16 h-16 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center justify-center mx-auto shadow-lg shadow-amber-500/10">
+            <ShieldCheck className="w-8 h-8" />
+          </div>
+
+          <div className="space-y-1.5">
+            <span className="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+              सत्र सक्रिय (Active Session)
+            </span>
+            <h3 className="text-lg font-black text-white">
+              आप पहले से लॉगिन हैं!
+            </h3>
+            <p className="text-xs text-slate-300">
+              सुरक्षा नियमों के अनुसार, बिना लॉगआउट किए दोबारा लॉगिन करने की अनुमति नहीं है।
+            </p>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 text-left space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-slate-400">नाम:</span>
+              <span className="font-bold text-white">{activeSessionUser.name}</span>
+            </div>
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-slate-400">मोबाइल:</span>
+              <span className="font-bold text-amber-300">{activeSessionUser.phone}</span>
+            </div>
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-slate-400">खाता प्रकार:</span>
+              <span className="font-bold text-sky-400">{isWorker ? 'कारीगर (Worker Pro)' : 'ग्राहक / नियोक्ता (Customer)'}</span>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2.5 pt-2">
+            <button
+              onClick={() => {
+                if (isWorker) onWorkerLogout();
+                else onCustomerLogout();
+                onClose();
+              }}
+              className="w-full py-3 rounded-2xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 font-bold text-xs border border-rose-500/30 transition-all flex items-center justify-center gap-2"
+            >
+              <LogOut className="w-4 h-4" />
+              <span>लॉगआउट करें (Logout to Switch Account)</span>
+            </button>
+
+            <button
+              onClick={onClose}
+              className="w-full py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs border border-slate-700 transition-all"
+            >
+              रद्द करें / वापस जाएं
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleCustomerSubmit = async (e) => {
     e.preventDefault();
@@ -79,12 +159,17 @@ export default function AuthModal({
           return;
         }
 
+        const finalAddress = customerAddress.trim() || formatFullAddress(addressDetails);
+
         const res = await customerRegister({
           name: customerName.trim(),
           phone: customerPhone.trim(),
           pin: customerPin.trim(),
-          address: customerAddress.trim(),
-          city: customerCity.trim()
+          address: finalAddress,
+          addressDetails,
+          pincode: addressDetails.pincode || '',
+          city: addressDetails.city || customerCity.trim(),
+          area: addressDetails.street || ''
         });
 
         if (res.success) {
@@ -355,26 +440,21 @@ export default function AuthModal({
                 </div>
 
                 {mode === 'register' && (
-                  <>
-                    <div>
-                      <label htmlFor="customerAddress" className="block text-xs font-medium text-slate-300 mb-1">
-                        घर / ऑफिस का पता (वैकल्पिक)
-                      </label>
-                      <div className="relative">
-                        <MapPin className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
-                        <input
-                          id="customerAddress"
-                          name="customerAddress"
-                          type="text"
-                          autoComplete="street-address"
-                          value={customerAddress}
-                          onChange={(e) => setCustomerAddress(e.target.value)}
-                          placeholder="फ्लैट नं, सोसायटी, सड़क..."
-                          className="w-full pl-9 pr-3 py-2.5 bg-slate-800/90 border border-slate-700 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-amber-500"
-                        />
-                      </div>
-                    </div>
-                  </>
+                  <div className="pt-1">
+                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                      घर / ऑफिस का पता (Divided Address - वैकल्पिक)
+                    </label>
+                    <AddressInputFields
+                      value={addressDetails}
+                      onChange={(addr) => {
+                        setAddressDetails(addr);
+                        setCustomerAddress(addr.fullAddress);
+                        setCustomerCity(addr.city);
+                      }}
+                      required={false}
+                      showPopularChips={true}
+                    />
+                  </div>
                 )}
 
                 <button

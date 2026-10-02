@@ -18,6 +18,14 @@ const bookingSchema = new mongoose.Schema({
   customerName: { type: String, required: true, trim: true },
   customerPhone: { type: String, required: true, trim: true },
   customerAddress: { type: String, required: true },
+  addressDetails: {
+    building: { type: String, default: '' },
+    street: { type: String, default: '' },
+    city: { type: String, default: '' },
+    pincode: { type: String, default: '' },
+    country: { type: String, default: 'India' }
+  },
+  pincode: { type: String, default: '' },
   city: { type: String, required: true },
   area: { type: String, default: '' },
   

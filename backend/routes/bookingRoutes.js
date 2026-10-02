@@ -155,6 +155,8 @@ router.get('/employers', async (req, res) => {
           customerName: booking.customerName,
           customerPhone: booking.customerPhone,
           customerAddress: booking.customerAddress,
+          addressDetails: booking.addressDetails || null,
+          pincode: booking.pincode || '',
           city: booking.city,
           area: booking.area,
           totalBookings: 0,
@@ -252,6 +254,8 @@ router.post('/', optionalToken, async (req, res) => {
       customerName,
       customerPhone,
       customerAddress,
+      addressDetails,
+      pincode,
       city,
       area,
       serviceRequired,
@@ -263,17 +267,42 @@ router.post('/', optionalToken, async (req, res) => {
       estimatedCost
     } = req.body;
 
-    if (!workerId || !customerName || !customerPhone || !customerAddress || !preferredDate) {
-      return res.status(400).json({
-        success: false,
-        message: 'Please provide workerId, customerName, customerPhone, customerAddress, and preferredDate.'
-      });
+    // Verify worker exists first
+    if (!workerId) {
+      return res.status(400).json({ success: false, message: 'Worker ID is required.' });
     }
-
-    // Verify worker exists
     const worker = await Worker.findById(workerId);
     if (!worker) {
       return res.status(404).json({ success: false, message: 'Worker not found' });
+    }
+
+    // Determine structured details & formatted address
+    let details = addressDetails && typeof addressDetails === 'object' ? addressDetails : {};
+    let finalPincode = (pincode || details.pincode || '').toString().trim();
+    let finalCity = (city || details.city || worker.city || 'Ahmedabad').trim();
+
+    let finalAddress = (customerAddress || '').trim();
+    if (!finalAddress) {
+      const parts = [];
+      if (details.building) parts.push(details.building.trim());
+      if (details.street) parts.push(details.street.trim());
+      if (finalCity && finalPincode) parts.push(`${finalCity} - ${finalPincode}`);
+      else if (finalCity) parts.push(finalCity);
+      parts.push(details.country || 'India');
+      finalAddress = parts.join(', ');
+    }
+
+    // If pincode was not explicitly provided, extract from full address if present
+    if (!finalPincode && finalAddress) {
+      const pinMatch = finalAddress.match(/\b([1-9][0-9]{5})\b/);
+      if (pinMatch) finalPincode = pinMatch[1];
+    }
+
+    if (!customerName || !customerPhone || !finalAddress || !preferredDate) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide workerId, customerName, customerPhone, address, and preferredDate.'
+      });
     }
 
     const calculatedDay = preferredDay || getDayName(preferredDate);
@@ -297,11 +326,19 @@ router.post('/', optionalToken, async (req, res) => {
       workerPhone: worker.phone,
       workerAvatar: worker.avatar || '',
       customer: customerId,
-      customerName,
-      customerPhone,
-      customerAddress,
-      city: city || worker.city,
-      area: area || worker.area,
+      customerName: customerName.trim(),
+      customerPhone: customerPhone.trim(),
+      customerAddress: finalAddress,
+      addressDetails: {
+        building: (details.building || '').trim(),
+        street: (details.street || '').trim(),
+        city: finalCity,
+        pincode: finalPincode,
+        country: (details.country || 'India').trim()
+      },
+      pincode: finalPincode,
+      city: finalCity,
+      area: area || details.street || worker.area,
       serviceRequired: serviceRequired || `${worker.category} Service`,
       jobDescription: jobDescription || '',
       preferredDate,

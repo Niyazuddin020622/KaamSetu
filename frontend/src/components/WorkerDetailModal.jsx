@@ -442,7 +442,11 @@ export default function WorkerDetailModal({
                         <div className="flex items-start gap-1.5 sm:col-span-2 pt-1 border-t border-slate-800">
                           <MapPin className="w-3.5 h-3.5 text-rose-400 shrink-0 mt-0.5" />
                           <span>
-                            <strong>कहाँ पे काम किया (Location):</strong> <span className="text-amber-200 font-medium">{job.customerAddress}, {job.area}, {job.city}</span>
+                            <strong>कहाँ पे काम किया (Location):</strong> <span className="text-amber-200 font-medium">
+                              {job.customerAddress && job.city && job.customerAddress.toLowerCase().includes(job.city.toLowerCase())
+                                ? job.customerAddress
+                                : `${job.customerAddress || ''}${job.area ? `, ${job.area}` : ''}${job.city ? `, ${job.city}` : ''}`}
+                            </span>
                           </span>
                         </div>
                       </div>

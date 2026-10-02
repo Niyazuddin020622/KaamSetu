@@ -9,7 +9,9 @@ import {
   Hammer, 
   ShieldCheck,
   CheckCircle2,
-  ExternalLink
+  ExternalLink,
+  X,
+  Clock
 } from 'lucide-react';
 
 export default function Sidebar({ 
@@ -21,7 +23,8 @@ export default function Sidebar({
   employersCount = 0,
   bookingsCount = 0,
   isMobileOpen = false,
-  setIsMobileOpen
+  setIsMobileOpen,
+  sessionTimeRemaining = ''
 }) {
   const navItems = [
     {
@@ -89,6 +92,15 @@ export default function Sidebar({
                 <p className="text-[10px] text-slate-400 font-medium">Control Center & Audit</p>
               </div>
             </div>
+
+            {/* Mobile close button */}
+            <button
+              onClick={() => setIsMobileOpen && setIsMobileOpen(false)}
+              className="p-1.5 rounded-xl bg-slate-800 text-slate-400 hover:text-white lg:hidden transition-colors"
+              title="Close Navigation"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
 
           {/* Navigation Links */}
@@ -168,24 +180,35 @@ export default function Sidebar({
             </div>
           </div>
 
+          {/* 5-Hour Admin Session Status Badge */}
+          {sessionTimeRemaining && (
+            <div className="flex items-center justify-between px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[10px] text-amber-300 font-bold">
+              <span className="flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span>सुरक्षित सेशन (5h):</span>
+              </span>
+              <span className="text-amber-200">{sessionTimeRemaining}</span>
+            </div>
+          )}
+
           <div className="flex items-center gap-2">
             {/* Link to view public client frontend */}
             <a
-              href="http://localhost:5173"
+              href="https://kaamsetu06.vercel.app/"
               target="_blank"
               rel="noopener noreferrer"
               className="flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-xs font-bold border border-slate-700 transition-colors"
-              title="Open Client Website"
+              title="Open Client Website (kaamsetu06.vercel.app)"
             >
-              <ExternalLink className="w-3.5 h-3.5 text-amber-400" />
-              <span>Client Site</span>
+              <ExternalLink className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <span className="truncate">Client Site</span>
             </a>
 
             {/* Logout */}
             <button
               onClick={onLogout}
-              className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-xs font-bold border border-rose-500/30 transition-colors"
-              title="Logout"
+              className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-xs font-bold border border-rose-500/30 transition-colors shrink-0"
+              title="Logout Admin Session"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span>Logout</span>

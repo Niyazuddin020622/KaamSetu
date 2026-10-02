@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { registerWorker } from '../api';
 import { handleImageError } from '../utils/imageHelper';
+import { CITIES, getCityAreas, getCityFromPincode } from '../utils/cityMaster';
 
 const CATEGORIES = [
   'Plumber', 
@@ -49,6 +50,7 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
     dailyRate: 1800,
     city: 'Ahmedabad',
     area: '',
+    pincode: '',
     bio: '',
     avatar: PRESET_AVATARS[0].url,
     emergencyAvailable: false,
@@ -77,10 +79,23 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
+    setFormData((prev) => {
+      const updated = {
+        ...prev,
+        [name]: type === 'checkbox' ? checked : value
+      };
+      if (name === 'pincode') {
+        const cleanPin = value.replace(/[^0-9]/g, '').slice(0, 6);
+        updated.pincode = cleanPin;
+        if (cleanPin.length >= 3) {
+          const matched = getCityFromPincode(cleanPin);
+          if (matched) {
+            updated.city = matched.name;
+          }
+        }
+      }
+      return updated;
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -353,7 +368,7 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
               </div>
             </div>
 
-            {/* City & Area - Ahmedabad Included */}
+            {/* City, PIN & Area */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label htmlFor="workerRegCity" className="text-xs font-bold text-slate-300 block mb-1">
@@ -366,32 +381,62 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
                   onChange={handleChange}
                   className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white focus:outline-none focus:border-amber-400 font-semibold"
                 >
-                  <option value="Ahmedabad">Ahmedabad (अहमदाबाद)</option>
-                  <option value="New Delhi">New Delhi (दिल्ली)</option>
-                  <option value="Noida">Noida (नोएडा)</option>
-                  <option value="Gurugram">Gurugram (गुरुग्राम)</option>
-                  <option value="Faridabad">Faridabad (फरीदाबाद)</option>
-                  <option value="Ghaziabad">Ghaziabad (गाजियाबाद)</option>
-                  <option value="Mumbai">Mumbai (मुंबई)</option>
-                  <option value="Bengaluru">Bengaluru (बेंगलुरु)</option>
+                  {CITIES.map((c) => (
+                    <option key={c.id} value={c.name} className="bg-slate-900 text-white">
+                      {c.name} ({c.hindiName}) - {c.state}
+                    </option>
+                  ))}
                 </select>
               </div>
 
               <div>
-                <label htmlFor="workerRegArea" className="text-xs font-bold text-slate-300 block mb-1">
-                  इलाका / मोहल्ला (Area / Locality) *
+                <label htmlFor="workerRegPincode" className="text-xs font-bold text-slate-300 block mb-1">
+                  पिन कोड (PIN Code)
                 </label>
                 <input
-                  id="workerRegArea"
+                  id="workerRegPincode"
                   type="text"
-                  name="area"
-                  required
-                  value={formData.area}
+                  name="pincode"
+                  maxLength={6}
+                  inputMode="numeric"
+                  value={formData.pincode}
                   onChange={handleChange}
-                  placeholder="उदा. SG Highway, Maninagar, Satellite..."
-                  className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
+                  placeholder="उदा. 380015 (ऑटो शहर खोज)"
+                  className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 font-mono"
                 />
               </div>
+            </div>
+
+            <div>
+              <label htmlFor="workerRegArea" className="text-xs font-bold text-slate-300 block mb-1">
+                इलाका / मोहल्ला (Area / Locality) *
+              </label>
+              <input
+                id="workerRegArea"
+                type="text"
+                name="area"
+                required
+                value={formData.area}
+                onChange={handleChange}
+                placeholder="उदा. SG Highway, Maninagar, Satellite..."
+                className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
+              />
+              {/* Quick Area Chips */}
+              {getCityAreas(formData.city).length > 0 && (
+                <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
+                  <span className="text-[10px] text-slate-400">त्वरित सुझाव:</span>
+                  {getCityAreas(formData.city).slice(0, 6).map((area) => (
+                    <button
+                      key={area}
+                      type="button"
+                      onClick={() => setFormData((prev) => ({ ...prev, area }))}
+                      className="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 hover:bg-amber-500/20 hover:text-amber-300 text-slate-300 border border-slate-700 transition-colors"
+                    >
+                      {area}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Sub-skills */}

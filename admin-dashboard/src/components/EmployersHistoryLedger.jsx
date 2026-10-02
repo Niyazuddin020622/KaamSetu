@@ -302,7 +302,11 @@ export default function EmployersHistoryLedger({ employers = [] }) {
                       <div className="sm:col-span-2 pt-1 border-t border-slate-800 flex items-start gap-1.5">
                         <MapPin className="w-3.5 h-3.5 text-rose-400 shrink-0 mt-0.5" />
                         <span>
-                          <strong>Job Location:</strong> <span className="text-slate-200 font-medium">{record.customerAddress}, {record.area}, {record.city}</span>
+                          <strong>Job Location:</strong> <span className="text-slate-200 font-medium">
+                            {record.customerAddress && record.city && record.customerAddress.toLowerCase().includes(record.city.toLowerCase())
+                              ? record.customerAddress
+                              : `${record.customerAddress || ''}${record.area ? `, ${record.area}` : ''}${record.city ? `, ${record.city}` : ''}`}
+                          </span>
                         </span>
                       </div>
                     </div>

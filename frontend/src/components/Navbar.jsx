@@ -10,8 +10,11 @@ import {
   Briefcase,
   LogIn,
   KeyRound,
+  LogOut,
   ShieldCheck
 } from 'lucide-react';
+
+import { getCityOptions } from '../utils/cityMaster';
 
 export default function Navbar({ 
   selectedCity, 
@@ -22,20 +25,14 @@ export default function Navbar({
   currentUser = null,
   currentWorker = null,
   onOpenAuth = () => {},
-  onOpenWorkerDashboard = () => {}
+  onOpenWorkerDashboard = () => {},
+  onCustomerLogout = () => {},
+  onWorkerLogout = () => {}
 }) {
 
-  const cities = [
-    { value: 'All Cities', label: 'All Cities (सभी शहर)', short: 'सभी शहर' },
-    { value: 'Ahmedabad', label: 'Ahmedabad (अहमदाबाद)', short: 'Ahmedabad' },
-    { value: 'New Delhi', label: 'New Delhi (दिल्ली)', short: 'Delhi' },
-    { value: 'Noida', label: 'Noida (नोएडा)', short: 'Noida' },
-    { value: 'Gurugram', label: 'Gurugram (गुरुग्राम)', short: 'Gurugram' },
-    { value: 'Faridabad', label: 'Faridabad (फरीदाबाद)', short: 'Faridabad' },
-    { value: 'Ghaziabad', label: 'Ghaziabad (गाजियाबाद)', short: 'Ghaziabad' },
-    { value: 'Mumbai', label: 'Mumbai (मुंबई)', short: 'Mumbai' },
-    { value: 'Bengaluru', label: 'Bengaluru (बेंगलुरु)', short: 'Bengaluru' }
-  ];
+  const isLoggedIn = Boolean(currentUser || currentWorker);
+
+  const cities = getCityOptions(true);
 
   return (
     <header className="sticky top-0 z-40 w-full glass-panel border-b border-slate-800/80 backdrop-blur-xl transition-all">
@@ -99,76 +96,104 @@ export default function Navbar({
               <span className="lg:hidden text-[11px]">हेल्पलाइन</span>
             </a>
 
-            {/* If Worker Logged In: Show Worker Dashboard button */}
+            {/* SCENARIO A: Worker Logged In (Show Worker Profile & Logout, NO LOGIN BUTTONS) */}
             {currentWorker && (
-              <button
-                onClick={onOpenWorkerDashboard}
-                className="flex items-center gap-1.5 px-2.5 lg:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold text-sky-300 bg-sky-500/20 hover:bg-sky-500/30 border border-sky-500/40 transition-all shrink-0 shadow-md shadow-sky-500/10"
-              >
-                <Briefcase className="w-4 h-4 text-sky-400 shrink-0" />
-                <span className="max-w-[100px] truncate">{currentWorker.name}</span>
-                <span className="px-1.5 py-0.2 text-[10px] bg-sky-400 text-slate-950 rounded-full font-black">
-                  डैशबोर्ड
-                </span>
-              </button>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={onOpenWorkerDashboard}
+                  className="flex items-center gap-1.5 px-2.5 lg:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold text-sky-300 bg-sky-500/20 hover:bg-sky-500/30 border border-sky-500/40 transition-all shrink-0 shadow-md shadow-sky-500/10"
+                  title="कारीगर डैशबोर्ड खोलें"
+                >
+                  <Briefcase className="w-4 h-4 text-sky-400 shrink-0" />
+                  <span className="max-w-[110px] truncate">{currentWorker.name}</span>
+                  <span className="px-1.5 py-0.2 text-[10px] bg-sky-400 text-slate-950 rounded-full font-black">
+                    कारीगर
+                  </span>
+                </button>
+
+                <button
+                  onClick={onWorkerLogout}
+                  className="flex items-center gap-1 px-2.5 py-1.5 sm:py-2 rounded-xl text-xs font-bold text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 transition-all shrink-0"
+                  title="कारीगर खाता लॉगआउट करें"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span className="hidden md:inline">लॉगआउट</span>
+                </button>
+              </div>
             )}
 
-            {/* My Bookings / Hiring History Button */}
-            <button
-              onClick={onOpenMyBookings}
-              className={`relative flex items-center gap-1.5 px-2.5 lg:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all shrink-0 ${
-                currentUser
-                  ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30 hover:bg-amber-500/25'
-                  : 'text-slate-300 bg-slate-900/80 hover:bg-slate-800 border border-slate-700/60 hover:text-white'
-              }`}
-              title="काम का इतिहास देखें"
-            >
-              <ClipboardList className={`w-4 h-4 shrink-0 ${currentUser ? 'text-amber-400' : 'text-sky-400'}`} />
-              <span className="hidden md:inline">
-                {currentUser ? `${currentUser.name} का इतिहास` : 'काम का इतिहास'}
-              </span>
-              <span className="md:hidden text-xs">
-                {currentUser ? 'मेरी बुकिंग' : 'इतिहास'}
-              </span>
-              {bookingCount > 0 && (
-                <span className="px-1.5 py-0.2 text-[10px] sm:text-xs font-black bg-amber-500 text-slate-950 rounded-full">
-                  {bookingCount}
-                </span>
-              )}
-            </button>
+            {/* SCENARIO B: Customer / Employer Logged In (Show User Profile & Logout, NO LOGIN BUTTONS) */}
+            {currentUser && !currentWorker && (
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={onOpenMyBookings}
+                  className="relative flex items-center gap-1.5 px-2.5 lg:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all shrink-0 bg-amber-500/15 text-amber-300 border border-amber-500/30 hover:bg-amber-500/25"
+                  title="मेरा काम का इतिहास देखें"
+                >
+                  <User className="w-4 h-4 text-amber-400 shrink-0" />
+                  <span className="max-w-[120px] truncate font-bold">{currentUser.name}</span>
+                  <span className="hidden md:inline text-xs font-medium text-amber-200/80">• इतिहास</span>
+                  {bookingCount > 0 && (
+                    <span className="px-1.5 py-0.2 text-[10px] sm:text-xs font-black bg-amber-500 text-slate-950 rounded-full">
+                      {bookingCount}
+                    </span>
+                  )}
+                </button>
 
-            {/* If Not Logged In as Customer: Show Login button */}
-            {!currentUser && !currentWorker && (
-              <button
-                onClick={() => onOpenAuth('customer')}
-                className="flex items-center gap-1.5 px-2.5 lg:px-3 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-200 bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all shrink-0"
-              >
-                <LogIn className="w-3.5 h-3.5 text-amber-400" />
-                <span>लॉगिन</span>
-              </button>
+                <button
+                  onClick={onCustomerLogout}
+                  className="flex items-center gap-1 px-2.5 py-1.5 sm:py-2 rounded-xl text-xs font-bold text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 transition-all shrink-0"
+                  title="ग्राहक खाता लॉगआउट करें"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span className="hidden md:inline">लॉगआउट</span>
+                </button>
+              </div>
             )}
 
-            {/* If Not Logged In as Worker: Show quick Worker Login */}
+            {/* SCENARIO C: Not Logged In (ONLY NOW SHOW LOGIN BUTTONS) */}
+            {!isLoggedIn && (
+              <>
+                <button
+                  onClick={onOpenMyBookings}
+                  className="relative flex items-center gap-1.5 px-2.5 lg:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-300 bg-slate-900/80 hover:bg-slate-800 border border-slate-700/60 hover:text-white transition-all shrink-0"
+                  title="काम का इतिहास देखें"
+                >
+                  <ClipboardList className="w-4 h-4 text-sky-400 shrink-0" />
+                  <span className="hidden md:inline">काम का इतिहास</span>
+                  <span className="md:hidden text-xs">इतिहास</span>
+                </button>
+
+                <button
+                  onClick={() => onOpenAuth('customer')}
+                  className="flex items-center gap-1.5 px-2.5 lg:px-3 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-200 bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all shrink-0"
+                >
+                  <LogIn className="w-3.5 h-3.5 text-amber-400" />
+                  <span>लॉगिन</span>
+                </button>
+
+                <button
+                  onClick={() => onOpenAuth('worker')}
+                  className="hidden xl:flex items-center gap-1 px-2.5 py-1.5 sm:py-2 rounded-xl text-xs font-bold text-sky-400 bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 transition-all shrink-0"
+                  title="कारीगर लॉगिन"
+                >
+                  <KeyRound className="w-3.5 h-3.5" />
+                  <span>कारीगर लॉगिन</span>
+                </button>
+              </>
+            )}
+
+            {/* Join as Worker CTA */}
             {!currentWorker && (
               <button
-                onClick={() => onOpenAuth('worker')}
-                className="hidden xl:flex items-center gap-1 px-2.5 py-1.5 sm:py-2 rounded-xl text-xs font-bold text-sky-400 bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 transition-all shrink-0"
-                title="कारीगर लॉगिन"
+                onClick={onOpenRegister}
+                className="flex items-center gap-1.5 px-3 lg:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-950 bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 shadow-md shadow-amber-500/20 transition-all shrink-0 active:scale-95"
               >
-                <KeyRound className="w-3.5 h-3.5" />
-                <span>कारीगर लॉगिन</span>
+                <PlusCircle className="w-4 h-4 shrink-0" />
+                <span className="hidden lg:inline">Join as Worker <span className="text-xs font-normal opacity-90">(कारीगर बनें)</span></span>
+                <span className="lg:hidden">कारीगर बनें</span>
               </button>
             )}
-
-            {/* Worker Register Button */}
-            <button
-              onClick={onOpenRegister}
-              className="flex items-center gap-1.5 px-3 lg:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-950 bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 shadow-md shadow-amber-500/20 transition-all shrink-0 active:scale-95"
-            >
-              <PlusCircle className="w-4 h-4 shrink-0" />
-              <span className="hidden lg:inline">Join as Worker <span className="text-xs font-normal opacity-90">(कारीगर बनें)</span></span>
-              <span className="lg:hidden">कारीगर बनें</span>
-            </button>
           </div>
 
           {/* Mobile Actions (<640px) */}
@@ -182,50 +207,70 @@ export default function Navbar({
               <Phone className="w-4 h-4 fill-current" />
             </a>
 
-            {/* Worker Dashboard or Login Icon */}
+            {/* Worker Logged in: Dashboard + Direct Logout */}
             {currentWorker ? (
-              <button
-                onClick={onOpenWorkerDashboard}
-                className="p-2 rounded-xl bg-sky-500/20 border border-sky-500/40 text-sky-300 relative"
-                title="कारीगर डैशबोर्ड"
-              >
-                <Briefcase className="w-4 h-4" />
-                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full ring-2 ring-slate-950" />
-              </button>
-            ) : !currentUser ? (
-              <button
-                onClick={() => onOpenAuth('customer')}
-                className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-amber-400"
-                title="लॉगिन करें"
-              >
-                <User className="w-4 h-4" />
-              </button>
-            ) : null}
-
-            {/* My Bookings History Button */}
-            <button
-              onClick={onOpenMyBookings}
-              className={`p-2 rounded-xl border relative ${
-                currentUser 
-                  ? 'bg-amber-500/20 border-amber-500/30 text-amber-400' 
-                  : 'bg-slate-900 border-slate-800 text-sky-400'
-              }`}
-              title="काम का इतिहास (History)"
-            >
-              <ClipboardList className="w-4 h-4" />
-              {currentUser && (
-                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-400 rounded-full ring-2 ring-slate-950" />
-              )}
-            </button>
-
-            {/* Join Worker Quick Icon */}
-            <button
-              onClick={onOpenRegister}
-              className="p-2 rounded-xl bg-amber-400 text-slate-950 font-bold"
-              title="कारीगर बनें (Join as Worker)"
-            >
-              <PlusCircle className="w-4 h-4" />
-            </button>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={onOpenWorkerDashboard}
+                  className="p-2 rounded-xl bg-sky-500/20 border border-sky-500/40 text-sky-300 relative"
+                  title="कारीगर डैशबोर्ड"
+                >
+                  <Briefcase className="w-4 h-4" />
+                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full ring-2 ring-slate-950" />
+                </button>
+                <button
+                  onClick={onWorkerLogout}
+                  className="p-2 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300"
+                  title="कारीगर लॉगआउट करें"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            ) : currentUser ? (
+              /* Customer Logged in: History + Direct Logout (NO LOGIN BUTTON) */
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={onOpenMyBookings}
+                  className="p-2 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-400 relative"
+                  title="मेरा इतिहास"
+                >
+                  <ClipboardList className="w-4 h-4" />
+                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-400 rounded-full ring-2 ring-slate-950" />
+                </button>
+                <button
+                  onClick={onCustomerLogout}
+                  className="p-2 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300"
+                  title="ग्राहक लॉगआउट करें"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              /* Not logged in: Show Login & History & Register */
+              <>
+                <button
+                  onClick={() => onOpenAuth('customer')}
+                  className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-amber-400"
+                  title="लॉगिन करें"
+                >
+                  <User className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={onOpenMyBookings}
+                  className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-sky-400"
+                  title="काम का इतिहास (History)"
+                >
+                  <ClipboardList className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={onOpenRegister}
+                  className="p-2 rounded-xl bg-amber-400 text-slate-950 font-bold"
+                  title="कारीगर बनें (Join as Worker)"
+                >
+                  <PlusCircle className="w-4 h-4" />
+                </button>
+              </>
+            )}
           </div>
 
         </div>

@@ -69,10 +69,10 @@ export default function MasterBookingsTable({
     <div className="p-4 sm:p-6 space-y-6">
       
       {/* Search & Filter Toolbar */}
-      <div className="p-4 rounded-3xl bg-slate-900 border border-slate-800 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
-        <div className="flex-1 flex flex-wrap items-center gap-2">
+      <div className="p-3.5 sm:p-4 rounded-3xl bg-slate-900 border border-slate-800 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+        <div className="flex-1 flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2">
           {/* Keyword Search */}
-          <div className="flex-1 min-w-[220px] flex items-center gap-2 px-3.5 py-2.5 rounded-2xl bg-slate-800 border border-slate-700 text-xs">
+          <div className="w-full sm:flex-1 sm:min-w-[200px] flex items-center gap-2 px-3.5 py-2.5 rounded-2xl bg-slate-800 border border-slate-700 text-xs">
             <Search className="w-4 h-4 text-slate-400 shrink-0" />
             <input
               type="text"
@@ -83,40 +83,125 @@ export default function MasterBookingsTable({
             />
           </div>
 
-          {/* Status Filter */}
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3.5 py-2.5 rounded-2xl bg-slate-800 border border-slate-700 text-xs font-bold text-slate-200 focus:outline-none cursor-pointer"
-          >
-            {STATUS_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value} className="bg-slate-900">
-                {opt.label}
-              </option>
-            ))}
-          </select>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            {/* Status Filter */}
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="flex-1 sm:flex-initial px-3.5 py-2.5 rounded-2xl bg-slate-800 border border-slate-700 text-xs font-bold text-slate-200 focus:outline-none cursor-pointer"
+            >
+              {STATUS_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value} className="bg-slate-900">
+                  {opt.label}
+                </option>
+              ))}
+            </select>
 
-          {/* Day of Week Filter */}
-          <select
-            value={dayFilter}
-            onChange={(e) => setDayFilter(e.target.value)}
-            className="px-3.5 py-2.5 rounded-2xl bg-slate-800 border border-slate-700 text-xs font-bold text-slate-200 focus:outline-none cursor-pointer"
-          >
-            {daysList.map((d) => (
-              <option key={d.key} value={d.key} className="bg-slate-900">
-                {d.label}
-              </option>
-            ))}
-          </select>
+            {/* Day of Week Filter */}
+            <select
+              value={dayFilter}
+              onChange={(e) => setDayFilter(e.target.value)}
+              className="flex-1 sm:flex-initial px-3.5 py-2.5 rounded-2xl bg-slate-800 border border-slate-700 text-xs font-bold text-slate-200 focus:outline-none cursor-pointer"
+            >
+              {daysList.map((d) => (
+                <option key={d.key} value={d.key} className="bg-slate-900">
+                  {d.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
-        <div className="text-xs text-slate-400 self-center font-bold">
+        <div className="text-xs text-slate-400 self-end sm:self-center font-bold">
           Showing: <span className="text-amber-400">{filtered.length}</span> of {bookings.length}
         </div>
       </div>
 
-      {/* Main Table */}
-      <div className="glass-panel rounded-3xl border border-slate-800 overflow-hidden shadow-xl">
+      {/* MOBILE CARD VIEW (< md screens) */}
+      <div className="md:hidden space-y-3">
+        {filtered.length === 0 ? (
+          <div className="p-8 text-center text-slate-400 bg-slate-900/60 rounded-3xl border border-slate-800">
+            <ClipboardList className="w-10 h-10 text-slate-600 mx-auto mb-2" />
+            <p className="font-bold">No Bookings Found</p>
+            <p className="text-xs text-slate-500 mt-1">Try resetting your filters</p>
+          </div>
+        ) : (
+          filtered.map((b) => (
+            <div key={b._id} className="p-4 rounded-3xl bg-slate-900/90 border border-slate-800 space-y-3">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <div className="font-black text-sm text-white">{b.workerName}</div>
+                  <div className="text-xs font-bold text-amber-400">{b.workerCategory} • {b.workerPhone}</div>
+                </div>
+                <span className="font-black text-amber-400 text-sm">₹{b.estimatedCost}</span>
+              </div>
+
+              <div className="p-2.5 rounded-2xl bg-slate-950/60 border border-slate-800/80 space-y-1 text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-400">Employer:</span>
+                  <span className="font-bold text-slate-200">{b.customerName} ({b.customerPhone})</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-400">Service:</span>
+                  <span className="font-semibold text-white">{b.serviceRequired}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-400">Date & Day:</span>
+                  <span className="font-semibold text-sky-300">{b.preferredDate} ({b.preferredDay || 'Scheduled'})</span>
+                </div>
+                <div className="flex items-center justify-between truncate">
+                  <span className="text-slate-400">Location:</span>
+                  <span className="text-slate-300 truncate">{b.area ? `${b.area}, ` : ''}{b.city}</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-2 pt-1">
+                <select
+                  value={b.status}
+                  onChange={(e) => onUpdateStatus(b._id, e.target.value)}
+                  className={`flex-1 px-2.5 py-1.5 rounded-xl text-xs font-bold border focus:outline-none ${
+                    b.status === 'completed'
+                      ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                      : b.status === 'in_progress'
+                      ? 'bg-purple-500/20 text-purple-300 border-purple-500/40'
+                      : b.status === 'accepted'
+                      ? 'bg-sky-500/20 text-sky-300 border-sky-500/40'
+                      : b.status === 'cancelled'
+                      ? 'bg-rose-500/20 text-rose-300 border-rose-500/40'
+                      : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                  }`}
+                >
+                  <option value="pending" className="bg-slate-900 text-amber-300">🟡 Pending</option>
+                  <option value="accepted" className="bg-slate-900 text-sky-300">🔵 Accepted</option>
+                  <option value="in_progress" className="bg-slate-900 text-purple-300">🟣 In Progress</option>
+                  <option value="completed" className="bg-slate-900 text-emerald-300">🟢 Completed</option>
+                  <option value="cancelled" className="bg-slate-900 text-rose-300">🔴 Cancelled</option>
+                </select>
+
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button
+                    onClick={() => setSelectedBookingForModal(b)}
+                    className="p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white"
+                    title="View Ticket"
+                  >
+                    <Eye className="w-4 h-4 text-amber-400" />
+                  </button>
+                  <button
+                    onClick={() => onDeleteBooking(b._id)}
+                    className="p-2 rounded-xl bg-rose-500/10 text-rose-400"
+                    title="Delete Booking"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* DESKTOP TABLE VIEW (md+ screens) */}
+      <div className="hidden md:block glass-panel rounded-3xl border border-slate-800 overflow-hidden shadow-xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
@@ -301,7 +386,11 @@ export default function MasterBookingsTable({
                   <div className="text-slate-300 font-semibold">Phone: {selectedBookingForModal.customerPhone}</div>
                   <div className="flex items-start gap-1.5 text-slate-300">
                     <MapPin className="w-3.5 h-3.5 text-rose-400 shrink-0 mt-0.5" />
-                    <span>{selectedBookingForModal.customerAddress}, {selectedBookingForModal.area}, {selectedBookingForModal.city}</span>
+                    <span>
+                      {selectedBookingForModal.customerAddress && selectedBookingForModal.city && selectedBookingForModal.customerAddress.toLowerCase().includes(selectedBookingForModal.city.toLowerCase())
+                        ? selectedBookingForModal.customerAddress
+                        : `${selectedBookingForModal.customerAddress || ''}${selectedBookingForModal.area ? `, ${selectedBookingForModal.area}` : ''}${selectedBookingForModal.city ? `, ${selectedBookingForModal.city}` : ''}`}
+                    </span>
                   </div>
                   <div className="pt-2">
                     <a

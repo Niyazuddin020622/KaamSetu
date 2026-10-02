@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import { createBooking } from '../api';
 import { handleImageError } from '../utils/imageHelper';
+import AddressInputFields from './AddressInputFields';
+import { formatFullAddress, parseAddressString } from '../utils/addressHelper';
 
 export default function BookingModal({ worker, onClose, onBookingSuccess, currentUser = null }) {
   // Check localStorage if currentUser prop wasn't passed directly
@@ -27,7 +29,26 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
 
   const [customerName, setCustomerName] = useState(activeUser?.name || '');
   const [customerPhone, setCustomerPhone] = useState(activeUser?.phone || '');
-  const [customerAddress, setCustomerAddress] = useState(activeUser?.address || '');
+  
+  const [addressDetails, setAddressDetails] = useState(() => {
+    if (activeUser?.addressDetails && typeof activeUser.addressDetails === 'object') {
+      return activeUser.addressDetails;
+    }
+    if (activeUser?.address) {
+      return parseAddressString(activeUser.address, activeUser.city || worker?.city || 'Ahmedabad');
+    }
+    return {
+      building: '',
+      street: activeUser?.area || '',
+      city: activeUser?.city || (worker ? worker.city : 'Ahmedabad'),
+      pincode: activeUser?.pincode || (worker?.pincode || ''),
+      country: 'India'
+    };
+  });
+
+  const [customerAddress, setCustomerAddress] = useState(
+    activeUser?.address || formatFullAddress(addressDetails)
+  );
   const [city, setCity] = useState(activeUser?.city || (worker ? worker.city : 'Ahmedabad'));
   const [area, setArea] = useState(activeUser?.area || (worker ? worker.area : ''));
   const [serviceRequired, setServiceRequired] = useState(
@@ -45,12 +66,21 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
 
   if (!worker) return null;
 
+  const handleAddressChange = (addr) => {
+    setAddressDetails(addr);
+    setCustomerAddress(addr.fullAddress);
+    if (addr.city) setCity(addr.city);
+    if (addr.street) setArea(addr.street);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    if (!customerName.trim() || !customerPhone.trim() || !customerAddress.trim()) {
-      setError('कृपया अपना नाम, मोबाइल नंबर और पूरा पता दर्ज करें।');
+    const finalAddress = customerAddress || formatFullAddress(addressDetails);
+
+    if (!customerName.trim() || !customerPhone.trim() || !finalAddress.trim()) {
+      setError('कृपया अपना नाम, मोबाइल नंबर और पूरा पता (मकान, सड़क, शहर, पिन कोड) दर्ज करें।');
       return;
     }
 
@@ -61,9 +91,11 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
         workerId: worker._id,
         customerName: customerName.trim(),
         customerPhone: customerPhone.trim(),
-        customerAddress: customerAddress.trim(),
-        city,
-        area,
+        customerAddress: finalAddress.trim(),
+        addressDetails,
+        pincode: addressDetails.pincode || '',
+        city: addressDetails.city || city || worker.city,
+        area: addressDetails.street || area || worker.area,
         serviceRequired,
         jobDescription: jobDescription.trim(),
         preferredDate,
@@ -300,18 +332,12 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
                 </div>
               </div>
 
-              <div>
-                <label htmlFor="bookingCustomerAddress" className="text-xs font-bold text-slate-300 block mb-1">घर का पूरा पता (Full Address) *</label>
-                <input
-                  id="bookingCustomerAddress"
-                  name="customerAddress"
-                  type="text"
-                  required
-                  autoComplete="street-address"
-                  value={customerAddress}
-                  onChange={(e) => setCustomerAddress(e.target.value)}
-                  placeholder="मकान नंबर, गली/मोहल्ला, लैंडमार्क..."
-                  className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
+              <div className="pt-1">
+                <AddressInputFields
+                  value={addressDetails}
+                  onChange={handleAddressChange}
+                  required={true}
+                  showPopularChips={true}
                 />
               </div>
             </div>

@@ -72,13 +72,13 @@ export default function DashboardOverview({
     <div className="p-4 sm:p-6 space-y-6">
       
       {/* Top Banner */}
-      <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-slate-900 border border-amber-500/30 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-4 sm:p-6 rounded-3xl bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-slate-900 border border-amber-500/30 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 text-xs font-bold border border-amber-400/30 mb-1">
             <Sparkles className="w-3.5 h-3.5" />
             <span>Live Audit Engine Active</span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-black text-white">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-black text-white">
             KaamSetu Enterprise Control Center
           </h2>
           <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-2xl">
@@ -86,17 +86,17 @@ export default function DashboardOverview({
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-2.5">
           <button
             onClick={() => onNavigateTab('workers')}
-            className="px-4 py-2.5 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 transition-all active:scale-95 flex items-center gap-1.5"
+            className="w-full sm:w-auto px-4 py-2.5 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 transition-all active:scale-95 flex items-center justify-center gap-1.5"
           >
             <Users className="w-4 h-4" />
             <span>Worker Work History</span>
           </button>
           <button
             onClick={() => onNavigateTab('employers')}
-            className="px-4 py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs border border-slate-700 transition-all active:scale-95 flex items-center gap-1.5"
+            className="w-full sm:w-auto px-4 py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs border border-slate-700 transition-all active:scale-95 flex items-center justify-center gap-1.5"
           >
             <Building2 className="w-4 h-4 text-sky-400" />
             <span>Employer Hiring History</span>
@@ -186,7 +186,7 @@ export default function DashboardOverview({
             <span className="text-xs text-slate-400">Hubs Active</span>
           </div>
 
-          <div className="grid grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             {workers.byCity && workers.byCity.map((city, idx) => (
               <div 
                 key={idx}

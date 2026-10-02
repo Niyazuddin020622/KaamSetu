@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, PlusCircle, CheckCircle, AlertCircle } from 'lucide-react';
 import { createWorker } from '../api';
+import { CITIES, getCityAreas, getCityFromPincode } from '../utils/cityMaster';
 
 const CATEGORIES = [
   'Plumber', 
@@ -25,6 +26,7 @@ export default function AddWorkerModal({ onClose, onWorkerCreated }) {
     dailyRate: 1800,
     city: 'Ahmedabad',
     area: 'Satellite',
+    pincode: '',
     bio: '',
     avatar: 'https://images.unsplash.com/photo-1541888946425-d0fbb18f15f6?w=400',
     isVerified: true,
@@ -37,10 +39,23 @@ export default function AddWorkerModal({ onClose, onWorkerCreated }) {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
+    setFormData((prev) => {
+      const updated = {
+        ...prev,
+        [name]: type === 'checkbox' ? checked : value
+      };
+      if (name === 'pincode') {
+        const cleanPin = value.replace(/[^0-9]/g, '').slice(0, 6);
+        updated.pincode = cleanPin;
+        if (cleanPin.length >= 3) {
+          const matched = getCityFromPincode(cleanPin);
+          if (matched) {
+            updated.city = matched.name;
+          }
+        }
+      }
+      return updated;
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -187,29 +202,61 @@ export default function AddWorkerModal({ onClose, onWorkerCreated }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="font-bold text-slate-300 block mb-1">City *</label>
-              <input
-                type="text"
+              <select
                 name="city"
-                required
                 value={formData.city}
                 onChange={handleChange}
-                placeholder="Ahmedabad / New Delhi"
                 className="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none text-xs"
-              />
+              >
+                {CITIES.map((c) => (
+                  <option key={c.id} value={c.name} className="bg-slate-900 text-white">
+                    {c.name} ({c.hindiName}) - {c.state}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>
-              <label className="font-bold text-slate-300 block mb-1">Area / Locality *</label>
+              <label className="font-bold text-slate-300 block mb-1">PIN / Zip Code</label>
               <input
                 type="text"
-                name="area"
-                required
-                value={formData.area}
+                name="pincode"
+                maxLength={6}
+                inputMode="numeric"
+                value={formData.pincode}
                 onChange={handleChange}
-                placeholder="Satellite / Rohini"
-                className="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none text-xs"
+                placeholder="380015 (Auto detects city)"
+                className="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none text-xs font-mono"
               />
             </div>
+          </div>
+
+          <div>
+            <label className="font-bold text-slate-300 block mb-1">Area / Locality *</label>
+            <input
+              type="text"
+              name="area"
+              required
+              value={formData.area}
+              onChange={handleChange}
+              placeholder="Satellite / SG Highway / Rohini"
+              className="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none text-xs"
+            />
+            {getCityAreas(formData.city).length > 0 && (
+              <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
+                <span className="text-[10px] text-slate-400">Quick suggestions:</span>
+                {getCityAreas(formData.city).slice(0, 6).map((area) => (
+                  <button
+                    key={area}
+                    type="button"
+                    onClick={() => setFormData((prev) => ({ ...prev, area }))}
+                    className="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 hover:bg-amber-500/20 hover:text-amber-300 text-slate-300 border border-slate-700 transition-colors"
+                  >
+                    {area}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <div>

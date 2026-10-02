@@ -28,7 +28,7 @@ const getFlexiblePhoneRegex = (p) => {
 // POST /api/auth/customer/register
 router.post('/customer/register', async (req, res) => {
   try {
-    const { name, phone, pin, address, city, area } = req.body;
+    const { name, phone, pin, address, addressDetails, pincode, city, area } = req.body;
 
     if (!name || !phone || !pin) {
       return res.status(400).json({
@@ -61,13 +61,40 @@ router.post('/customer/register', async (req, res) => {
       });
     }
 
+    let details = addressDetails && typeof addressDetails === 'object' ? addressDetails : {};
+    let finalPincode = (pincode || details.pincode || '').toString().trim();
+    let finalCity = (city || details.city || 'Ahmedabad').trim();
+    let finalAddress = (address || '').trim();
+
+    if (!finalAddress && (details.building || details.street)) {
+      const parts = [];
+      if (details.building) parts.push(details.building.trim());
+      if (details.street) parts.push(details.street.trim());
+      if (finalCity && finalPincode) parts.push(`${finalCity} - ${finalPincode}`);
+      else if (finalCity) parts.push(finalCity);
+      parts.push(details.country || 'India');
+      finalAddress = parts.join(', ');
+    }
+    if (!finalPincode && finalAddress) {
+      const pinMatch = finalAddress.match(/\b([1-9][0-9]{5})\b/);
+      if (pinMatch) finalPincode = pinMatch[1];
+    }
+
     const user = new User({
       name: name.trim(),
       phone: cleanPhone,
       pin: pin.toString().trim(),
-      address: (address || '').trim(),
-      city: (city || 'Ahmedabad').trim(),
-      area: (area || '').trim(),
+      address: finalAddress,
+      addressDetails: {
+        building: (details.building || '').trim(),
+        street: (details.street || '').trim(),
+        city: finalCity,
+        pincode: finalPincode,
+        country: (details.country || 'India').trim()
+      },
+      pincode: finalPincode,
+      city: finalCity,
+      area: (area || details.street || '').trim(),
       role: 'customer'
     });
 
@@ -83,11 +110,11 @@ router.post('/customer/register', async (req, res) => {
       console.warn('Booking auto-link warning:', linkErr.message);
     }
 
-    // Generate JWT token
+    // Generate JWT token (24-hour session)
     const token = jwt.sign(
       { id: user._id, phone: user.phone, role: 'customer', name: user.name },
       JWT_SECRET,
-      { expiresIn: '30d' }
+      { expiresIn: '24h' }
     );
 
     res.status(201).json({
@@ -99,6 +126,8 @@ router.post('/customer/register', async (req, res) => {
         name: user.name,
         phone: user.phone,
         address: user.address,
+        addressDetails: user.addressDetails,
+        pincode: user.pincode,
         city: user.city,
         area: user.area,
         role: user.role
@@ -155,7 +184,7 @@ router.post('/customer/login', async (req, res) => {
     const token = jwt.sign(
       { id: user._id, phone: user.phone, role: 'customer', name: user.name },
       JWT_SECRET,
-      { expiresIn: '30d' }
+      { expiresIn: '24h' }
     );
 
     res.json({
@@ -167,6 +196,8 @@ router.post('/customer/login', async (req, res) => {
         name: user.name,
         phone: user.phone,
         address: user.address,
+        addressDetails: user.addressDetails,
+        pincode: user.pincode,
         city: user.city,
         area: user.area,
         role: user.role
@@ -198,10 +229,40 @@ router.get('/customer/me', verifyToken, requireCustomer, async (req, res) => {
 // PUT /api/auth/customer/profile - Update customer details
 router.put('/customer/profile', verifyToken, requireCustomer, async (req, res) => {
   try {
-    const { name, address, city, area } = req.body;
+    const { name, address, addressDetails, pincode, city, area } = req.body;
+    
+    const updateFields = {};
+    if (name) updateFields.name = name.trim();
+    if (city) updateFields.city = city.trim();
+    if (area) updateFields.area = area.trim();
+
+    let details = addressDetails && typeof addressDetails === 'object' ? addressDetails : null;
+    let finalAddress = (address || '').trim();
+    let finalPincode = (pincode || details?.pincode || '').toString().trim();
+
+    if (details) {
+      updateFields.addressDetails = {
+        building: (details.building || '').trim(),
+        street: (details.street || '').trim(),
+        city: (details.city || updateFields.city || 'Ahmedabad').trim(),
+        pincode: finalPincode,
+        country: (details.country || 'India').trim()
+      };
+      if (!finalAddress && (details.building || details.street)) {
+        const parts = [details.building, details.street].filter(Boolean);
+        if (details.city && finalPincode) parts.push(`${details.city} - ${finalPincode}`);
+        else if (details.city) parts.push(details.city);
+        parts.push(details.country || 'India');
+        finalAddress = parts.join(', ');
+      }
+    }
+
+    if (finalAddress) updateFields.address = finalAddress;
+    if (finalPincode) updateFields.pincode = finalPincode;
+
     const user = await User.findByIdAndUpdate(
       req.user.id,
-      { $set: { name, address, city, area } },
+      { $set: updateFields },
       { new: true }
     ).select('-pin');
 
@@ -266,7 +327,7 @@ router.post('/worker/login', async (req, res) => {
     const token = jwt.sign(
       { id: worker._id, phone: worker.phone, role: 'worker', name: worker.name },
       JWT_SECRET,
-      { expiresIn: '30d' }
+      { expiresIn: '24h' }
     );
 
     const safeWorker = worker.toObject();
@@ -323,7 +384,7 @@ router.post('/worker/set-pin', async (req, res) => {
     const token = jwt.sign(
       { id: worker._id, phone: worker.phone, role: 'worker', name: worker.name },
       JWT_SECRET,
-      { expiresIn: '30d' }
+      { expiresIn: '24h' }
     );
 
     const safeWorker = worker.toObject();

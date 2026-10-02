@@ -18,6 +18,7 @@ export default function LoginView({ onLoginSuccess }) {
       const res = await adminLogin(pin.trim());
       if (res.success) {
         localStorage.setItem('kaamsetu_admin_token', res.token || 'admin-active');
+        localStorage.setItem('kaamsetu_admin_login_time', Date.now().toString());
         onLoginSuccess();
       } else {
         setError(res.message || 'Invalid Admin PIN');

@@ -56,10 +56,10 @@ export default function WorkersHistoryLedger({
     <div className="p-4 sm:p-6 space-y-6">
       
       {/* Top Controls: Search, Filters & Add */}
-      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 p-4 rounded-3xl bg-slate-900 border border-slate-800">
-        <div className="flex-1 flex flex-wrap items-center gap-2">
+      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 p-3.5 sm:p-4 rounded-3xl bg-slate-900 border border-slate-800">
+        <div className="flex-1 flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2">
           {/* Search */}
-          <div className="flex-1 min-w-[200px] flex items-center gap-2 px-3 py-2 rounded-2xl bg-slate-800 border border-slate-700 text-xs">
+          <div className="w-full sm:flex-1 sm:min-w-[200px] flex items-center gap-2 px-3.5 py-2.5 rounded-2xl bg-slate-800 border border-slate-700 text-xs">
             <Search className="w-4 h-4 text-slate-400 shrink-0" />
             <input
               type="text"
@@ -70,36 +70,38 @@ export default function WorkersHistoryLedger({
             />
           </div>
 
-          {/* Category Dropdown */}
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="px-3 py-2 rounded-2xl bg-slate-800 border border-slate-700 text-xs font-bold text-slate-200 focus:outline-none cursor-pointer"
-          >
-            {categories.map((c) => (
-              <option key={c} value={c} className="bg-slate-900">
-                {c === 'All' ? 'All Trades' : c}
-              </option>
-            ))}
-          </select>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            {/* Category Dropdown */}
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="flex-1 sm:flex-initial px-3 py-2.5 rounded-2xl bg-slate-800 border border-slate-700 text-xs font-bold text-slate-200 focus:outline-none cursor-pointer"
+            >
+              {categories.map((c) => (
+                <option key={c} value={c} className="bg-slate-900">
+                  {c === 'All' ? 'All Trades' : c}
+                </option>
+              ))}
+            </select>
 
-          {/* City Dropdown */}
-          <select
-            value={selectedCity}
-            onChange={(e) => setSelectedCity(e.target.value)}
-            className="px-3 py-2 rounded-2xl bg-slate-800 border border-slate-700 text-xs font-bold text-slate-200 focus:outline-none cursor-pointer"
-          >
-            {cities.map((city) => (
-              <option key={city} value={city} className="bg-slate-900">
-                {city === 'All' ? 'All Cities' : city}
-              </option>
-            ))}
-          </select>
+            {/* City Dropdown */}
+            <select
+              value={selectedCity}
+              onChange={(e) => setSelectedCity(e.target.value)}
+              className="flex-1 sm:flex-initial px-3 py-2.5 rounded-2xl bg-slate-800 border border-slate-700 text-xs font-bold text-slate-200 focus:outline-none cursor-pointer"
+            >
+              {cities.map((city) => (
+                <option key={city} value={city} className="bg-slate-900">
+                  {city === 'All' ? 'All Cities' : city}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <button
           onClick={onOpenAddWorker}
-          className="px-4 py-2 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-300 hover:to-orange-300 text-slate-950 font-black text-xs shadow-md shadow-amber-500/20 transition-all flex items-center justify-center gap-1.5 active:scale-95 shrink-0"
+          className="w-full md:w-auto px-4 py-2.5 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-300 hover:to-orange-300 text-slate-950 font-black text-xs shadow-md shadow-amber-500/20 transition-all flex items-center justify-center gap-1.5 active:scale-95 shrink-0"
         >
           <PlusCircle className="w-4 h-4" />
           <span>Add New Worker</span>

@@ -153,6 +153,7 @@ router.post('/', async (req, res) => {
       dailyRate: dailyRate ? Number(dailyRate) : Number(hourlyRate) * 7,
       city,
       area,
+      pincode: (req.body.pincode || '').toString().trim(),
       bio: bio || `Experienced and dependable professional ${category} with expertise in local repairs and installations.`,
       avatar: finalAvatar,
       isVerified: true,
