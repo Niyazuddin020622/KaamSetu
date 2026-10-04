@@ -26,7 +26,10 @@ import {
   AlertCircle, 
   CheckCircle2, 
   RefreshCw, 
-  Search
+  Search,
+  MapPin,
+  LayoutGrid,
+  List
 } from 'lucide-react';
 
 export default function App() {
@@ -43,13 +46,17 @@ export default function App() {
   const [authInitialRole, setAuthInitialRole] = useState('customer');
   const [showWorkerDashboard, setShowWorkerDashboard] = useState(false);
 
-  // Filters & Search - Default to Ahmedabad or All
+  // Filters & Search - Default to registered customer's city or All
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [selectedCity, setSelectedCity] = useState('All');
+  const [selectedCity, setSelectedCity] = useState(() => {
+    const session = getValidCustomerSession();
+    return session?.city || 'All';
+  });
   const [searchQuery, setSearchQuery] = useState('');
   const [emergencyOnly, setEmergencyOnly] = useState(false);
   const [availableOnly, setAvailableOnly] = useState(false);
   const [sortBy, setSortBy] = useState('rating');
+  const [viewMode, setViewMode] = useState('auto'); // 'auto' | 'compact' | 'grid'
 
   // Modals
   const [selectedWorkerDetail, setSelectedWorkerDetail] = useState(null);
@@ -101,7 +108,10 @@ export default function App() {
   const handleAuthSuccess = (role, data) => {
     if (role === 'customer') {
       setCurrentUser(data);
-      showToast(`नमस्ते ${data.name}! आपका स्वागत है (24 घंटे का सत्र सक्रिय)।`);
+      if (data.city) {
+        setSelectedCity(data.city); // Auto-filter workers to employer's registered city!
+      }
+      showToast(`नमस्ते ${data.name}! आपका स्वागत है${data.city ? ` (${data.city} के कारीगर दिखाए जा रहे हैं)` : ''}।`);
     } else if (role === 'worker') {
       setCurrentWorker(data);
       setShowWorkerDashboard(true);
@@ -124,6 +134,7 @@ export default function App() {
     customerLogout();
     setCurrentUser(null);
     setShowMyBookingsModal(false);
+    setSelectedCity('All');
     showToast('ग्राहक खाता सफलतापूर्वक लॉगआउट हो गया।');
   };
 
@@ -264,6 +275,40 @@ export default function App() {
       {/* Main Directory Area */}
       <main id="workers-directory" className="flex-1 max-w-7xl w-full mx-auto px-2.5 sm:px-6 lg:px-8 py-3 sm:py-8">
         
+        {/* Customer Location Context Banner */}
+        {currentUser?.city && (
+          <div className="mb-3 sm:mb-4 p-3 rounded-2xl bg-slate-900/80 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-sm">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
+                <MapPin className="w-4 h-4" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-bold text-white truncate">
+                  आपका पंजीकृत शहर: <span className="text-amber-300 font-extrabold">{currentUser.city}</span>
+                </p>
+                <p className="text-[11px] text-slate-400">
+                  {selectedCity === currentUser.city ? (
+                    <span className="text-emerald-400 font-medium">✓ आपके शहर के स्थानीय कारीगर दिखाए जा रहे हैं</span>
+                  ) : (
+                    <span>
+                      अभी आप <strong className="text-white">'{selectedCity === 'All' ? 'सभी शहरों' : selectedCity}'</strong> के कारीगर देख रहे हैं।
+                    </span>
+                  )}
+                </p>
+              </div>
+            </div>
+
+            {selectedCity !== currentUser.city && (
+              <button
+                onClick={() => setSelectedCity(currentUser.city)}
+                className="self-start sm:self-auto px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition-all shadow-sm active:scale-95 shrink-0"
+              >
+                📍 वापस {currentUser.city} के कारीगर देखें
+              </button>
+            )}
+          </div>
+        )}
+
         {/* Category Selector Chips */}
         <CategoryChips
           categories={categories}
@@ -315,6 +360,30 @@ export default function App() {
                 <option value="experience" className="bg-slate-900">अनुभव (Experience)</option>
                 <option value="completed" className="bg-slate-900">ज्यादा काम (Jobs)</option>
               </select>
+            </div>
+
+            {/* View Mode Toggle: Grid vs Compact List */}
+            <div className="flex items-center bg-slate-800 border border-slate-700 rounded-xl p-0.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => setViewMode('compact')}
+                className={`p-1.5 rounded-lg text-xs font-bold transition-all ${
+                  viewMode === 'compact' ? 'bg-amber-400 text-slate-950 shadow' : 'text-slate-400 hover:text-white'
+                }`}
+                title="कॉम्पैक्ट लिस्ट व्यू (स्मार्टफोन के लिए बेस्ट)"
+              >
+                <List className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode('grid')}
+                className={`p-1.5 rounded-lg text-xs font-bold transition-all ${
+                  viewMode === 'grid' ? 'bg-amber-400 text-slate-950 shadow' : 'text-slate-400 hover:text-white'
+                }`}
+                title="ग्रिड कार्ड व्यू"
+              >
+                <LayoutGrid className="w-3.5 h-3.5" />
+              </button>
             </div>
 
             {/* Refresh Button */}
@@ -382,11 +451,18 @@ export default function App() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className={
+            viewMode === 'compact'
+              ? 'flex flex-col gap-2.5 max-w-4xl mx-auto'
+              : viewMode === 'grid'
+              ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6'
+              : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-6'
+          }>
             {workers.map((worker) => (
               <WorkerCard
                 key={worker._id}
                 worker={worker}
+                viewMode={viewMode}
                 onSelectWorker={(w) => setSelectedWorkerDetail(w)}
                 onBookWorker={(w) => setSelectedWorkerForBooking(w)}
               />
@@ -429,6 +505,7 @@ export default function App() {
       {selectedWorkerDetail && (
         <WorkerDetailModal
           worker={selectedWorkerDetail}
+          currentUser={currentUser}
           initialTab={selectedWorkerDetail.defaultTab || 'about'}
           onClose={() => setSelectedWorkerDetail(null)}
           onBookWorker={(w) => {

@@ -14,19 +14,9 @@ import {
 import { registerWorker } from '../api';
 import { handleImageError } from '../utils/imageHelper';
 import { CITIES, getCityAreas, getCityFromPincode } from '../utils/cityMaster';
+import { TRADE_CATEGORIES, getSkillsByCategory } from '../utils/tradeSkills';
 
-const CATEGORIES = [
-  'Plumber', 
-  'Welder', 
-  'Electrician', 
-  'Carpenter', 
-  'Painter', 
-  'Mason (Mistri)', 
-  'AC & Appliance', 
-  'Mechanic', 
-  'Cleaner & Housekeeping', 
-  'General Helper / Labour'
-];
+const CATEGORIES = TRADE_CATEGORIES;
 
 const PRESET_AVATARS = [
   { label: 'प्लंबर (Plumber)', url: 'https://images.unsplash.com/photo-1541888946425-d0fbb18f15f6?w=400&auto=format&fit=crop&q=80' },
@@ -44,7 +34,7 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
     pin: '',
     email: '',
     category: 'Plumber',
-    subSkills: '',
+    subSkills: getSkillsByCategory('Plumber').slice(0, 4),
     experienceYears: 4,
     hourlyRate: 350,
     dailyRate: 1800,
@@ -84,6 +74,11 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
         ...prev,
         [name]: type === 'checkbox' ? checked : value
       };
+      if (name === 'category') {
+        updated.category = value;
+        // Auto-populate default core skills for the newly selected category
+        updated.subSkills = getSkillsByCategory(value).slice(0, 4);
+      }
       if (name === 'pincode') {
         const cleanPin = value.replace(/[^0-9]/g, '').slice(0, 6);
         updated.pincode = cleanPin;
@@ -98,6 +93,25 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
     });
   };
 
+  const handleToggleSkill = (skill) => {
+    setFormData((prev) => {
+      const current = Array.isArray(prev.subSkills) ? prev.subSkills : [];
+      const updated = current.includes(skill)
+        ? current.filter((s) => s !== skill)
+        : [...current, skill];
+      return { ...prev, subSkills: updated };
+    });
+  };
+
+  const handleSelectAllSkills = () => {
+    const all = getSkillsByCategory(formData.category);
+    setFormData((prev) => ({ ...prev, subSkills: [...all] }));
+  };
+
+  const handleClearSkills = () => {
+    setFormData((prev) => ({ ...prev, subSkills: [] }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -109,6 +123,11 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
 
     if (!formData.pin || formData.pin.toString().trim().length < 4) {
       setError('कृपया कम से कम 4 अंकों का गुप्त लॉगिन PIN बनाएं।');
+      return;
+    }
+
+    if (!formData.subSkills || formData.subSkills.length === 0) {
+      setError('कृपया अपने काम का कम से कम 1 विशेष कौशल (Special Skill) चेकबॉक्स से चुनें।');
       return;
     }
 
@@ -439,19 +458,69 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
               )}
             </div>
 
-            {/* Sub-skills */}
-            <div>
-              <label className="text-xs font-bold text-slate-300 block mb-1">
-                विशेष कौशल (Special Skills / काम का विवरण)
-              </label>
-              <input
-                type="text"
-                name="subSkills"
-                value={formData.subSkills}
-                onChange={handleChange}
-                placeholder="उदा. मेन गेट वेल्डिंग, शेड, ग्रिल, ताला रिपेयर"
-                className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
-              />
+            {/* Sub-skills: Checkboxes per category (NO manual typing mistakes) */}
+            <div className="p-3 sm:p-4 rounded-2xl bg-slate-800/60 border border-slate-700/80 space-y-2.5">
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <div>
+                  <label className="text-xs font-bold text-amber-300 block">
+                    विशेष कौशल (Special Skills / काम का विवरण) *
+                  </label>
+                  <p className="text-[10px] sm:text-xs text-slate-400">
+                    आप <strong>{formData.category}</strong> में क्या-क्या काम करते हैं? चेकबॉक्स चुनिए (टाइप करने की आवश्यकता नहीं):
+                  </p>
+                </div>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button
+                    type="button"
+                    onClick={handleSelectAllSkills}
+                    className="text-[10px] font-bold px-2 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 transition-colors"
+                  >
+                    सभी चुनें (Select All)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleClearSkills}
+                    className="text-[10px] font-bold px-2 py-1 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 hover:text-white transition-colors"
+                  >
+                    हटाएं (Clear)
+                  </button>
+                </div>
+              </div>
+
+              {/* Checkbox Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 max-h-56 overflow-y-auto pr-1">
+                {getSkillsByCategory(formData.category).map((skill) => {
+                  const isSelected = Array.isArray(formData.subSkills) && formData.subSkills.includes(skill);
+                  return (
+                    <label
+                      key={skill}
+                      className={`flex items-start gap-2.5 p-2 rounded-xl border text-xs font-semibold cursor-pointer transition-all ${
+                        isSelected
+                          ? 'bg-amber-500/15 border-amber-500/50 text-amber-200 shadow-sm'
+                          : 'bg-slate-900/60 border-slate-700/70 text-slate-300 hover:bg-slate-800 hover:border-slate-600'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => handleToggleSkill(skill)}
+                        className="w-4 h-4 rounded text-amber-400 bg-slate-800 border-slate-600 focus:ring-amber-400 shrink-0 mt-0.5"
+                      />
+                      <span className="leading-snug select-none">{skill}</span>
+                    </label>
+                  );
+                })}
+              </div>
+
+              {/* Counter / Validation status */}
+              <div className="flex items-center justify-between pt-1 border-t border-slate-700/50 text-[11px] text-slate-400">
+                <span>
+                  चुने गए कौशल: <strong className="text-amber-400">{formData.subSkills?.length || 0}</strong>
+                </span>
+                {(!formData.subSkills || formData.subSkills.length === 0) && (
+                  <span className="text-rose-400 font-bold">⚠️ कम से कम 1 काम अवश्य चुनें</span>
+                )}
+              </div>
             </div>
 
             {/* Emergency Checkbox */}

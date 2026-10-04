@@ -4,6 +4,7 @@ const Booking = require('../models/Booking');
 const Worker = require('../models/Worker');
 const User = require('../models/User');
 const { verifyToken, optionalToken, requireCustomer, requireWorker } = require('../middleware/auth');
+const { getCityByName, getCityFromPincode, calculateDistance } = require('../data/cityMaster');
 
 // Helper function to get Day of Week in Hindi and English
 const getDayName = (dateStr) => {
@@ -194,6 +195,9 @@ router.get('/employers', async (req, res) => {
         customerAddress: booking.customerAddress,
         city: booking.city,
         area: booking.area,
+        workerCity: booking.workerCity || '',
+        isCrossCity: Boolean(booking.isCrossCity),
+        distanceKm: booking.distanceKm || 0,
         urgency: booking.urgency,
         status: booking.status,
         estimatedCost: booking.estimatedCost,
@@ -319,6 +323,25 @@ router.post('/', optionalToken, async (req, res) => {
       }
     }
 
+    // Normalize cities using City Master
+    const customerCityObj = (finalPincode ? getCityFromPincode(finalPincode) : null) || getCityByName(finalCity);
+    if (customerCityObj) {
+      finalCity = customerCityObj.name;
+    }
+    const workerCityObj = getCityByName(worker.city);
+    const workerCityName = workerCityObj ? workerCityObj.name : (worker.city || 'Ahmedabad');
+    const isCrossCity = finalCity.toLowerCase() !== workerCityName.toLowerCase();
+
+    let distanceKm = 0;
+    if (customerCityObj && workerCityObj && customerCityObj.coordinates && workerCityObj.coordinates) {
+      distanceKm = calculateDistance(
+        customerCityObj.coordinates.latitude,
+        customerCityObj.coordinates.longitude,
+        workerCityObj.coordinates.latitude,
+        workerCityObj.coordinates.longitude
+      );
+    }
+
     const booking = new Booking({
       worker: worker._id,
       workerName: worker.name,
@@ -339,6 +362,9 @@ router.post('/', optionalToken, async (req, res) => {
       pincode: finalPincode,
       city: finalCity,
       area: area || details.street || worker.area,
+      workerCity: workerCityName,
+      isCrossCity,
+      distanceKm,
       serviceRequired: serviceRequired || `${worker.category} Service`,
       jobDescription: jobDescription || '',
       preferredDate,

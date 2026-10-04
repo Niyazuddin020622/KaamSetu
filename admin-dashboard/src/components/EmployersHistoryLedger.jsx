@@ -14,13 +14,16 @@ import {
   X, 
   History, 
   IndianRupee, 
-  AlertCircle 
+  AlertCircle,
+  LayoutGrid,
+  List
 } from 'lucide-react';
 import { handleImageError } from '../utils/imageHelper';
 
 export default function EmployersHistoryLedger({ employers = [] }) {
   const [search, setSearch] = useState('');
   const [selectedEmployerForHistory, setSelectedEmployerForHistory] = useState(null);
+  const [viewMode, setViewMode] = useState('dense'); // 'dense' | 'cards'
 
   const filteredEmployers = employers.filter(emp => {
     return (
@@ -34,8 +37,8 @@ export default function EmployersHistoryLedger({ employers = [] }) {
   return (
     <div className="p-4 sm:p-6 space-y-6">
       
-      {/* Top Banner & Search */}
-      <div className="p-5 sm:p-6 rounded-3xl bg-slate-900 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* Top Banner, Search & View Toggle */}
+      <div className="p-4 sm:p-5 rounded-3xl bg-slate-900 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <h2 className="text-base sm:text-lg font-black text-white flex items-center gap-2">
@@ -51,29 +54,169 @@ export default function EmployersHistoryLedger({ employers = [] }) {
           </p>
         </div>
 
-        {/* Search */}
-        <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-2xl bg-slate-800 border border-slate-700 text-xs w-full md:w-80">
-          <Search className="w-4 h-4 text-slate-400 shrink-0" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search employer by name, phone, or city..."
-            className="bg-transparent text-white placeholder-slate-500 focus:outline-none w-full text-xs"
-          />
+        <div className="flex items-center gap-2.5 flex-wrap">
+          {/* View Mode Toggle */}
+          <div className="flex items-center bg-slate-800 p-1 rounded-2xl border border-slate-700 shrink-0">
+            <button
+              onClick={() => setViewMode('dense')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                viewMode === 'dense'
+                  ? 'bg-sky-400 text-slate-950 shadow'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+              title="Compact Dense List View"
+            >
+              <List className="w-3.5 h-3.5" />
+              <span className="text-[11px]">कॉम्पैक्ट लिस्ट</span>
+            </button>
+            <button
+              onClick={() => setViewMode('cards')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                viewMode === 'cards'
+                  ? 'bg-sky-400 text-slate-950 shadow'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+              title="Card Grid View"
+            >
+              <LayoutGrid className="w-3.5 h-3.5" />
+              <span className="text-[11px]">कार्ड्स</span>
+            </button>
+          </div>
+
+          {/* Search */}
+          <div className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-slate-800 border border-slate-700 text-xs flex-1 min-w-[200px]">
+            <Search className="w-4 h-4 text-slate-400 shrink-0" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search employer by name, phone, or city..."
+              className="bg-transparent text-white placeholder-slate-500 focus:outline-none w-full text-xs"
+            />
+          </div>
         </div>
       </div>
 
-      {/* Employers Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {filteredEmployers.length === 0 ? (
-          <div className="col-span-full py-12 text-center text-slate-400 bg-slate-900/40 rounded-3xl border border-slate-800">
-            <Building2 className="w-12 h-12 text-slate-600 mx-auto mb-2" />
-            <h3 className="text-sm font-bold text-slate-300">No Employers Found</h3>
-            <p className="text-xs text-slate-500">Try searching with a different name, phone, or city</p>
+      {/* Content: Dense vs Cards */}
+      {filteredEmployers.length === 0 ? (
+        <div className="py-12 text-center text-slate-400 bg-slate-900/40 rounded-3xl border border-slate-800">
+          <Building2 className="w-12 h-12 text-slate-600 mx-auto mb-2" />
+          <h3 className="text-sm font-bold text-slate-300">No Employers Found</h3>
+          <p className="text-xs text-slate-500">Try searching with a different name, phone, or city</p>
+        </div>
+      ) : viewMode === 'dense' ? (
+        <>
+          {/* HIGH-DENSITY MOBILE LIST (< md screens) */}
+          <div className="md:hidden space-y-2.5">
+            {filteredEmployers.map((emp, idx) => (
+              <div
+                key={idx}
+                className="p-3 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-slate-700 flex items-center justify-between gap-3 transition-all shadow-sm"
+              >
+                <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                  <div className="w-10 h-10 rounded-xl bg-sky-500/15 text-sky-400 flex items-center justify-center font-black text-sm border border-sky-500/30 shrink-0">
+                    {emp.customerName ? emp.customerName[0].toUpperCase() : 'C'}
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5">
+                      <h4 className="text-xs font-black text-white truncate max-w-[130px]">{emp.customerName}</h4>
+                      <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-sky-500/10 text-sky-300 border border-sky-500/30">
+                        {emp.totalBookings} hires
+                      </span>
+                    </div>
+                    <div className="text-[11px] font-semibold text-emerald-400/90 truncate">
+                      {emp.customerPhone} • <span className="text-slate-400 font-normal">{emp.city}</span>
+                    </div>
+                    <div className="text-[10px] text-slate-400 pt-0.5">
+                      Completed: <strong className="text-emerald-400">{emp.completedBookings}</strong> • Spent: <strong className="text-white">₹{emp.totalSpent}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 1-Tap Audit History Button */}
+                <button
+                  onClick={() => setSelectedEmployerForHistory(emp)}
+                  className="px-3 py-2 rounded-xl bg-sky-500/15 text-sky-300 border border-sky-500/30 hover:bg-sky-500/25 active:scale-90 text-xs font-bold flex items-center gap-1 shrink-0 transition-all"
+                  title="View Audit History"
+                >
+                  <History className="w-4 h-4" />
+                  <span className="text-[11px]">Audit</span>
+                </button>
+              </div>
+            ))}
           </div>
-        ) : (
-          filteredEmployers.map((emp, idx) => {
+
+          {/* DENSE DESKTOP TABLE (md+ screens) */}
+          <div className="hidden md:block glass-panel rounded-3xl border border-slate-800 overflow-hidden shadow-xl">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="bg-slate-950/80 border-b border-slate-800 text-slate-400 uppercase tracking-wider text-[11px]">
+                    <th className="p-3.5 font-bold">Employer / Hirer</th>
+                    <th className="p-3.5 font-bold">Phone Number</th>
+                    <th className="p-3.5 font-bold">Location & Address</th>
+                    <th className="p-3.5 font-bold">Total Hires</th>
+                    <th className="p-3.5 font-bold">Completed</th>
+                    <th className="p-3.5 font-bold">Total Spent</th>
+                    <th className="p-3.5 font-bold text-right">Audit</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60">
+                  {filteredEmployers.map((emp, idx) => (
+                    <tr key={idx} className="hover:bg-slate-800/40 transition-colors">
+                      <td className="p-3.5">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-lg bg-sky-500/15 text-sky-400 flex items-center justify-center font-bold text-xs border border-sky-500/30 shrink-0">
+                            {emp.customerName ? emp.customerName[0].toUpperCase() : 'C'}
+                          </div>
+                          <span className="font-black text-white">{emp.customerName}</span>
+                        </div>
+                      </td>
+
+                      <td className="p-3.5 font-semibold text-slate-200">
+                        {emp.customerPhone}
+                      </td>
+
+                      <td className="p-3.5 max-w-[180px]">
+                        <div className="text-amber-400 font-semibold">{emp.city}</div>
+                        <div className="text-[10px] text-slate-400 truncate" title={emp.customerAddress}>
+                          {emp.customerAddress || 'On file'}
+                        </div>
+                      </td>
+
+                      <td className="p-3.5 font-bold text-sky-300">
+                        {emp.totalBookings} Jobs
+                      </td>
+
+                      <td className="p-3.5 font-bold text-emerald-400">
+                        {emp.completedBookings} Jobs
+                      </td>
+
+                      <td className="p-3.5 font-black text-white text-sm">
+                        ₹{emp.totalSpent}
+                      </td>
+
+                      <td className="p-3.5 text-right">
+                        <button
+                          onClick={() => setSelectedEmployerForHistory(emp)}
+                          className="px-3 py-1.5 rounded-xl bg-sky-500/15 text-sky-300 border border-sky-500/30 hover:bg-sky-500/25 text-[11px] font-bold inline-flex items-center gap-1.5 transition-all"
+                        >
+                          <History className="w-3.5 h-3.5" />
+                          <span>View History</span>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      ) : (
+        /* CARDS GRID VIEW */
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {filteredEmployers.map((emp, idx) => {
             const historyList = emp.history || [];
 
             return (
@@ -132,9 +275,9 @@ export default function EmployersHistoryLedger({ employers = [] }) {
                 </div>
               </div>
             );
-          })
-        )}
-      </div>
+          })}
+        </div>
+      )}
 
       {/* MODAL: Full Hiring History of Selected Employer */}
       {selectedEmployerForHistory && (

@@ -12,7 +12,12 @@ import {
 } from 'lucide-react';
 import { handleImageError } from '../utils/imageHelper';
 
-export default function WorkerCard({ worker, onSelectWorker, onBookWorker }) {
+export default function WorkerCard({ 
+  worker, 
+  onSelectWorker, 
+  onBookWorker, 
+  viewMode = 'auto' // 'auto' | 'compact' | 'grid'
+}) {
   const handleWhatsApp = (e) => {
     e.stopPropagation();
     const cleanPhone = worker.phone.replace(/[^0-9]/g, '');
@@ -27,7 +32,126 @@ export default function WorkerCard({ worker, onSelectWorker, onBookWorker }) {
     window.open(`tel:${worker.phone}`);
   };
 
-  return (
+  // ─────────────────────────────────────────────────────────────
+  // 1. MOBILE COMPACT SMART CARD (High-density: 3-4 cards per screen)
+  // ─────────────────────────────────────────────────────────────
+  const renderCompactCard = () => (
+    <div 
+      onClick={() => onSelectWorker(worker)}
+      className="glass-card rounded-2xl p-3 border border-slate-800 hover:border-amber-400/50 flex flex-col gap-2.5 transition-all active:scale-[0.99] cursor-pointer shadow-sm relative"
+    >
+      {/* Upper Row: Photo + Main Info + Price */}
+      <div className="flex items-start gap-2.5 min-w-0">
+        {/* Avatar + Rating */}
+        <div className="relative shrink-0 flex flex-col items-center">
+          <img
+            src={worker.avatar}
+            alt={worker.name}
+            onError={handleImageError}
+            className="w-14 h-14 rounded-2xl object-cover border border-slate-700 bg-slate-800 shadow-sm"
+          />
+          {worker.isAvailable && (
+            <span 
+              className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-slate-900 rounded-full" 
+              title="अभी उपलब्ध हैं"
+            />
+          )}
+          <div className="flex items-center gap-0.5 mt-1 text-[10px] font-black text-amber-400 bg-slate-950/90 px-1.5 py-0.5 rounded-full border border-slate-800">
+            <Star className="w-2.5 h-2.5 fill-amber-400" />
+            <span>{worker.rating}</span>
+          </div>
+        </div>
+
+        {/* Center Info */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between gap-1">
+            <div className="flex items-center gap-1 min-w-0">
+              <h3 className="text-sm font-black text-white truncate">{worker.name}</h3>
+              {worker.isVerified && (
+                <CheckCircle className="w-3.5 h-3.5 text-sky-400 shrink-0" title="सत्यापित" />
+              )}
+            </div>
+            {/* Visiting Charge */}
+            <div className="text-right shrink-0">
+              <span className="text-sm font-black text-amber-400">₹{worker.hourlyRate}</span>
+              <span className="text-[10px] text-slate-400">/hr</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1.5 text-[11px] text-slate-300 mt-0.5">
+            <span className="font-bold text-amber-300 truncate">{worker.category}</span>
+            <span className="text-slate-600">•</span>
+            <span className="text-slate-400 shrink-0">{worker.experienceYears}+ वर्ष अनुभव</span>
+          </div>
+
+          <div className="flex items-center gap-1 text-[11px] text-slate-400 truncate mt-0.5">
+            <MapPin className="w-3 h-3 text-amber-400 shrink-0" />
+            <span className="truncate">{worker.area}, {worker.city}</span>
+          </div>
+
+          {/* 2 skills pills */}
+          {worker.subSkills && worker.subSkills.length > 0 && (
+            <div className="flex items-center gap-1 mt-1.5 overflow-hidden">
+              {worker.subSkills.slice(0, 2).map((skill, idx) => (
+                <span
+                  key={idx}
+                  className="text-[9px] px-1.5 py-0.5 rounded-md bg-slate-800/90 text-slate-300 border border-slate-700/60 truncate max-w-[110px]"
+                >
+                  {skill.split('(')[0].trim()}
+                </span>
+              ))}
+              {worker.subSkills.length > 2 && (
+                <span className="text-[9px] text-slate-500 font-bold shrink-0">
+                  +{worker.subSkills.length - 2}
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Quick 1-Tap Action Row */}
+      <div className="grid grid-cols-3 gap-1.5 pt-2 border-t border-slate-800/60">
+        <button
+          type="button"
+          onClick={handleCall}
+          className="flex items-center justify-center gap-1 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold shadow-sm active:scale-95 transition-all"
+          title="सीधे फोन लगाएं"
+        >
+          <Phone className="w-3 h-3 fill-current" />
+          <span>कॉल</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={handleWhatsApp}
+          className="flex items-center justify-center gap-1 py-1.5 rounded-xl bg-emerald-950 border border-emerald-500/40 text-emerald-300 text-[11px] font-bold hover:bg-emerald-900 active:scale-95 transition-all"
+          title="व्हाट्सएप चैट"
+        >
+          <MessageCircle className="w-3 h-3" />
+          <span>व्हाट्सएप</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onBookWorker(worker);
+          }}
+          className="flex items-center justify-center gap-1 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-[11px] font-black shadow-sm active:scale-95 transition-all"
+          title="अपॉइंटमेंट बुक करें"
+        >
+          <Calendar className="w-3 h-3" />
+          <span>बुक करें</span>
+        </button>
+      </div>
+    </div>
+  );
+
+  // ─────────────────────────────────────────────────────────────
+  // 2. DESKTOP / TABLET FULL GRID CARD
+  // ─────────────────────────────────────────────────────────────
+  const renderGridCard = () => (
     <div 
       onClick={() => onSelectWorker(worker)}
       className="glass-card rounded-2xl sm:rounded-3xl p-4 sm:p-5 flex flex-col justify-between cursor-pointer border border-slate-800 hover:border-amber-400/50 relative group transition-all"
@@ -146,9 +270,9 @@ export default function WorkerCard({ worker, onSelectWorker, onBookWorker }) {
           )}
         </div>
 
-        {/* Action Buttons - Large touch targets for smartphones */}
+        {/* Action Buttons - Large touch targets */}
         <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
-          {/* Direct Call Button (Phone icon in green) */}
+          {/* Direct Call Button */}
           <button
             type="button"
             onClick={handleCall}
@@ -186,5 +310,17 @@ export default function WorkerCard({ worker, onSelectWorker, onBookWorker }) {
         </div>
       </div>
     </div>
+  );
+
+  // If user selected explicit mode
+  if (viewMode === 'compact') return renderCompactCard();
+  if (viewMode === 'grid') return renderGridCard();
+
+  // Default 'auto': Compact on mobile (<640px), Grid on desktop (>=640px)
+  return (
+    <>
+      <div className="block sm:hidden">{renderCompactCard()}</div>
+      <div className="hidden sm:block">{renderGridCard()}</div>
+    </>
   );
 }

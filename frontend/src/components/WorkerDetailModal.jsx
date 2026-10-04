@@ -23,6 +23,7 @@ import { handleImageError } from '../utils/imageHelper';
 
 export default function WorkerDetailModal({ 
   worker, 
+  currentUser = null,
   onClose, 
   onBookWorker, 
   onWorkerUpdated,
@@ -282,12 +283,19 @@ export default function WorkerDetailModal({
             </div>
 
             {/* Service Area */}
-            <div className="p-3 rounded-xl bg-slate-800/40 border border-slate-700/40 flex items-center gap-3 text-xs">
-              <MapPin className="w-4 h-4 text-amber-400 shrink-0" />
-              <div>
-                <span className="text-slate-400 block">सर्विस का इलाका (Location)</span>
-                <span className="text-white font-bold">{worker.area}, {worker.city}</span>
+            <div className="p-3 rounded-xl bg-slate-800/40 border border-slate-700/40 flex items-center justify-between gap-2.5 text-xs flex-wrap">
+              <div className="flex items-center gap-3">
+                <MapPin className="w-4 h-4 text-amber-400 shrink-0" />
+                <div>
+                  <span className="text-slate-400 block text-[11px]">सर्विस का इलाका (Location)</span>
+                  <span className="text-white font-bold text-xs sm:text-sm">{worker.area}, {worker.city}</span>
+                </div>
               </div>
+              {currentUser?.city && currentUser.city.toLowerCase() !== worker.city?.toLowerCase() && (
+                <span className="px-2.5 py-1 rounded-lg bg-amber-500/15 border border-amber-500/40 text-[11px] font-bold text-amber-300">
+                  ⚠️ भिन्न शहर (आपका पंजीकृत शहर: {currentUser.city})
+                </span>
+              )}
             </div>
           </div>
         )}

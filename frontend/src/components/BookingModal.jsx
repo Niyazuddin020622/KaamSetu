@@ -60,6 +60,7 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
   );
   const [preferredTimeSlot, setPreferredTimeSlot] = useState('सुबह 9 से 12 बजे (Morning)');
   const [urgency, setUrgency] = useState('Today');
+  const [showEditAddress, setShowEditAddress] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [bookingConfirmed, setBookingConfirmed] = useState(null);
@@ -214,6 +215,23 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
               </div>
             )}
 
+            {/* City Mismatch Notice Banner */}
+            {activeUser?.city && worker?.city && activeUser.city.toLowerCase() !== worker.city.toLowerCase() && (
+              <div className="p-3.5 rounded-2xl bg-amber-500/15 border border-amber-500/40 text-amber-200 text-xs space-y-2">
+                <div className="flex items-center gap-2 font-black text-amber-300">
+                  <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
+                  <span>सावधानी: शहर अलग है (City Mismatch Notice)</span>
+                </div>
+                <p className="leading-relaxed">
+                  आपका पंजीकृत शहर <strong className="text-white">{activeUser.city}</strong> है, जबकि कारीगर <strong className="text-white">{worker.name}</strong> केवल <strong className="text-amber-300">{worker.city}</strong> में उपलब्ध हैं।
+                </p>
+                <div className="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-[11px] text-slate-300 space-y-1">
+                  <p>• यदि आप <strong>{worker.city}</strong> के पते के लिए काम करवाना चाहते हैं, तो नीचे {worker.city} का सटीक पता दर्ज करें।</p>
+                  <p>• यदि आप अपने शहर <strong>{activeUser.city}</strong> में कारीगर चाहते हैं, तो कृपया बैक जाकर {activeUser.city} का कारीगर चुनें।</p>
+                </div>
+              </div>
+            )}
+
             {/* Urgency Selection - Big Tap Friendly Buttons */}
             <div>
               <label className="text-xs font-bold text-slate-200 block mb-1.5">
@@ -296,50 +314,82 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
 
             {/* Customer Contact */}
             <div className="pt-2 border-t border-slate-800 space-y-3">
-              <h4 className="text-xs font-extrabold uppercase tracking-wider text-amber-400">
-                आपका नाम व पता (Customer Information)
-              </h4>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label htmlFor="bookingCustomerName" className="text-xs font-bold text-slate-300 block mb-1">आपका नाम (Your Name) *</label>
-                  <input
-                    id="bookingCustomerName"
-                    name="customerName"
-                    type="text"
-                    required
-                    autoComplete="name"
-                    value={customerName}
-                    onChange={(e) => setCustomerName(e.target.value)}
-                    placeholder="उदा. राहुल शर्मा"
-                    className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="bookingCustomerPhone" className="text-xs font-bold text-slate-300 block mb-1">मोबाइल नंबर (Phone Number) *</label>
-                  <input
-                    id="bookingCustomerPhone"
-                    name="customerPhone"
-                    type="tel"
-                    required
-                    autoComplete="tel"
-                    value={customerPhone}
-                    onChange={(e) => setCustomerPhone(e.target.value)}
-                    placeholder="उदा. 9876543210"
-                    className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
-                  />
-                </div>
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-extrabold uppercase tracking-wider text-amber-400">
+                  आपका नाम व पता (Customer Information)
+                </h4>
+                {activeUser && (
+                  <button
+                    type="button"
+                    onClick={() => setShowEditAddress(!showEditAddress)}
+                    className="text-[11px] font-bold text-amber-400 hover:text-amber-300 underline"
+                  >
+                    {showEditAddress ? '✓ सहेजा गया पता रखें' : '✏️ पता बदलें'}
+                  </button>
+                )}
               </div>
 
-              <div className="pt-1">
-                <AddressInputFields
-                  value={addressDetails}
-                  onChange={handleAddressChange}
-                  required={true}
-                  showPopularChips={true}
-                />
-              </div>
+              {activeUser && !showEditAddress ? (
+                /* 1-Tap Fast Checkout Card */
+                <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-800/80 border border-emerald-500/30 flex items-center justify-between gap-3">
+                  <div className="min-w-0 space-y-0.5">
+                    <div className="flex items-center gap-1.5">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <span className="font-bold text-white text-xs sm:text-sm truncate">{customerName}</span>
+                      <span className="text-slate-400 text-xs">({customerPhone})</span>
+                    </div>
+                    <p className="text-[11px] text-slate-300 truncate">
+                      📍 {customerAddress || `${area}, ${city}`}
+                    </p>
+                  </div>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shrink-0">
+                    सत्यापित पता
+                  </span>
+                </div>
+              ) : (
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label htmlFor="bookingCustomerName" className="text-xs font-bold text-slate-300 block mb-1">आपका नाम (Your Name) *</label>
+                      <input
+                        id="bookingCustomerName"
+                        name="customerName"
+                        type="text"
+                        required
+                        autoComplete="name"
+                        value={customerName}
+                        onChange={(e) => setCustomerName(e.target.value)}
+                        placeholder="उदा. राहुल शर्मा"
+                        className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor="bookingCustomerPhone" className="text-xs font-bold text-slate-300 block mb-1">मोबाइल नंबर (Phone Number) *</label>
+                      <input
+                        id="bookingCustomerPhone"
+                        name="customerPhone"
+                        type="tel"
+                        required
+                        autoComplete="tel"
+                        value={customerPhone}
+                        onChange={(e) => setCustomerPhone(e.target.value)}
+                        placeholder="उदा. 9876543210"
+                        className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-1">
+                    <AddressInputFields
+                      value={addressDetails}
+                      onChange={handleAddressChange}
+                      required={true}
+                      showPopularChips={true}
+                    />
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Rate Banner */}

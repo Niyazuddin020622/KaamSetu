@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Hammer, 
   MapPin, 
@@ -34,8 +34,60 @@ export default function Navbar({
 
   const cities = getCityOptions(true);
 
+  // Smart Auto-Hide Scroll Logic
+  const [isVisible, setIsVisible] = useState(true);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    let ticking = false;
+
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+          
+          setIsScrolled(currentScrollY > 20);
+
+          // Top area buffer: always keep header visible near the top
+          if (currentScrollY <= 60) {
+            setIsVisible(true);
+          } else {
+            const diff = currentScrollY - lastScrollY.current;
+            // 8px threshold to prevent jitter on micro-scrolls
+            if (Math.abs(diff) > 8) {
+              if (diff > 0) {
+                // Scrolling down -> hide navbar
+                setIsVisible(false);
+              } else {
+                // Scrolling up -> show navbar
+                setIsVisible(true);
+              }
+            }
+          }
+
+          lastScrollY.current = Math.max(0, currentScrollY);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <header className="sticky top-0 z-40 w-full glass-panel border-b border-slate-800/80 backdrop-blur-xl transition-all">
+    <>
+      <header
+        className={`fixed top-0 left-0 right-0 z-40 w-full transition-transform duration-300 ease-in-out ${
+          isVisible ? 'translate-y-0' : '-translate-y-full'
+        } ${
+          isScrolled
+            ? 'glass-panel bg-slate-950/90 backdrop-blur-xl border-b border-slate-800/80 shadow-xl shadow-black/40'
+            : 'glass-panel bg-slate-950/80 backdrop-blur-md border-b border-slate-800/60'
+        }`}
+      >
       <div className="max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14 sm:h-16 md:h-20 gap-2">
           
@@ -276,5 +328,9 @@ export default function Navbar({
         </div>
       </div>
     </header>
+
+      {/* Spacer to prevent page content from hiding beneath fixed navbar */}
+      <div className="h-14 sm:h-16 md:h-20 shrink-0" aria-hidden="true" />
+    </>
   );
 }

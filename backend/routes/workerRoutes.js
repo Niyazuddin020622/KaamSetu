@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const Worker = require('../models/Worker');
+const { getCityByName, getCityFromPincode, calculateDistance } = require('../data/cityMaster');
 
-// GET /api/workers - Fetch all workers with flexible filters & search
+// GET /api/workers - Fetch all workers with flexible filters, proximity calculation & search
 router.get('/', async (req, res) => {
   try {
     const { 
@@ -14,7 +15,10 @@ router.get('/', async (req, res) => {
       availableOnly, 
       emergencyOnly, 
       sortBy,
-      limit = 50 
+      lat,
+      lon,
+      userCity,
+      limit = 60 
     } = req.query;
 
     const query = {};
@@ -64,12 +68,64 @@ router.get('/', async (req, res) => {
 
     const workers = await Worker.find(query)
       .sort(sortOption)
-      .limit(Number(limit));
+      .limit(Number(limit))
+      .lean();
+
+    // Determine reference coordinates for distance computation
+    const userLat = lat ? Number(lat) : null;
+    const userLon = lon ? Number(lon) : null;
+    let refCoords = null;
+
+    if (userLat !== null && !isNaN(userLat) && userLon !== null && !isNaN(userLon)) {
+      refCoords = { latitude: userLat, longitude: userLon };
+    } else if (userCity && userCity !== 'All') {
+      const userCityMaster = getCityByName(userCity);
+      if (userCityMaster?.coordinates) {
+        refCoords = userCityMaster.coordinates;
+      }
+    }
+
+    // Attach distanceKm to each worker
+    const enrichedWorkers = workers.map(w => {
+      let workerCoords = null;
+      if (w.pincode) {
+        const pinCity = getCityFromPincode(w.pincode);
+        if (pinCity?.coordinates) workerCoords = pinCity.coordinates;
+      }
+      if (!workerCoords && w.city) {
+        const cityObj = getCityByName(w.city);
+        if (cityObj?.coordinates) workerCoords = cityObj.coordinates;
+      }
+
+      let distanceKm = null;
+      if (refCoords && workerCoords) {
+        distanceKm = calculateDistance(
+          refCoords.latitude,
+          refCoords.longitude,
+          workerCoords.latitude,
+          workerCoords.longitude
+        );
+      }
+
+      return {
+        ...w,
+        distanceKm
+      };
+    });
+
+    // If sorting by distance is requested
+    if (sortBy === 'distance' && refCoords) {
+      enrichedWorkers.sort((a, b) => {
+        if (a.distanceKm === null) return 1;
+        if (b.distanceKm === null) return -1;
+        return a.distanceKm - b.distanceKm;
+      });
+    }
 
     res.json({
       success: true,
-      count: workers.length,
-      data: workers
+      count: enrichedWorkers.length,
+      data: enrichedWorkers
     });
   } catch (error) {
     console.error('Error fetching workers:', error);
@@ -141,6 +197,13 @@ router.post('/', async (req, res) => {
       parsedSkills = subSkills.split(',').map(s => s.trim()).filter(Boolean);
     }
 
+    let finalPincode = (req.body.pincode || '').toString().trim();
+    let finalCity = (city || 'Ahmedabad').trim();
+    const matchedCity = (finalPincode ? getCityFromPincode(finalPincode) : null) || getCityByName(finalCity);
+    if (matchedCity) {
+      finalCity = matchedCity.name;
+    }
+
     const worker = new Worker({
       name,
       phone,
@@ -151,9 +214,9 @@ router.post('/', async (req, res) => {
       experienceYears: Number(experienceYears) || 2,
       hourlyRate: Number(hourlyRate),
       dailyRate: dailyRate ? Number(dailyRate) : Number(hourlyRate) * 7,
-      city,
+      city: finalCity,
       area,
-      pincode: (req.body.pincode || '').toString().trim(),
+      pincode: finalPincode,
       bio: bio || `Experienced and dependable professional ${category} with expertise in local repairs and installations.`,
       avatar: finalAvatar,
       isVerified: true,
@@ -188,9 +251,18 @@ router.post('/', async (req, res) => {
 // PUT /api/workers/:id - Update worker
 router.put('/:id', async (req, res) => {
   try {
+    const updateData = { ...req.body };
+    if (updateData.city || updateData.pincode) {
+      const pin = (updateData.pincode || '').toString().trim();
+      const matchedCity = (pin ? getCityFromPincode(pin) : null) || (updateData.city ? getCityByName(updateData.city) : null);
+      if (matchedCity) {
+        updateData.city = matchedCity.name;
+      }
+    }
+
     const updatedWorker = await Worker.findByIdAndUpdate(
       req.params.id,
-      { $set: req.body },
+      { $set: updateData },
       { new: true, runValidators: true }
     );
     if (!updatedWorker) {

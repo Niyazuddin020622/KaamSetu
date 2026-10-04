@@ -2,25 +2,16 @@ import React, { useState } from 'react';
 import { X, PlusCircle, CheckCircle, AlertCircle } from 'lucide-react';
 import { createWorker } from '../api';
 import { CITIES, getCityAreas, getCityFromPincode } from '../utils/cityMaster';
+import { TRADE_CATEGORIES, getSkillsByCategory } from '../utils/tradeSkills';
 
-const CATEGORIES = [
-  'Plumber', 
-  'Welder', 
-  'Electrician', 
-  'Carpenter', 
-  'Painter', 
-  'Mason (Mistri)', 
-  'AC & Appliance', 
-  'Mechanic', 
-  'Cleaner & Housekeeping', 
-  'General Helper / Labour'
-];
+const CATEGORIES = TRADE_CATEGORIES;
 
 export default function AddWorkerModal({ onClose, onWorkerCreated }) {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
     category: 'Plumber',
+    subSkills: getSkillsByCategory('Plumber').slice(0, 4),
     experienceYears: 3,
     hourlyRate: 350,
     dailyRate: 1800,
@@ -44,6 +35,10 @@ export default function AddWorkerModal({ onClose, onWorkerCreated }) {
         ...prev,
         [name]: type === 'checkbox' ? checked : value
       };
+      if (name === 'category') {
+        updated.category = value;
+        updated.subSkills = getSkillsByCategory(value).slice(0, 4);
+      }
       if (name === 'pincode') {
         const cleanPin = value.replace(/[^0-9]/g, '').slice(0, 6);
         updated.pincode = cleanPin;
@@ -55,6 +50,16 @@ export default function AddWorkerModal({ onClose, onWorkerCreated }) {
         }
       }
       return updated;
+    });
+  };
+
+  const handleToggleSkill = (skill) => {
+    setFormData((prev) => {
+      const current = Array.isArray(prev.subSkills) ? prev.subSkills : [];
+      const updated = current.includes(skill)
+        ? current.filter((s) => s !== skill)
+        : [...current, skill];
+      return { ...prev, subSkills: updated };
     });
   };
 
@@ -257,6 +262,41 @@ export default function AddWorkerModal({ onClose, onWorkerCreated }) {
                 ))}
               </div>
             )}
+          </div>
+
+          {/* Category-based Sub-skills */}
+          <div className="p-3 rounded-xl bg-slate-800/80 border border-slate-700 space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="font-bold text-amber-300 block text-xs">
+                Special Skills / Trade Services ({formData.category})
+              </label>
+              <span className="text-[10px] text-slate-400">
+                Selected: {formData.subSkills?.length || 0}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-40 overflow-y-auto pr-1">
+              {getSkillsByCategory(formData.category).map((skill) => {
+                const isSelected = Array.isArray(formData.subSkills) && formData.subSkills.includes(skill);
+                return (
+                  <label
+                    key={skill}
+                    className={`flex items-start gap-2 p-1.5 rounded-lg border text-[11px] cursor-pointer transition-all ${
+                      isSelected
+                        ? 'bg-amber-500/15 border-amber-500/50 text-amber-200'
+                        : 'bg-slate-900/60 border-slate-700 text-slate-300 hover:bg-slate-800'
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => handleToggleSkill(skill)}
+                      className="w-3.5 h-3.5 rounded text-amber-500 mt-0.5"
+                    />
+                    <span className="leading-tight">{skill}</span>
+                  </label>
+                );
+              })}
+            </div>
           </div>
 
           <div>

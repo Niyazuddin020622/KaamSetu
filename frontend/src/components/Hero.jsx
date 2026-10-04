@@ -1,6 +1,6 @@
-import React from 'react';
-import { Search, ShieldCheck, Zap, PhoneCall, Clock, CheckCircle2, MapPin, Phone } from 'lucide-react';
-import { getCityOptions } from '../utils/cityMaster';
+import React, { useState } from 'react';
+import { Search, ShieldCheck, Zap, PhoneCall, Clock, CheckCircle2, MapPin, Phone, LocateFixed, Loader2 } from 'lucide-react';
+import { getCityOptions, getNearbyCities } from '../utils/cityMaster';
 
 export default function Hero({ 
   searchQuery, 
@@ -12,8 +12,42 @@ export default function Hero({
   onSearchSubmit,
   totalWorkersCount = 12
 }) {
+  const [gpsLoading, setGpsLoading] = useState(false);
+  const [gpsMessage, setGpsMessage] = useState('');
   const cityOptions = getCityOptions(true);
   const popularKeywords = ['प्लंबर (Plumber)', 'वेल्डर (Welder)', 'इलेक्ट्रीशियन (Electrician)', 'बढ़ई (Carpenter)', 'पेंटर (Painter)', 'मिस्त्री (Mason)'];
+
+  const handleAutoDetectGPS = () => {
+    if (!navigator.geolocation) {
+      alert('ब्राउज़र में GPS लोकेशन सपोर्ट उपलब्ध नहीं है।');
+      return;
+    }
+    setGpsLoading(true);
+    setGpsMessage('');
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        const nearby = getNearbyCities(latitude, longitude, 120);
+        if (nearby && nearby.length > 0) {
+          const nearest = nearby[0];
+          setSelectedCity(nearest.name);
+          setGpsMessage(`📍 आपकी लोकेशन: ${nearest.name} (${nearest.distanceKm} किमी दूर)`);
+          if (onSearchSubmit) onSearchSubmit();
+        } else {
+          setGpsMessage('निकटतम कोई सक्रिय शहर नहीं मिला, डिफ़ॉल्ट शहर चुनें।');
+        }
+        setGpsLoading(false);
+        setTimeout(() => setGpsMessage(''), 5000);
+      },
+      (err) => {
+        console.warn('GPS Error:', err);
+        setGpsLoading(false);
+        setGpsMessage('GPS लोकेशन अनुमति नहीं मिली।');
+        setTimeout(() => setGpsMessage(''), 4000);
+      },
+      { timeout: 8000, enableHighAccuracy: true }
+    );
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -84,23 +118,41 @@ export default function Hero({
             {/* City Divider on Desktop */}
             <div className="hidden md:block h-8 w-px bg-slate-800" />
 
-            {/* City Selection with Ahmedabad included */}
-            <div className="w-full md:w-auto flex items-center gap-2 px-3 py-1.5 md:py-0 border-t md:border-t-0 border-slate-800/80">
-              <MapPin className="w-4 h-4 text-amber-400 shrink-0" />
-              <select
-                id="heroCitySelect"
-                name="city"
-                aria-label="शहर चुनें (Select City)"
-                value={selectedCity}
-                onChange={(e) => setSelectedCity(e.target.value)}
-                className="bg-transparent text-xs sm:text-sm text-slate-200 font-semibold focus:outline-none cursor-pointer w-full md:w-auto"
+            {/* City Selection with GPS 1-Tap Auto Detect */}
+            <div className="w-full md:w-auto flex items-center justify-between gap-1.5 px-3 py-1.5 md:py-0 border-t md:border-t-0 border-slate-800/80">
+              <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                <MapPin className="w-4 h-4 text-amber-400 shrink-0" />
+                <select
+                  id="heroCitySelect"
+                  name="city"
+                  aria-label="शहर चुनें (Select City)"
+                  value={selectedCity}
+                  onChange={(e) => setSelectedCity(e.target.value)}
+                  className="bg-transparent text-xs sm:text-sm text-slate-200 font-semibold focus:outline-none cursor-pointer w-full md:w-auto"
+                >
+                  {cityOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value} className="bg-slate-900 text-slate-200">
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* 1-Tap Auto GPS Locate Button */}
+              <button
+                type="button"
+                onClick={handleAutoDetectGPS}
+                disabled={gpsLoading}
+                className="flex items-center gap-1 px-2 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] sm:text-xs font-bold transition-all shrink-0 active:scale-95"
+                title="1-टैप: वर्तमान लोकेशन से शहर खोजें (Auto Detect GPS)"
               >
-                {cityOptions.map((opt) => (
-                  <option key={opt.value} value={opt.value} className="bg-slate-900 text-slate-200">
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+                {gpsLoading ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <LocateFixed className="w-3.5 h-3.5" />
+                )}
+                <span className="hidden xs:inline">पास खोजें</span>
+              </button>
             </div>
 
             {/* Submit Button - Big, easy touch target */}
@@ -112,6 +164,13 @@ export default function Hero({
               <span>कारीगर ढूंढें (Search)</span>
             </button>
           </form>
+
+          {/* GPS Message / Status Feedback */}
+          {gpsMessage && (
+            <div className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-xs font-bold text-amber-300 animate-fadeIn">
+              <span>{gpsMessage}</span>
+            </div>
+          )}
 
           {/* Emergency 24x7 Quick Toggle & Suggestions */}
           <div className="mt-3 sm:mt-4 flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs sm:text-sm">

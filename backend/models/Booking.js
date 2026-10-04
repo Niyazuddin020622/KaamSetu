@@ -47,7 +47,10 @@ const bookingSchema = new mongoose.Schema({
   },
   estimatedCost: { type: Number },
   completedDate: { type: String, default: '' },
-  notes: { type: String, default: '' }
+  notes: { type: String, default: '' },
+  workerCity: { type: String, default: '' },
+  isCrossCity: { type: Boolean, default: false },
+  distanceKm: { type: Number, default: 0 }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Booking', bookingSchema);

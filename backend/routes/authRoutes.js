@@ -5,6 +5,7 @@ const User = require('../models/User');
 const Worker = require('../models/Worker');
 const Booking = require('../models/Booking');
 const { verifyToken, requireCustomer, requireWorker, JWT_SECRET } = require('../middleware/auth');
+const { getCityByName, getCityFromPincode } = require('../data/cityMaster');
 
 // Helper to format clean 10-digit phone
 const cleanPhoneNumber = (p) => {
@@ -66,6 +67,17 @@ router.post('/customer/register', async (req, res) => {
     let finalCity = (city || details.city || 'Ahmedabad').trim();
     let finalAddress = (address || '').trim();
 
+    if (!finalPincode && finalAddress) {
+      const pinMatch = finalAddress.match(/\b([1-9][0-9]{5})\b/);
+      if (pinMatch) finalPincode = pinMatch[1];
+    }
+
+    // Standardize city name via City Master to prevent mismatch
+    const matchedCity = (finalPincode ? getCityFromPincode(finalPincode) : null) || getCityByName(finalCity);
+    if (matchedCity) {
+      finalCity = matchedCity.name;
+    }
+
     if (!finalAddress && (details.building || details.street)) {
       const parts = [];
       if (details.building) parts.push(details.building.trim());
@@ -74,10 +86,6 @@ router.post('/customer/register', async (req, res) => {
       else if (finalCity) parts.push(finalCity);
       parts.push(details.country || 'India');
       finalAddress = parts.join(', ');
-    }
-    if (!finalPincode && finalAddress) {
-      const pinMatch = finalAddress.match(/\b([1-9][0-9]{5})\b/);
-      if (pinMatch) finalPincode = pinMatch[1];
     }
 
     const user = new User({

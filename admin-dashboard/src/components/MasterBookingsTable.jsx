@@ -14,7 +14,8 @@ import {
   Filter, 
   X, 
   MessageCircle, 
-  FileSpreadsheet 
+  FileSpreadsheet,
+  AlertTriangle 
 } from 'lucide-react';
 
 const STATUS_OPTIONS = [
@@ -155,6 +156,13 @@ export default function MasterBookingsTable({
                 </div>
               </div>
 
+              {Boolean(b.isCrossCity || (b.workerCity && b.city && b.workerCity.toLowerCase() !== b.city.toLowerCase())) && (
+                <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/35 text-amber-300 text-[10px] font-bold">
+                  <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-amber-400" />
+                  <span>Inter-City: Hirer ({b.city}) ↔ Worker ({b.workerCity || 'External'}){b.distanceKm ? ` • ~${Math.round(b.distanceKm)}km` : ''}</span>
+                </div>
+              )}
+
               <div className="flex items-center justify-between gap-2 pt-1">
                 <select
                   value={b.status}
@@ -271,6 +279,12 @@ export default function MasterBookingsTable({
                       <div className="text-[10px] text-amber-300 font-medium">
                         {b.area ? `${b.area}, ` : ''}{b.city}
                       </div>
+                      {Boolean(b.isCrossCity || (b.workerCity && b.city && b.workerCity.toLowerCase() !== b.city.toLowerCase())) && (
+                        <div className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[9px] font-bold mt-1">
+                          <AlertTriangle className="w-2.5 h-2.5 text-amber-400" />
+                          <span>Cross-City ({b.workerCity || 'Remote'})</span>
+                        </div>
+                      )}
                     </td>
 
                     {/* Cost */}
@@ -357,6 +371,21 @@ export default function MasterBookingsTable({
             {/* Body */}
             <div className="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1 text-xs">
               
+              {/* Inter-City Warning Banner */}
+              {Boolean(selectedBookingForModal.isCrossCity || (selectedBookingForModal.workerCity && selectedBookingForModal.city && selectedBookingForModal.workerCity.toLowerCase() !== selectedBookingForModal.city.toLowerCase())) && (
+                <div className="p-3.5 rounded-2xl bg-amber-500/15 border border-amber-500/40 text-amber-300 flex items-start gap-2.5 text-xs">
+                  <AlertTriangle className="w-4 h-4 shrink-0 text-amber-400 mt-0.5" />
+                  <div>
+                    <div className="font-bold text-amber-300">⚠️ Cross-City Job Alert:</div>
+                    <p className="text-[11px] text-amber-200/90 mt-0.5 leading-relaxed">
+                      Employer address is in <strong>{selectedBookingForModal.city}</strong>, but worker is registered in <strong>{selectedBookingForModal.workerCity || 'Different City'}</strong>
+                      {selectedBookingForModal.distanceKm ? ` (Approx distance: ${Math.round(selectedBookingForModal.distanceKm)} km)` : ''}.
+                      Ensure worker is capable and willing to travel before dispatching!
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {/* Worker & Employer 2-Col Box */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {/* Worker Box */}
