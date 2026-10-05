@@ -22,6 +22,7 @@ import {
   List
 } from 'lucide-react';
 import { handleImageError } from '../utils/imageHelper';
+import { formatPhoneDisplay } from '../utils/phoneHelper';
 
 export default function WorkersHistoryLedger({ 
   workers = [], 
@@ -306,7 +307,7 @@ export default function WorkersHistoryLedger({
 
                         {/* Contact & Location */}
                         <td className="p-3.5">
-                          <div className="font-semibold text-slate-200">{worker.phone}</div>
+                          <div className="font-semibold text-slate-200">{formatPhoneDisplay(worker.phone)}</div>
                           <div className="text-[10px] text-amber-400/90 truncate max-w-[140px]">
                             {worker.area ? `${worker.area}, ` : ''}{worker.city}
                           </div>
@@ -429,7 +430,7 @@ export default function WorkersHistoryLedger({
                   <div className="space-y-1.5 text-xs text-slate-300 bg-slate-900/60 p-3 rounded-2xl border border-slate-800">
                     <div className="flex items-center gap-2">
                       <Phone className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                      <span className="font-semibold">{worker.phone}</span>
+                      <span className="font-semibold">{formatPhoneDisplay(worker.phone)}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0" />
@@ -521,7 +522,7 @@ export default function WorkersHistoryLedger({
                     </span>
                   </div>
                   <p className="text-xs text-slate-300 mt-0.5">
-                    Phone: <strong className="text-white">{selectedWorkerForHistory.phone}</strong> • Region: {selectedWorkerForHistory.city}
+                    Phone: <strong className="text-white">{formatPhoneDisplay(selectedWorkerForHistory.phone)}</strong> • Region: {selectedWorkerForHistory.city}
                   </p>
                 </div>
               </div>
@@ -606,7 +607,7 @@ export default function WorkersHistoryLedger({
                           </span>
                         </div>
                         <p className="text-xs text-slate-300 mt-0.5">
-                          Hired by Employer: <strong className="text-white">{job.customerName}</strong> ({job.customerPhone})
+                          Hired by Employer: <strong className="text-white">{job.customerName}</strong> ({formatPhoneDisplay(job.customerPhone)})
                         </p>
                       </div>
 

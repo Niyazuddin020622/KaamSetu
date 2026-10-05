@@ -17,6 +17,7 @@ import {
   FileSpreadsheet,
   AlertTriangle 
 } from 'lucide-react';
+import { formatPhoneDisplay, formatPhoneTel } from '../utils/phoneHelper';
 
 const STATUS_OPTIONS = [
   { value: 'all', label: 'All Statuses' },
@@ -132,7 +133,7 @@ export default function MasterBookingsTable({
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <div className="font-black text-sm text-white">{b.workerName}</div>
-                  <div className="text-xs font-bold text-amber-400">{b.workerCategory} • {b.workerPhone}</div>
+                  <div className="text-xs font-bold text-amber-400">{b.workerCategory} • {formatPhoneDisplay(b.workerPhone)}</div>
                 </div>
                 <span className="font-black text-amber-400 text-sm">₹{b.estimatedCost}</span>
               </div>
@@ -140,7 +141,7 @@ export default function MasterBookingsTable({
               <div className="p-2.5 rounded-2xl bg-slate-950/60 border border-slate-800/80 space-y-1 text-xs">
                 <div className="flex items-center justify-between">
                   <span className="text-slate-400">Employer:</span>
-                  <span className="font-bold text-slate-200">{b.customerName} ({b.customerPhone})</span>
+                  <span className="font-bold text-slate-200">{b.customerName} ({formatPhoneDisplay(b.customerPhone)})</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-slate-400">Service:</span>
@@ -241,13 +242,13 @@ export default function MasterBookingsTable({
                     <td className="p-4">
                       <div className="font-black text-white">{b.workerName}</div>
                       <div className="text-[10px] text-amber-400 font-semibold">{b.workerCategory}</div>
-                      <div className="text-[10px] text-slate-400">{b.workerPhone}</div>
+                      <div className="text-[10px] text-slate-400">{formatPhoneDisplay(b.workerPhone)}</div>
                     </td>
 
                     {/* Customer */}
                     <td className="p-4">
                       <div className="font-black text-slate-200">{b.customerName}</div>
-                      <div className="text-[10px] text-emerald-400 font-medium">{b.customerPhone}</div>
+                      <div className="text-[10px] text-emerald-400 font-medium">{formatPhoneDisplay(b.customerPhone)}</div>
                     </td>
 
                     {/* Service */}
@@ -395,15 +396,15 @@ export default function MasterBookingsTable({
                   <div className="text-amber-300 font-semibold">{selectedBookingForModal.workerCategory}</div>
                   <div className="flex items-center gap-1.5 text-slate-300">
                     <Phone className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>{selectedBookingForModal.workerPhone}</span>
+                    <span>{formatPhoneDisplay(selectedBookingForModal.workerPhone)}</span>
                   </div>
                   <div className="pt-2">
                     <a
-                      href={`tel:${selectedBookingForModal.workerPhone}`}
+                      href={`tel:${formatPhoneTel(selectedBookingForModal.workerPhone)}`}
                       className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-600 text-white font-bold text-xs"
                     >
                       <Phone className="w-3 h-3 fill-current" />
-                      <span>Call Worker</span>
+                      <span>Call Worker ({formatPhoneDisplay(selectedBookingForModal.workerPhone)})</span>
                     </a>
                   </div>
                 </div>
@@ -412,7 +413,7 @@ export default function MasterBookingsTable({
                 <div className="p-4 rounded-2xl bg-slate-850 border border-slate-700/80 space-y-2">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-sky-400">Employer / Hirer</span>
                   <div className="font-black text-base text-white">{selectedBookingForModal.customerName}</div>
-                  <div className="text-slate-300 font-semibold">Phone: {selectedBookingForModal.customerPhone}</div>
+                  <div className="text-slate-300 font-semibold">Phone: {formatPhoneDisplay(selectedBookingForModal.customerPhone)}</div>
                   <div className="flex items-start gap-1.5 text-slate-300">
                     <MapPin className="w-3.5 h-3.5 text-rose-400 shrink-0 mt-0.5" />
                     <span>
@@ -423,11 +424,11 @@ export default function MasterBookingsTable({
                   </div>
                   <div className="pt-2">
                     <a
-                      href={`tel:${selectedBookingForModal.customerPhone}`}
+                      href={`tel:${formatPhoneTel(selectedBookingForModal.customerPhone)}`}
                       className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-sky-600 text-white font-bold text-xs"
                     >
                       <Phone className="w-3 h-3 fill-current" />
-                      <span>Call Employer</span>
+                      <span>Call Employer ({formatPhoneDisplay(selectedBookingForModal.customerPhone)})</span>
                     </a>
                   </div>
                 </div>

@@ -74,7 +74,9 @@ workerSchema.methods.comparePin = async function(candidatePin) {
   return await bcrypt.compare(candidatePin, this.pin);
 };
 
-// Index for high performance search
+// Index for high performance search & fast directory filtering
 workerSchema.index({ name: 'text', bio: 'text', subSkills: 'text', area: 'text', city: 'text' });
+workerSchema.index({ phone: 1 });
+workerSchema.index({ city: 1, category: 1, isAvailable: 1 });
 
 module.exports = mongoose.model('Worker', workerSchema);

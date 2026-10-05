@@ -66,5 +66,38 @@ npm install
 npm run dev   # Starts Vite dev server on http://localhost:5173
 ```
 
-Open your browser and visit: **[http://localhost:5173](http://localhost:5173)**
-Admin PIN: `admin123`
+### 3. Admin Dashboard
+```bash
+cd admin-dashboard
+npm install
+npm run dev   # Starts Vite dev server on http://localhost:5174
+```
+
+---
+
+## 🐳 Docker Deployment (1-Command Full Stack)
+
+KaamSetu is fully Dockerized with production multi-stage builds and Nginx reverse proxies.
+
+### Quick Start with Docker Compose:
+```bash
+# Build and run all 4 services (Mongo + Backend + Frontend + Admin) in background
+docker compose up -d --build
+
+# Seed initial workers & test data into MongoDB container
+docker compose exec backend node seed.js
+
+# Check logs
+docker compose logs -f
+
+# Stop all containers
+docker compose down
+```
+
+### Service URLs in Docker:
+- 📱 **Frontend App (Customer & Worker)**: [http://localhost:5173](http://localhost:5173)
+- 🔐 **Admin Dashboard**: [http://localhost:5174](http://localhost:5174)
+- ⚡ **Backend API**: [http://localhost:5000](http://localhost:5000)
+- 🗄️ **MongoDB**: `localhost:27017` (Persistent Volume `mongo_data`)
+- **Admin PIN**: `admin123`
+

@@ -110,9 +110,15 @@ export default function Navbar({
                   कामसेतु
                 </span>
               </div>
-              <p className="hidden md:block text-[10px] sm:text-xs text-slate-400 font-medium truncate">
-                Plumber, Welder & Trade Workers
-              </p>
+              <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold text-slate-300 truncate">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0 hidden sm:inline-block"></span>
+                <span className="hidden sm:inline bg-gradient-to-r from-amber-300 via-amber-200 to-emerald-300 bg-clip-text text-transparent font-medium">
+                  भारत का विश्वसनीय कारीगर नेटवर्क
+                </span>
+                <span className="hidden lg:inline text-slate-500">•</span>
+                <span className="hidden lg:inline text-emerald-400 font-bold">0% कमीशन</span>
+                <span className="sm:hidden text-[9px] text-amber-300/90 font-medium">विश्वसनीय कारीगर • 0% कमीशन</span>
+              </div>
             </div>
           </div>
 

@@ -80,7 +80,7 @@ export default function LoginView({ onLoginSuccess }) {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} noValidate className="space-y-4">
             <div className="space-y-1.5">
               <label htmlFor="adminPin" className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
                 <KeyRound className="w-3.5 h-3.5 text-amber-400" />
@@ -90,7 +90,6 @@ export default function LoginView({ onLoginSuccess }) {
                 id="adminPin"
                 name="adminPin"
                 type="password"
-                required
                 autoFocus
                 autoComplete="current-password"
                 value={pin}

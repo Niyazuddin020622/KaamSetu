@@ -98,6 +98,34 @@ export default function WorkerDashboardModal({
 
   if (!isOpen) return null;
 
+  const getSlotKey = (slotStr) => {
+    if (!slotStr) return 'morning';
+    const s = slotStr.toLowerCase();
+    if (s.includes('full') || s.includes('पूरा')) return 'full_day';
+    if (s.includes('emerg') || s.includes('तुरंत')) return 'emergency';
+    if (s.includes('afternoon') || s.includes('दोपहर')) return 'afternoon';
+    if (s.includes('even') || s.includes('शाम')) return 'evening';
+    if (s.includes('morn') || s.includes('सुबह')) return 'morning';
+    return 'morning';
+  };
+
+  const areSlotsConflicting = (slot1, slot2) => {
+    const k1 = getSlotKey(slot1);
+    const k2 = getSlotKey(slot2);
+    if (k1 === 'full_day' || k2 === 'full_day') return true;
+    return k1 === k2;
+  };
+
+  const getConflictingActiveJob = (pendingJob) => {
+    if (!pendingJob || pendingJob.status !== 'pending') return null;
+    return jobs.find((j) => 
+      j._id !== pendingJob._id &&
+      ['accepted', 'in_progress'].includes(j.status) &&
+      j.preferredDate === pendingJob.preferredDate &&
+      areSlotsConflicting(j.preferredTimeSlot, pendingJob.preferredTimeSlot)
+    );
+  };
+
   const handleStatusChange = async (bookingId, newStatus) => {
     try {
       const res = await updateBookingStatus(bookingId, newStatus);
@@ -106,20 +134,22 @@ export default function WorkerDashboardModal({
           prev.map((j) => (j._id === bookingId ? { ...j, status: newStatus } : j))
         );
         setActionMsg(
-          newStatus === 'completed'
+          res.message ||
+          (newStatus === 'completed'
             ? '🎉 बधाई! काम पूरा मार्क हो गया।'
             : newStatus === 'accepted'
             ? '✅ काम स्वीकार कर लिया गया है।'
             : newStatus === 'in_progress'
             ? '🛠️ काम शुरू मार्क कर दिया गया है।'
-            : 'स्टेटस अपडेट हो गया।'
+            : 'स्टेटस अपडेट हो गया।')
         );
-        // Refresh summary
+        // Refresh summary & jobs
         fetchJobs();
-        setTimeout(() => setActionMsg(''), 3000);
+        setTimeout(() => setActionMsg(''), 4000);
       }
     } catch (err) {
-      alert('स्टेटस बदलने में समस्या आई।');
+      const msg = err.response?.data?.message || 'स्टेटस बदलने में समस्या आई।';
+      alert(msg);
     }
   };
 
@@ -415,6 +445,28 @@ export default function WorkerDashboardModal({
                     </div>
                   </div>
 
+                  {/* Slot Conflict Banner if Worker already accepted another job for this exact slot */}
+                  {(() => {
+                    const conflict = getConflictingActiveJob(job);
+                    if (!conflict) return null;
+                    return (
+                      <div className="p-2.5 rounded-xl bg-amber-500/15 border border-amber-500/40 text-amber-200 text-xs flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
+                        <span>
+                          <strong>⚠️ समय टकराव (Conflict):</strong> आपने इस तारीख ({job.preferredDate}) और समय का दूसरा काम (<strong>{conflict.customerName}</strong>) पहले ही स्वीकार कर रखा है।
+                        </span>
+                      </div>
+                    );
+                  })()}
+
+                  {/* Notes (e.g. cancellation reasons or system updates) */}
+                  {job.notes && (
+                    <div className="p-2 rounded-xl bg-slate-900 border border-slate-700/80 text-[11px] text-slate-300 flex items-start gap-1.5">
+                      <span className="text-amber-400 font-bold shrink-0">नोट:</span>
+                      <span>{job.notes}</span>
+                    </div>
+                  )}
+
                   {/* Actions & Status Workflow Buttons */}
                   <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
                     {/* Contact Customer */}
@@ -437,23 +489,32 @@ export default function WorkerDashboardModal({
 
                     {/* Status Triggers */}
                     <div className="flex items-center gap-2 flex-wrap">
-                      {job.status === 'pending' && (
-                        <>
-                          <button
-                            onClick={() => handleStatusChange(job._id, 'accepted')}
-                            className="px-3 py-1.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-black flex items-center gap-1 shadow transition-transform active:scale-95"
-                          >
-                            <Check className="w-3.5 h-3.5" />
-                            <span>काम स्वीकारें (Accept)</span>
-                          </button>
-                          <button
-                            onClick={() => handleStatusChange(job._id, 'cancelled')}
-                            className="px-2.5 py-1.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30 text-xs font-bold transition-colors"
-                          >
-                            रद्द करें
-                          </button>
-                        </>
-                      )}
+                      {job.status === 'pending' && (() => {
+                        const conflict = getConflictingActiveJob(job);
+                        return (
+                          <>
+                            <button
+                              disabled={Boolean(conflict)}
+                              onClick={() => handleStatusChange(job._id, 'accepted')}
+                              className={`px-3 py-1.5 rounded-xl text-xs font-black flex items-center gap-1 shadow transition-transform ${
+                                conflict
+                                  ? 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed'
+                                  : 'bg-sky-500 hover:bg-sky-400 text-slate-950 active:scale-95'
+                              }`}
+                              title={conflict ? 'इस समय का दूसरा काम पहले से स्वीकृत है' : 'काम स्वीकारें'}
+                            >
+                              <Check className="w-3.5 h-3.5" />
+                              <span>{conflict ? 'समय व्यस्त है' : 'काम स्वीकारें (Accept)'}</span>
+                            </button>
+                            <button
+                              onClick={() => handleStatusChange(job._id, 'cancelled')}
+                              className="px-2.5 py-1.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30 text-xs font-bold transition-colors"
+                            >
+                              रद्द करें
+                            </button>
+                          </>
+                        );
+                      })()}
 
                       {job.status === 'accepted' && (
                         <button

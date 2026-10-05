@@ -248,6 +248,12 @@ export const getBookings = async (params = {}) => {
   return response.data;
 };
 
+export const getWorkerBookedSlots = async (workerId, date = '') => {
+  const params = date ? { date } : {};
+  const response = await api.get(`/bookings/worker-slots/${workerId}`, { params });
+  return response.data;
+};
+
 export const getWorkerHistory = async (workerId) => {
   const response = await api.get(`/bookings/worker/${workerId}`);
   return response.data;

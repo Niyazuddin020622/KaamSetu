@@ -36,7 +36,7 @@ const bookingSchema = new mongoose.Schema({
   preferredTimeSlot: { type: String, default: 'Morning (9 AM - 12 PM)' },
   urgency: { 
     type: String, 
-    enum: ['Emergency (Within 2 Hours)', 'Today', 'Tomorrow / Scheduled'], 
+    enum: ['Emergency', 'Emergency (Within 2 Hours)', 'Today', 'Tomorrow', 'Tomorrow / Scheduled', 'Scheduled'], 
     default: 'Today' 
   },
   
@@ -50,7 +50,22 @@ const bookingSchema = new mongoose.Schema({
   notes: { type: String, default: '' },
   workerCity: { type: String, default: '' },
   isCrossCity: { type: Boolean, default: false },
-  distanceKm: { type: Number, default: 0 }
+  distanceKm: { type: Number, default: 0 },
+
+  // Lifecycle Timestamps & Audit Trail
+  acceptedAt: { type: Date, default: null },
+  startedAt: { type: Date, default: null },
+  completedAt: { type: Date, default: null },
+  cancelledAt: { type: Date, default: null },
+  cancelledBy: { type: String, enum: ['customer', 'worker', 'admin', 'system', ''], default: '' }
 }, { timestamps: true });
+
+// High-performance compound indexes for sub-millisecond query speed
+bookingSchema.index({ worker: 1, preferredDate: 1, status: 1 });
+bookingSchema.index({ customerPhone: 1, createdAt: -1 });
+bookingSchema.index({ workerPhone: 1, createdAt: -1 });
+bookingSchema.index({ customer: 1, createdAt: -1 });
+bookingSchema.index({ status: 1, createdAt: -1 });
+bookingSchema.index({ city: 1, status: 1 });
 
 module.exports = mongoose.model('Booking', bookingSchema);

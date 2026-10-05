@@ -89,7 +89,10 @@ export default function Sidebar({
                     Admin
                   </span>
                 </div>
-                <p className="text-[10px] text-slate-400 font-medium">Control Center & Audit</p>
+                <p className="text-[10px] text-slate-400 font-medium flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span>भारत का कारीगर नेटवर्क • Portal</span>
+                </p>
               </div>
             </div>
 

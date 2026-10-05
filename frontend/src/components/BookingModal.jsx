@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   X, 
   Calendar, 
@@ -9,12 +9,21 @@ import {
   AlertCircle, 
   CheckCircle2, 
   Zap, 
-  Wrench
+  Wrench,
+  Loader2
 } from 'lucide-react';
-import { createBooking } from '../api';
+import { createBooking, getWorkerBookedSlots } from '../api';
 import { handleImageError } from '../utils/imageHelper';
 import AddressInputFields from './AddressInputFields';
 import { formatFullAddress, parseAddressString } from '../utils/addressHelper';
+import { cleanPhoneNumber, isValidIndianPhone } from '../utils/phoneHelper';
+
+const TIME_SLOTS = [
+  { key: 'morning', label: 'सुबह 9 से 12 बजे (Morning)' },
+  { key: 'afternoon', label: 'दोपहर 12 से 3 बजे (Afternoon)' },
+  { key: 'evening', label: 'शाम 3 से 7 बजे (Evening)' },
+  { key: 'emergency', label: 'तुरंत इमरजेंसी (Emergency)' }
+];
 
 export default function BookingModal({ worker, onClose, onBookingSuccess, currentUser = null }) {
   // Check localStorage if currentUser prop wasn't passed directly
@@ -65,6 +74,49 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
   const [error, setError] = useState('');
   const [bookingConfirmed, setBookingConfirmed] = useState(null);
 
+  // Booked/busy slots for this worker on selected date
+  const [busySlots, setBusySlots] = useState([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
+
+  // Fetch booked slots for the selected date
+  useEffect(() => {
+    let isMounted = true;
+    if (worker?._id && preferredDate) {
+      setLoadingSlots(true);
+      getWorkerBookedSlots(worker._id, preferredDate)
+        .then((res) => {
+          if (isMounted && res.success) {
+            setBusySlots(res.busySlots || []);
+          }
+        })
+        .catch((err) => {
+          console.error('Failed to fetch worker booked slots:', err);
+        })
+        .finally(() => {
+          if (isMounted) setLoadingSlots(false);
+        });
+    }
+    return () => { isMounted = false; };
+  }, [worker?._id, preferredDate]);
+
+  const isSlotBusy = (slotKey) => {
+    return busySlots.some((b) => b.slotKey === slotKey || b.slotKey === 'full_day');
+  };
+
+  const allSlotsBusy = TIME_SLOTS.every((s) => isSlotBusy(s.key));
+  const currentSlotKey = TIME_SLOTS.find((s) => s.label === preferredTimeSlot)?.key;
+  const isCurrentSlotBusy = currentSlotKey ? isSlotBusy(currentSlotKey) : false;
+
+  // Auto-switch to first available slot if currently selected slot is busy
+  useEffect(() => {
+    if (busySlots.length > 0 && isCurrentSlotBusy) {
+      const firstFree = TIME_SLOTS.find((s) => !isSlotBusy(s.key));
+      if (firstFree) {
+        setPreferredTimeSlot(firstFree.label);
+      }
+    }
+  }, [busySlots, isCurrentSlotBusy]);
+
   if (!worker) return null;
 
   const handleAddressChange = (addr) => {
@@ -78,10 +130,26 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
     e.preventDefault();
     setError('');
 
+    if (isCurrentSlotBusy) {
+      setError(`कारीगर ${worker.name} इस समय स्लॉट (${preferredTimeSlot}) पर पहले से बुक हैं। कृपया दूसरा समय चुनें।`);
+      return;
+    }
+
+    if (allSlotsBusy) {
+      setError(`कारीगर ${worker.name} इस तारीख (${preferredDate}) के सभी समय में व्यस्त हैं। कृपया दूसरी तारीख चुनें।`);
+      return;
+    }
+
+    const cleanPhone = cleanPhoneNumber(customerPhone);
+    if (!cleanPhone || !isValidIndianPhone(cleanPhone)) {
+      setError('कृपया 10 अंकों का मान्य भारतीय मोबाइल नंबर (जैसे 9876543210) दर्ज करें।');
+      return;
+    }
+
     const finalAddress = customerAddress || formatFullAddress(addressDetails);
 
-    if (!customerName.trim() || !customerPhone.trim() || !finalAddress.trim()) {
-      setError('कृपया अपना नाम, मोबाइल नंबर और पूरा पता (मकान, सड़क, शहर, पिन कोड) दर्ज करें।');
+    if (!customerName.trim() || !finalAddress.trim()) {
+      setError('कृपया अपना नाम और पूरा पता दर्ज करें।');
       return;
     }
 
@@ -91,7 +159,7 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
       const payload = {
         workerId: worker._id,
         customerName: customerName.trim(),
-        customerPhone: customerPhone.trim(),
+        customerPhone: cleanPhone,
         customerAddress: finalAddress.trim(),
         addressDetails,
         pincode: addressDetails.pincode || '',
@@ -101,7 +169,11 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
         jobDescription: jobDescription.trim(),
         preferredDate,
         preferredTimeSlot,
-        urgency: urgency === 'Emergency' ? 'Emergency (Within 2 Hours)' : urgency,
+        urgency: urgency === 'Emergency'
+          ? 'Emergency (Within 2 Hours)'
+          : urgency === 'Tomorrow'
+          ? 'Tomorrow / Scheduled'
+          : 'Today',
         estimatedCost: worker.hourlyRate
       };
 
@@ -115,7 +187,7 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
         setError(res.message || 'बुकिंग दर्ज नहीं हो सकी। कृपया दोबारा प्रयास करें।');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'बुकिंग रिक्वेस्ट भेजने में समस्या आई।');
+      setError(err.response?.data?.message || 'बुकिंग रिक्वेस्ट भेजने में समस्या आई। कृपया पुनः प्रयास करें।');
     } finally {
       setLoading(false);
     }
@@ -207,7 +279,7 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
           </div>
         ) : (
           /* Form */
-          <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1">
+          <form onSubmit={handleSubmit} noValidate className="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1">
             {error && (
               <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
@@ -261,39 +333,80 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
             </div>
 
             {/* Date & Time Slot */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label htmlFor="preferredDate" className="text-xs font-bold text-slate-300 block mb-1">
-                  तारीख चुनें (Select Date)
-                </label>
-                <input
-                  id="preferredDate"
-                  name="preferredDate"
-                  type="date"
-                  required
-                  value={preferredDate}
-                  onChange={(e) => setPreferredDate(e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white focus:outline-none focus:border-amber-400 font-semibold"
-                />
+            <div className="space-y-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label htmlFor="preferredDate" className="text-xs font-bold text-slate-300 block mb-1">
+                    तारीख चुनें (Select Date)
+                  </label>
+                  <input
+                    id="preferredDate"
+                    name="preferredDate"
+                    type="date"
+                    min={new Date().toISOString().split('T')[0]}
+                    value={preferredDate}
+                    onChange={(e) => setPreferredDate(e.target.value)}
+                    className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white focus:outline-none focus:border-amber-400 font-semibold"
+                  />
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label htmlFor="preferredTimeSlot" className="text-xs font-bold text-slate-300 block">
+                      पसंदीदा समय (Time Slot)
+                    </label>
+                    {loadingSlots && (
+                      <span className="text-[10px] text-amber-400 flex items-center gap-1 font-semibold">
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                        <span>जांच रहे हैं...</span>
+                      </span>
+                    )}
+                  </div>
+                  <select
+                    id="preferredTimeSlot"
+                    name="preferredTimeSlot"
+                    value={preferredTimeSlot}
+                    onChange={(e) => setPreferredTimeSlot(e.target.value)}
+                    className={`w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border text-white focus:outline-none font-semibold ${
+                      isCurrentSlotBusy 
+                        ? 'border-rose-500/80 text-rose-300' 
+                        : 'border-slate-700 focus:border-amber-400'
+                    }`}
+                  >
+                    {TIME_SLOTS.map((slot) => {
+                      const busy = isSlotBusy(slot.key);
+                      return (
+                        <option 
+                          key={slot.key} 
+                          value={slot.label} 
+                          disabled={busy}
+                          className={busy ? 'bg-slate-900 text-slate-500' : 'bg-slate-800 text-white'}
+                        >
+                          {slot.label} {busy ? '🔴 पहले से बुक (Booked)' : '🟢 उपलब्ध'}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
               </div>
 
-              <div>
-                <label htmlFor="preferredTimeSlot" className="text-xs font-bold text-slate-300 block mb-1">
-                  पसंदीदा समय (Time Slot)
-                </label>
-                <select
-                  id="preferredTimeSlot"
-                  name="preferredTimeSlot"
-                  value={preferredTimeSlot}
-                  onChange={(e) => setPreferredTimeSlot(e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white focus:outline-none focus:border-amber-400 font-semibold"
-                >
-                  <option value="सुबह 9 से 12 बजे (Morning)">सुबह 9 से 12 बजे (Morning)</option>
-                  <option value="दोपहर 12 से 3 बजे (Afternoon)">दोपहर 12 से 3 बजे (Afternoon)</option>
-                  <option value="शाम 3 से 7 बजे (Evening)">शाम 3 से 7 बजे (Evening)</option>
-                  <option value="तुरंत इमरजेंसी (Emergency)">तुरंत इमरजेंसी (Emergency)</option>
-                </select>
-              </div>
+              {/* Slot availability banners */}
+              {allSlotsBusy ? (
+                <div className="p-2.5 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+                  <span>कारीगर {worker.name} इस तारीख ({preferredDate}) के सभी स्लॉट में व्यस्त हैं। कृपया दूसरी तारीख चुनें।</span>
+                </div>
+              ) : isCurrentSlotBusy ? (
+                <div className="p-2.5 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+                  <span>यह समय स्लॉट पहले से बुक है। कृपया ऊपर से कोई हरा (🟢 उपलब्ध) समय चुनें।</span>
+                </div>
+              ) : busySlots.length > 0 ? (
+                <div className="p-2 rounded-xl bg-slate-800/80 border border-slate-700/60 text-[11px] text-slate-300 flex items-center gap-2">
+                  <span className="text-amber-400 font-bold">ℹ️ सूचना:</span>
+                  <span>इस तारीख को कारीगर का {busySlots.length} समय स्लॉट पहले से बुक है, बाकी उपलब्ध समय नीचे से चुन सकते हैं।</span>
+                </div>
+              ) : null}
             </div>
 
             {/* Problem Description */}
@@ -355,7 +468,6 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
                         id="bookingCustomerName"
                         name="customerName"
                         type="text"
-                        required
                         autoComplete="name"
                         value={customerName}
                         onChange={(e) => setCustomerName(e.target.value)}
@@ -365,18 +477,30 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
                     </div>
 
                     <div>
-                      <label htmlFor="bookingCustomerPhone" className="text-xs font-bold text-slate-300 block mb-1">मोबाइल नंबर (Phone Number) *</label>
-                      <input
-                        id="bookingCustomerPhone"
-                        name="customerPhone"
-                        type="tel"
-                        required
-                        autoComplete="tel"
-                        value={customerPhone}
-                        onChange={(e) => setCustomerPhone(e.target.value)}
-                        placeholder="उदा. 9876543210"
-                        className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
-                      />
+                      <label htmlFor="bookingCustomerPhone" className="text-xs font-bold text-slate-300 block mb-1">
+                        मोबाइल नंबर (Phone Number) *
+                      </label>
+                      <div className="relative flex items-center">
+                        <div className="absolute left-0 top-0 bottom-0 px-2.5 bg-slate-800 border-r border-slate-700 rounded-l-xl flex items-center gap-1 text-xs font-bold text-amber-400 select-none z-10">
+                          <span>🇮🇳</span>
+                          <span>+91</span>
+                        </div>
+                        <input
+                          id="bookingCustomerPhone"
+                          name="customerPhone"
+                          type="tel"
+                          maxLength={10}
+                          autoComplete="tel"
+                          value={customerPhone}
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/[^0-9]/g, '');
+                            const clean = val.length > 10 ? val.slice(-10) : val;
+                            setCustomerPhone(clean);
+                          }}
+                          placeholder="98765 43210"
+                          className="w-full pl-16 pr-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 font-mono tracking-wider"
+                        />
+                      </div>
                     </div>
                   </div>
 
@@ -384,7 +508,7 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
                     <AddressInputFields
                       value={addressDetails}
                       onChange={handleAddressChange}
-                      required={true}
+                      required={false}
                       showPopularChips={true}
                     />
                   </div>
@@ -415,11 +539,23 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
 
               <button
                 type="submit"
-                disabled={loading}
-                className="w-full sm:w-auto px-5 sm:px-6 py-3 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-2 active:scale-95"
+                disabled={loading || allSlotsBusy || isCurrentSlotBusy}
+                className={`w-full sm:w-auto px-5 sm:px-6 py-3 rounded-xl font-black text-xs sm:text-sm shadow-lg transition-all flex items-center justify-center gap-2 active:scale-95 ${
+                  allSlotsBusy || isCurrentSlotBusy
+                    ? 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed shadow-none'
+                    : 'bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 shadow-amber-500/20'
+                }`}
               >
                 <CheckCircle2 className="w-4 h-4 shrink-0" />
-                <span>{loading ? 'रिक्वेस्ट जा रही है...' : 'कारीगर को बुक करें (Confirm)'}</span>
+                <span>
+                  {loading 
+                    ? 'रिक्वेस्ट जा रही है...' 
+                    : allSlotsBusy 
+                    ? 'सभी स्लॉट व्यस्त हैं' 
+                    : isCurrentSlotBusy 
+                    ? 'यह समय व्यस्त है (स्लॉट बदलें)' 
+                    : 'कारीगर को बुक करें (Confirm)'}
+                </span>
               </button>
             </div>
           </form>
