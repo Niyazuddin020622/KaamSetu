@@ -74,7 +74,14 @@ export default function WorkerDetailModal({
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
-    if (!customerName || !comment) return;
+    if (!customerName.trim()) {
+      setReviewMessage('कृपया अपना नाम दर्ज करें।');
+      return;
+    }
+    if (!comment.trim()) {
+      setReviewMessage('कृपया अपनी समीक्षा टिप्पणी दर्ज करें।');
+      return;
+    }
 
     setSubmittingReview(true);
     setReviewMessage('');
@@ -513,12 +520,11 @@ export default function WorkerDetailModal({
             {/* Review Form */}
             <div className="p-3.5 rounded-2xl bg-slate-800/80 border border-slate-700">
               <h4 className="text-xs font-bold text-white mb-2">{worker.name} के काम को रेटिंग दें</h4>
-              <form onSubmit={handleReviewSubmit} className="space-y-2.5">
+              <form onSubmit={handleReviewSubmit} noValidate className="space-y-2.5">
                 <input
                   id="reviewCustomerName"
                   name="customerName"
                   type="text"
-                  required
                   autoComplete="name"
                   aria-label="आपका नाम (Your Name)"
                   value={customerName}
@@ -547,7 +553,6 @@ export default function WorkerDetailModal({
                 <textarea
                   id="reviewComment"
                   name="reviewComment"
-                  required
                   rows="2"
                   aria-label="समीक्षा टिप्पणी (Review description)"
                   value={comment}

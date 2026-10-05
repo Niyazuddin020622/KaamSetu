@@ -403,6 +403,17 @@ export default function MyBookingsModal({
                         </div>
                       </div>
 
+                      {/* Notes / Cancellation Reason Banner */}
+                      {b.notes && (
+                        <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-200 text-xs flex items-start gap-2">
+                          <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                          <div>
+                            <span className="font-bold text-amber-300">अपडेट / सूचना: </span>
+                            <span>{b.notes}</span>
+                          </div>
+                        </div>
+                      )}
+
                       {/* Card Action Buttons */}
                       <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
                         <div className="flex items-center gap-2">

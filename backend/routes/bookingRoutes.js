@@ -6,6 +6,8 @@ const User = require('../models/User');
 const { verifyToken, optionalToken, requireCustomer, requireWorker } = require('../middleware/auth');
 const { getCityByName, getCityFromPincode, calculateDistance } = require('../data/cityMaster');
 
+const { cleanPhoneNumber, formatPhoneWith91, getFlexiblePhoneRegex, isValidIndianPhone } = require('../utils/phoneHelper');
+
 // Helper function to get Day of Week in Hindi and English
 const getDayName = (dateStr) => {
   if (!dateStr) return '';
@@ -23,15 +25,6 @@ const getDayName = (dateStr) => {
   return days[date.getDay()];
 };
 
-// Flexible regex for phone that handles spaces, dashes or country codes
-const getFlexiblePhoneRegex = (p) => {
-  if (!p) return null;
-  const digits = p.toString().replace(/[^0-9]/g, '');
-  const last10 = digits.length >= 10 ? digits.slice(-10) : digits;
-  if (!last10) return null;
-  return new RegExp(last10.split('').join('[^0-9]*'), 'i');
-};
-
 // GET /api/bookings - Get list of bookings with flexible search
 router.get('/', async (req, res) => {
   try {
@@ -39,9 +32,13 @@ router.get('/', async (req, res) => {
     const query = {};
 
     if (phone) {
-      const cleanPhone = phone.replace(/[^0-9]/g, '');
-      const searchPattern = cleanPhone.length >= 10 ? cleanPhone.slice(-10) : cleanPhone;
-      query.customerPhone = { $regex: searchPattern, $options: 'i' };
+      const cleanPhone = cleanPhoneNumber(phone);
+      query.$or = [
+        { customerPhone: cleanPhone },
+        { customerPhone: `+91 ${cleanPhone}` },
+        { customerPhone: `+91${cleanPhone}` },
+        { customerPhone: { $regex: cleanPhone, $options: 'i' } }
+      ];
     }
     if (workerId) {
       query.worker = workerId;
@@ -72,10 +69,14 @@ router.get('/', async (req, res) => {
 // GET /api/bookings/my-history - Secure hiring history for logged-in Customer ONLY
 router.get('/my-history', verifyToken, requireCustomer, async (req, res) => {
   try {
+    const cleanPhone = cleanPhoneNumber(req.user.phone);
     const phoneRegex = getFlexiblePhoneRegex(req.user.phone);
     const bookings = await Booking.find({
       $or: [
         { customer: req.user.id },
+        { customerPhone: cleanPhone },
+        { customerPhone: `+91 ${cleanPhone}` },
+        { customerPhone: `+91${cleanPhone}` },
         ...(phoneRegex ? [{ customerPhone: phoneRegex }] : [])
       ]
     }).populate('worker', 'name phone category avatar hourlyRate dailyRate rating city area').sort({ createdAt: -1 });
@@ -107,10 +108,14 @@ router.get('/my-history', verifyToken, requireCustomer, async (req, res) => {
 // GET /api/bookings/worker-history - Secure job history for logged-in Worker ONLY
 router.get('/worker-history', verifyToken, requireWorker, async (req, res) => {
   try {
+    const cleanPhone = cleanPhoneNumber(req.user.phone);
     const phoneRegex = getFlexiblePhoneRegex(req.user.phone);
     const bookings = await Booking.find({
       $or: [
         { worker: req.user.id },
+        { workerPhone: cleanPhone },
+        { workerPhone: `+91 ${cleanPhone}` },
+        { workerPhone: `+91${cleanPhone}` },
         ...(phoneRegex ? [{ workerPhone: phoneRegex }] : [])
       ]
     }).populate('customer', 'name phone address city area').sort({ createdAt: -1 });
@@ -212,7 +217,75 @@ router.get('/employers', async (req, res) => {
   }
 });
 
-// GET /api/bookings/worker/:workerId - Get complete work history of a specific worker
+// Canonical slot mapping and conflict detection
+const getSlotKey = (slotStr) => {
+  if (!slotStr) return 'morning';
+  const s = slotStr.toLowerCase();
+  if (s.includes('full') || s.includes('पूरा')) return 'full_day';
+  if (s.includes('emerg') || s.includes('तुरंत')) return 'emergency';
+  if (s.includes('afternoon') || s.includes('दोपहर')) return 'afternoon';
+  if (s.includes('even') || s.includes('शाम')) return 'evening';
+  if (s.includes('morn') || s.includes('सुबह')) return 'morning';
+  return 'morning';
+};
+
+const areSlotsConflicting = (slot1, slot2) => {
+  const k1 = getSlotKey(slot1);
+  const k2 = getSlotKey(slot2);
+  if (k1 === 'full_day' || k2 === 'full_day') return true;
+  return k1 === k2;
+};
+
+const normalizeDateStr = (d) => {
+  if (!d) return '';
+  const str = d.toString().trim();
+  const match = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (match) {
+    const year = match[1];
+    const month = match[2].padStart(2, '0');
+    const day = match[3].padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+  return str;
+};
+
+// GET /api/bookings/worker-slots/:workerId - Get busy/booked slots for a worker (accepted or in_progress)
+router.get('/worker-slots/:workerId', async (req, res) => {
+  try {
+    const { workerId } = req.params;
+    const { date } = req.query;
+
+    const query = {
+      worker: workerId,
+      status: { $in: ['accepted', 'in_progress'] }
+    };
+
+    if (date) {
+      query.preferredDate = normalizeDateStr(date);
+    }
+
+    const activeBookings = await Booking.find(query).select('preferredDate preferredTimeSlot status urgency');
+
+    const busySlots = activeBookings.map(b => ({
+      bookingId: b._id,
+      date: normalizeDateStr(b.preferredDate),
+      timeSlot: b.preferredTimeSlot,
+      slotKey: getSlotKey(b.preferredTimeSlot),
+      status: b.status
+    }));
+
+    res.json({
+      success: true,
+      workerId,
+      date: date ? normalizeDateStr(date) : null,
+      busySlots
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'स्लॉट जानकारी लोड करने में समस्या आई।', error: error.message });
+  }
+});
+
+// GET /api/bookings/worker/:workerId - Get public work history of a specific worker
 router.get('/worker/:workerId', async (req, res) => {
   try {
     const { workerId } = req.params;
@@ -233,6 +306,29 @@ router.get('/worker/:workerId', async (req, res) => {
       .filter(b => b.status === 'completed')
       .reduce((sum, b) => sum + (Number(b.estimatedCost) || 0), 0);
 
+    // Sanitize public bookings list: hide phone number and mask customer name for privacy
+    const publicJobs = bookings
+      .filter(b => ['completed', 'accepted', 'in_progress'].includes(b.status))
+      .map(b => ({
+        _id: b._id,
+        workerId: b.worker,
+        workerName: b.workerName,
+        workerCategory: b.workerCategory,
+        serviceRequired: b.serviceRequired,
+        jobDescription: b.jobDescription,
+        preferredDate: b.preferredDate,
+        preferredDay: b.preferredDay,
+        preferredTimeSlot: b.preferredTimeSlot,
+        customerName: b.customerName ? `${b.customerName.charAt(0)}***` : 'ग्राहक',
+        city: b.city,
+        area: b.area,
+        status: b.status,
+        estimatedCost: b.estimatedCost,
+        notes: b.notes,
+        completedDate: b.completedDate,
+        createdAt: b.createdAt
+      }));
+
     res.json({
       success: true,
       workerId,
@@ -243,7 +339,7 @@ router.get('/worker/:workerId', async (req, res) => {
         activeJobs,
         totalEarnings
       },
-      data: bookings
+      data: publicJobs
     });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to fetch worker history', error: error.message });
@@ -302,26 +398,116 @@ router.post('/', optionalToken, async (req, res) => {
       if (pinMatch) finalPincode = pinMatch[1];
     }
 
-    if (!customerName || !customerPhone || !finalAddress || !preferredDate) {
+    const cleanCustomerPhone = cleanPhoneNumber(customerPhone);
+    if (!cleanCustomerPhone || cleanCustomerPhone.length !== 10) {
+      return res.status(400).json({
+        success: false,
+        message: 'कृपया 10 अंकों का मान्य भारतीय मोबाइल नंबर दर्ज करें।'
+      });
+    }
+
+    if (!customerName || !finalAddress || !preferredDate) {
       return res.status(400).json({
         success: false,
         message: 'Please provide workerId, customerName, customerPhone, address, and preferredDate.'
       });
     }
 
-    const calculatedDay = preferredDay || getDayName(preferredDate);
-
     // Resolve customer ID if logged in or auto-link with existing user phone
     let customerId = null;
     if (req.user && req.user.role === 'customer') {
       customerId = req.user.id;
     } else {
-      const cleanPhone = (customerPhone || '').replace(/[^0-9]/g, '').slice(-10);
-      if (cleanPhone) {
-        const existingUser = await User.findOne({ phone: cleanPhone });
-        if (existingUser) customerId = existingUser._id;
-      }
+      const existingUser = await User.findOne({ 
+        $or: [
+          { phone: cleanCustomerPhone },
+          { phone: `+91 ${cleanCustomerPhone}` },
+          { phone: `+91${cleanCustomerPhone}` }
+        ]
+      });
+      if (existingUser) customerId = existingUser._id;
     }
+
+    // Normalize target date
+    const targetDate = normalizeDateStr(preferredDate);
+    const todayStr = new Date().toISOString().split('T')[0];
+    if (targetDate < todayStr) {
+      return res.status(400).json({
+        success: false,
+        message: 'कृपया आज की या आने वाली कोई तारीख चुनें। पुरानी तारीख नहीं चुनी जा सकती।'
+      });
+    }
+
+    // -------------------------------------------------------------
+    // PREVENT DUPLICATE BOOKINGS: Same customer booking same worker
+    // -------------------------------------------------------------
+    const customerIdentifierOr = [
+      { customerPhone: cleanCustomerPhone },
+      { customerPhone: `+91 ${cleanCustomerPhone}` },
+      { customerPhone: `+91${cleanCustomerPhone}` },
+      { customerPhone: new RegExp(cleanCustomerPhone, 'i') },
+      ...(customerId ? [{ customer: customerId }] : [])
+    ];
+
+    // Check 1: Has active booking (pending/accepted/in_progress) on the same date with this worker
+    const existingOnSameDate = await Booking.findOne({
+      worker: worker._id,
+      preferredDate: targetDate,
+      status: { $in: ['pending', 'accepted', 'in_progress'] },
+      $or: customerIdentifierOr
+    });
+
+    if (existingOnSameDate) {
+      const statusLabel = existingOnSameDate.status === 'pending'
+        ? 'पेंडिंग (Pending Request)'
+        : existingOnSameDate.status === 'accepted'
+        ? 'स्वीकृत (Accepted)'
+        : 'चालू (In Progress)';
+      return res.status(400).json({
+        success: false,
+        message: `डुप्लिकेट बुकिंग अमान्य: आपने पहले से इस कारीगर (${worker.name}) को तारीख ${targetDate} के लिए बुक किया हुआ है (स्थिति: ${statusLabel})। एक ही कारीगर को एक दिन में दोबारा बुक नहीं किया जा सकता।`,
+        isDuplicate: true,
+        existingBookingId: existingOnSameDate._id
+      });
+    }
+
+    // Check 2: Has an existing unresponded PENDING request with this worker
+    const existingPending = await Booking.findOne({
+      worker: worker._id,
+      status: 'pending',
+      $or: customerIdentifierOr
+    });
+
+    if (existingPending) {
+      return res.status(400).json({
+        success: false,
+        message: `डुप्लिकेट बुकिंग अमान्य: कारीगर (${worker.name}) के पास आपकी एक बुकिंग रिक्वेस्ट पहले से पेंडिंग है (तारीख: ${existingPending.preferredDate})। कृपया पहले उस रिक्वेस्ट के निर्णय की प्रतीक्षा करें या उसे 'माई बुकिंग्स' में रद्द करें।`,
+        isDuplicate: true,
+        existingBookingId: existingPending._id
+      });
+    }
+
+    // Check if worker is already booked (accepted or in_progress) on this date and time slot
+    const chosenSlot = preferredTimeSlot || 'सुबह 9 से 12 बजे (Morning)';
+    const activeWorkerBookings = await Booking.find({
+      worker: worker._id,
+      preferredDate: targetDate,
+      status: { $in: ['accepted', 'in_progress'] }
+    });
+
+    const conflictingBooking = activeWorkerBookings.find(b =>
+      areSlotsConflicting(b.preferredTimeSlot, chosenSlot)
+    );
+
+    if (conflictingBooking) {
+      return res.status(409).json({
+        success: false,
+        message: `कारीगर ${worker.name} इस तारीख (${preferredDate}) और समय (${chosenSlot}) के लिए पहले से बुक हैं। कृपया कोई अन्य समय स्लॉट या तारीख चुनें।`,
+        conflictSlot: conflictingBooking.preferredTimeSlot
+      });
+    }
+
+    const calculatedDay = preferredDay || getDayName(preferredDate);
 
     // Normalize cities using City Master
     const customerCityObj = (finalPincode ? getCityFromPincode(finalPincode) : null) || getCityByName(finalCity);
@@ -346,11 +532,11 @@ router.post('/', optionalToken, async (req, res) => {
       worker: worker._id,
       workerName: worker.name,
       workerCategory: worker.category,
-      workerPhone: worker.phone,
+      workerPhone: cleanPhoneNumber(worker.phone),
       workerAvatar: worker.avatar || '',
       customer: customerId,
       customerName: customerName.trim(),
-      customerPhone: customerPhone.trim(),
+      customerPhone: cleanCustomerPhone,
       customerAddress: finalAddress,
       addressDetails: {
         building: (details.building || '').trim(),
@@ -367,9 +553,9 @@ router.post('/', optionalToken, async (req, res) => {
       distanceKm,
       serviceRequired: serviceRequired || `${worker.category} Service`,
       jobDescription: jobDescription || '',
-      preferredDate,
+      preferredDate: targetDate,
       preferredDay: calculatedDay,
-      preferredTimeSlot: preferredTimeSlot || 'Morning (9 AM - 12 PM)',
+      preferredTimeSlot: chosenSlot,
       urgency: urgency || 'Today',
       estimatedCost: estimatedCost || worker.hourlyRate,
       status: 'pending'
@@ -384,7 +570,7 @@ router.post('/', optionalToken, async (req, res) => {
     });
   } catch (error) {
     console.error('Error creating booking:', error);
-    res.status(500).json({ success: false, message: 'Failed to create booking', error: error.message });
+    res.status(500).json({ success: false, message: error.message || 'बुकिंग दर्ज करने में समस्या आई।', error: error.message });
   }
 });
 
@@ -398,10 +584,93 @@ router.patch('/:id/status', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid status value' });
     }
 
+    const currentBooking = await Booking.findById(req.params.id);
+    if (!currentBooking) {
+      return res.status(404).json({ success: false, message: 'Booking not found' });
+    }
+
+    // Industrial State Machine: Enforce allowed state transitions
+    const allowedTransitions = {
+      pending: ['accepted', 'cancelled'],
+      accepted: ['in_progress', 'cancelled'],
+      in_progress: ['completed', 'cancelled'],
+      completed: [], // Terminal state
+      cancelled: []  // Terminal state
+    };
+
+    if (!allowedTransitions[currentBooking.status] || !allowedTransitions[currentBooking.status].includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: `बुकिंग का स्टेटस '${currentBooking.status}' से '${status}' में नहीं बदला जा सकता।`
+      });
+    }
+
+    let autoCancelledCount = 0;
+
+    // If accepting a booking, enforce no duplicate active bookings for the same worker, date, and slot
+    if (status === 'accepted' || status === 'in_progress') {
+      const targetDate = normalizeDateStr(currentBooking.preferredDate);
+      const otherActiveBookings = await Booking.find({
+        _id: { $ne: currentBooking._id },
+        worker: currentBooking.worker,
+        preferredDate: targetDate,
+        status: { $in: ['accepted', 'in_progress'] }
+      });
+
+      const conflictingActive = otherActiveBookings.find(b =>
+        areSlotsConflicting(b.preferredTimeSlot, currentBooking.preferredTimeSlot)
+      );
+
+      if (conflictingActive) {
+        return res.status(400).json({
+          success: false,
+          message: `आप इस तारीख (${currentBooking.preferredDate}) और समय (${currentBooking.preferredTimeSlot}) पर पहले से एक काम स्वीकार कर चुके हैं। एक समय पर दो काम नहीं कर सकते।`
+        });
+      }
+
+      // If accepted, auto-cancel any other pending requests for the same date & overlapping slot
+      const otherPendingBookings = await Booking.find({
+        _id: { $ne: currentBooking._id },
+        worker: currentBooking.worker,
+        preferredDate: targetDate,
+        status: 'pending'
+      });
+
+      const conflictingPending = otherPendingBookings.filter(b =>
+        areSlotsConflicting(b.preferredTimeSlot, currentBooking.preferredTimeSlot)
+      );
+
+      if (conflictingPending.length > 0) {
+        const cancelIds = conflictingPending.map(b => b._id);
+        await Booking.updateMany(
+          { _id: { $in: cancelIds } },
+          {
+            $set: {
+              status: 'cancelled',
+              notes: 'कारीगर ने इस समय का दूसरा काम स्वीकार कर लिया है। कृपया कोई अन्य समय स्लॉट या तारीख चुनें।',
+              cancelledAt: new Date(),
+              cancelledBy: 'system'
+            }
+          }
+        );
+        autoCancelledCount = conflictingPending.length;
+      }
+    }
+
     const updateFields = { status };
     if (notes !== undefined) updateFields.notes = notes;
-    if (status === 'completed') {
+
+    // Track lifecycle timestamps
+    if (status === 'accepted') {
+      updateFields.acceptedAt = new Date();
+    } else if (status === 'in_progress') {
+      updateFields.startedAt = new Date();
+    } else if (status === 'completed') {
+      updateFields.completedAt = new Date();
       updateFields.completedDate = completedDate || new Date().toISOString().split('T')[0];
+    } else if (status === 'cancelled') {
+      updateFields.cancelledAt = new Date();
+      updateFields.cancelledBy = req.body.cancelledBy || 'worker';
     }
 
     const booking = await Booking.findByIdAndUpdate(
@@ -410,10 +679,6 @@ router.patch('/:id/status', async (req, res) => {
       { new: true }
     );
 
-    if (!booking) {
-      return res.status(404).json({ success: false, message: 'Booking not found' });
-    }
-
     // If completed, increment worker's completedJobs count
     if (status === 'completed' && booking.worker) {
       await Worker.findByIdAndUpdate(booking.worker, { $inc: { completedJobs: 1 } });
@@ -421,7 +686,10 @@ router.patch('/:id/status', async (req, res) => {
 
     res.json({
       success: true,
-      message: `Booking status updated to ${status}`,
+      message: autoCancelledCount > 0
+        ? `काम स्वीकार कर लिया गया! इस समय के ${autoCancelledCount} अन्य पेंडिंग अनुरोध स्वतः रद्द कर दिए गए।`
+        : `Booking status updated to ${status}`,
+      autoCancelledCount,
       data: booking
     });
   } catch (error) {

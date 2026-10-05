@@ -24,6 +24,7 @@ import {
 } from '../api';
 import AddressInputFields from './AddressInputFields';
 import { formatFullAddress } from '../utils/addressHelper';
+import { cleanPhoneNumber } from '../utils/phoneHelper';
 
 export default function AuthModal({ 
   isOpen, 
@@ -65,6 +66,18 @@ export default function AuthModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+
+  // Reset inputs and error messages cleanly on modal open, mode change or role switch
+  React.useEffect(() => {
+    setError('');
+    setSuccessMsg('');
+    setCustomerPhone('');
+    setCustomerPin('');
+    setCustomerName('');
+    setWorkerPhone('');
+    setWorkerPin('');
+    setNewWorkerPin('');
+  }, [isOpen, mode, role]);
 
   if (!isOpen) return null;
 
@@ -139,7 +152,15 @@ export default function AuthModal({
     setError('');
     setSuccessMsg('');
 
-    if (!customerPhone.trim() || customerPhone.replace(/[^0-9]/g, '').length < 10) {
+    if (mode === 'register') {
+      if (!customerName.trim()) {
+        setError('कृपया अपना पूरा नाम दर्ज करें।');
+        return;
+      }
+    }
+
+    const cleanPhone = cleanPhoneNumber(customerPhone);
+    if (!cleanPhone || cleanPhone.length !== 10) {
       setError('कृपया सही 10-अंकों का मोबाइल नंबर दर्ज करें।');
       return;
     }
@@ -153,17 +174,11 @@ export default function AuthModal({
 
     try {
       if (mode === 'register') {
-        if (!customerName.trim()) {
-          setError('कृपया अपना नाम दर्ज करें।');
-          setLoading(false);
-          return;
-        }
-
         const finalAddress = customerAddress.trim() || formatFullAddress(addressDetails);
 
         const res = await customerRegister({
           name: customerName.trim(),
-          phone: customerPhone.trim(),
+          phone: cleanPhone,
           pin: customerPin.trim(),
           address: finalAddress,
           addressDetails,
@@ -182,7 +197,7 @@ export default function AuthModal({
       } else {
         // Login
         const res = await customerLogin({
-          phone: customerPhone.trim(),
+          phone: cleanPhone,
           pin: customerPin.trim()
         });
 
@@ -206,7 +221,8 @@ export default function AuthModal({
     setError('');
     setSuccessMsg('');
 
-    if (!workerPhone.trim() || workerPhone.replace(/[^0-9]/g, '').length < 10) {
+    const cleanPhone = cleanPhoneNumber(workerPhone);
+    if (!cleanPhone || cleanPhone.length !== 10) {
       setError('कृपया 10-अंकों का मोबाइल नंबर दर्ज करें।');
       return;
     }
@@ -223,7 +239,7 @@ export default function AuthModal({
         }
 
         const res = await workerSetPin({
-          phone: workerPhone.trim(),
+          phone: cleanPhone,
           pin: newWorkerPin.trim()
         });
 
@@ -237,7 +253,7 @@ export default function AuthModal({
       } else {
         // Worker login
         const res = await workerLogin({
-          phone: workerPhone.trim(),
+          phone: cleanPhone,
           pin: workerPin.trim()
         });
 
@@ -263,7 +279,7 @@ export default function AuthModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md overflow-y-auto">
       <div 
-        className="relative w-full max-w-md bg-slate-900 border border-slate-700/80 rounded-3xl shadow-2xl overflow-hidden my-auto"
+        className={`relative w-full ${role === 'customer' && mode === 'register' ? 'max-w-4xl' : 'max-w-md'} bg-slate-900 border border-slate-700/80 rounded-3xl shadow-2xl overflow-hidden my-auto transition-all duration-300`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header decoration */}
@@ -361,106 +377,180 @@ export default function AuthModal({
                 </button>
               </div>
 
-              <form onSubmit={handleCustomerSubmit} className="space-y-3.5" noValidate={false}>
-                {mode === 'register' && (
-                  <div>
-                    <label htmlFor="customerName" className="block text-xs font-medium text-slate-300 mb-1">
-                      आपका पूरा नाम <span className="text-rose-400">*</span>
-                    </label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
-                      <input
-                        id="customerName"
-                        name="customerName"
-                        type="text"
-                        required
-                        autoComplete="name"
-                        value={customerName}
-                        onChange={(e) => setCustomerName(e.target.value)}
-                        placeholder="जैसे: राहुल शर्मा"
-                        className="w-full pl-9 pr-3 py-2.5 bg-slate-800/90 border border-slate-700 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-amber-500"
+              <form onSubmit={handleCustomerSubmit} className="space-y-4" noValidate>
+                {mode === 'register' ? (
+                  /* HORIZONTAL 2-COLUMN RESPONSIVE LAYOUT */
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 items-start">
+                    {/* Left Column: Personal Credentials */}
+                    <div className="space-y-3.5 bg-slate-950/40 p-4 rounded-2xl border border-slate-800/80">
+                      <div className="flex items-center gap-1.5 pb-1 border-b border-slate-800 text-xs font-bold text-amber-400 uppercase tracking-wider">
+                        <User className="w-3.5 h-3.5" />
+                        <span>1. व्यक्तिगत विवरण (Personal Details)</span>
+                      </div>
+
+                      <div>
+                        <label htmlFor="customerName" className="block text-xs font-medium text-slate-300 mb-1">
+                          आपका पूरा नाम <span className="text-rose-400">*</span>
+                        </label>
+                        <div className="relative">
+                          <User className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
+                          <input
+                            id="customerName"
+                            name="customerName"
+                            type="text"
+                            autoComplete="name"
+                            value={customerName}
+                            onChange={(e) => setCustomerName(e.target.value)}
+                            placeholder="जैसे: राहुल शर्मा"
+                            className="w-full pl-9 pr-3 py-2.5 bg-slate-800/90 border border-slate-700 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-amber-500"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label htmlFor="customerPhone" className="block text-xs font-medium text-slate-300 mb-1">
+                          मोबाइल नंबर <span className="text-rose-400">*</span>
+                        </label>
+                        <div className="relative flex items-center">
+                          <span className="absolute left-3 text-xs font-bold text-amber-400 select-none flex items-center gap-1 z-10 pointer-events-none">
+                            <span>🇮🇳</span>
+                            <span>+91</span>
+                            <span className="text-slate-600">|</span>
+                          </span>
+                          <input
+                            id="customerPhone"
+                            name="customerPhone"
+                            type="tel"
+                            maxLength={10}
+                            autoComplete="tel"
+                            value={customerPhone}
+                            onChange={(e) => {
+                              const cleaned = cleanPhoneNumber(e.target.value);
+                              setCustomerPhone(cleaned.slice(0, 10));
+                            }}
+                            placeholder="98765 43210"
+                            className="w-full pl-16 pr-3 py-2.5 bg-slate-800/90 border border-slate-700 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-amber-500 font-mono tracking-wider"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label htmlFor="customerPin" className="block text-xs font-medium text-slate-300 mb-1">
+                          4-अंकों का गुप्त PIN <span className="text-rose-400">*</span>
+                        </label>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
+                          <input
+                            id="customerPin"
+                            name="customerPin"
+                            type={showPin ? 'text' : 'password'}
+                            maxLength={6}
+                            autoComplete="new-password"
+                            value={customerPin}
+                            onChange={(e) => setCustomerPin(e.target.value.replace(/[^0-9]/g, ''))}
+                            placeholder="अपना 4-अंकों का PIN बनाएं (उदा. 1234)"
+                            className="w-full pl-9 pr-10 py-2.5 bg-slate-800/90 border border-slate-700 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-amber-500 font-mono tracking-widest"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPin(!showPin)}
+                            className="absolute right-3 top-3 text-slate-400 hover:text-slate-200"
+                            aria-label={showPin ? "PIN छुपाएं" : "PIN देखें"}
+                          >
+                            {showPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          </button>
+                        </div>
+                        <p className="text-[10px] text-slate-400 mt-1">
+                          💡 यह 4 अंकों का गुप्त पिन ATM पिन जैसा है। इसे याद रखें।
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Right Column: Divided Address */}
+                    <div className="space-y-2 bg-slate-950/40 p-4 rounded-2xl border border-slate-800/80">
+                      <div className="flex items-center gap-1.5 pb-1 border-b border-slate-800 text-xs font-bold text-amber-400 uppercase tracking-wider">
+                        <MapPin className="w-3.5 h-3.5" />
+                        <span>2. सेवा का पता (Service Address - वैकल्पिक)</span>
+                      </div>
+                      <AddressInputFields
+                        value={addressDetails}
+                        onChange={(addr) => {
+                          setAddressDetails(addr);
+                          setCustomerAddress(addr.fullAddress);
+                          setCustomerCity(addr.city);
+                        }}
+                        required={false}
+                        showPopularChips={true}
                       />
                     </div>
                   </div>
-                )}
+                ) : (
+                  /* LOGIN MODE (Compact single-column) */
+                  <div className="space-y-3.5">
+                    <div>
+                      <label htmlFor="customerPhone" className="block text-xs font-medium text-slate-300 mb-1">
+                        मोबाइल नंबर <span className="text-rose-400">*</span>
+                      </label>
+                      <div className="relative flex items-center">
+                        <span className="absolute left-3 text-xs font-bold text-amber-400 select-none flex items-center gap-1 z-10 pointer-events-none">
+                          <span>🇮🇳</span>
+                          <span>+91</span>
+                          <span className="text-slate-600">|</span>
+                        </span>
+                        <input
+                          id="customerPhone"
+                          name="customerPhone"
+                          type="tel"
+                          maxLength={10}
+                          autoComplete="tel"
+                          value={customerPhone}
+                          onChange={(e) => {
+                            const cleaned = cleanPhoneNumber(e.target.value);
+                            setCustomerPhone(cleaned.slice(0, 10));
+                          }}
+                          placeholder="98765 43210"
+                          className="w-full pl-16 pr-3 py-2.5 bg-slate-800/90 border border-slate-700 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-amber-500 font-mono tracking-wider"
+                        />
+                      </div>
+                    </div>
 
-                <div>
-                  <label htmlFor="customerPhone" className="block text-xs font-medium text-slate-300 mb-1">
-                    मोबाइल नंबर <span className="text-rose-400">*</span>
-                  </label>
-                  <div className="relative">
-                    <Phone className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
-                    <input
-                      id="customerPhone"
-                      name="customerPhone"
-                      type="tel"
-                      required
-                      maxLength={10}
-                      autoComplete="tel"
-                      value={customerPhone}
-                      onChange={(e) => setCustomerPhone(e.target.value.replace(/[^0-9]/g, ''))}
-                      placeholder="10 अंकों का मोबाइल नंबर"
-                      className="w-full pl-9 pr-3 py-2.5 bg-slate-800/90 border border-slate-700 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-amber-500 font-mono tracking-wider"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label htmlFor="customerPin" className="block text-xs font-medium text-slate-300 mb-1">
-                    4-अंकों का गुप्त PIN <span className="text-rose-400">*</span>
-                  </label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
-                    <input
-                      id="customerPin"
-                      name="customerPin"
-                      type={showPin ? 'text' : 'password'}
-                      required
-                      maxLength={6}
-                      autoComplete={mode === 'register' ? 'new-password' : 'current-password'}
-                      value={customerPin}
-                      onChange={(e) => setCustomerPin(e.target.value.replace(/[^0-9]/g, ''))}
-                      placeholder={mode === 'register' ? 'अपना 4-अंकों का PIN बनाएं (उदा. 1234)' : 'अपना 4-अंकों का PIN दर्ज करें'}
-                      className="w-full pl-9 pr-10 py-2.5 bg-slate-800/90 border border-slate-700 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-amber-500 font-mono tracking-widest"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPin(!showPin)}
-                      className="absolute right-3 top-3 text-slate-400 hover:text-slate-200"
-                      aria-label={showPin ? "PIN छुपाएं" : "PIN देखें"}
-                    >
-                      {showPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                  <p className="text-[10px] text-slate-400 mt-1">
-                    {mode === 'register' 
-                      ? '💡 यह 4 अंकों का गुप्त पिन ATM पिन जैसा है। इसे याद रखें।'
-                      : 'सिर्फ आपका मोबाइल नंबर और PIN चाहिए, कोई OTP की प्रतीक्षा नहीं।'}
-                  </p>
-                </div>
-
-                {mode === 'register' && (
-                  <div className="pt-1">
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      घर / ऑफिस का पता (Divided Address - वैकल्पिक)
-                    </label>
-                    <AddressInputFields
-                      value={addressDetails}
-                      onChange={(addr) => {
-                        setAddressDetails(addr);
-                        setCustomerAddress(addr.fullAddress);
-                        setCustomerCity(addr.city);
-                      }}
-                      required={false}
-                      showPopularChips={true}
-                    />
+                    <div>
+                      <label htmlFor="customerPin" className="block text-xs font-medium text-slate-300 mb-1">
+                        4-अंकों का गुप्त PIN <span className="text-rose-400">*</span>
+                      </label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
+                        <input
+                          id="customerPin"
+                          name="customerPin"
+                          type={showPin ? 'text' : 'password'}
+                          maxLength={6}
+                          autoComplete="current-password"
+                          value={customerPin}
+                          onChange={(e) => setCustomerPin(e.target.value.replace(/[^0-9]/g, ''))}
+                          placeholder="अपना 4-अंकों का PIN दर्ज करें"
+                          className="w-full pl-9 pr-10 py-2.5 bg-slate-800/90 border border-slate-700 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-amber-500 font-mono tracking-widest"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPin(!showPin)}
+                          className="absolute right-3 top-3 text-slate-400 hover:text-slate-200"
+                          aria-label={showPin ? "PIN छुपाएं" : "PIN देखें"}
+                        >
+                          {showPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                      <p className="text-[10px] text-slate-400 mt-1">
+                        सिर्फ आपका मोबाइल नंबर और PIN चाहिए, कोई OTP की प्रतीक्षा नहीं।
+                      </p>
+                    </div>
                   </div>
                 )}
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full mt-2 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 active:scale-98 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="w-full mt-3 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 active:scale-98 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   {loading ? (
                     <div className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
@@ -487,25 +577,31 @@ export default function AuthModal({
                 </span>
               </div>
 
-              <form onSubmit={handleWorkerSubmit} className="space-y-3.5" noValidate={false}>
+              <form onSubmit={handleWorkerSubmit} className="space-y-3.5" noValidate>
                 <div>
                   <label htmlFor="workerPhone" className="block text-xs font-medium text-slate-300 mb-1">
                     कारीगर मोबाइल नंबर <span className="text-rose-400">*</span>
                   </label>
-                  <div className="relative">
-                    <Phone className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
+                  <div className="relative flex items-center">
+                    <span className="absolute left-3 text-xs font-bold text-sky-400 select-none flex items-center gap-1 z-10 pointer-events-none">
+                      <span>🇮🇳</span>
+                      <span>+91</span>
+                      <span className="text-slate-600">|</span>
+                    </span>
                     <input
                       id="workerPhone"
                       name="workerPhone"
                       type="tel"
-                      required
                       maxLength={10}
                       autoComplete="tel"
                       disabled={needsWorkerPinSetup}
                       value={workerPhone}
-                      onChange={(e) => setWorkerPhone(e.target.value.replace(/[^0-9]/g, ''))}
-                      placeholder="रजिस्टर्ड 10 अंकों का नंबर"
-                      className="w-full pl-9 pr-3 py-2.5 bg-slate-800/90 border border-slate-700 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-sky-500 font-mono tracking-wider disabled:opacity-60"
+                      onChange={(e) => {
+                        const cleaned = cleanPhoneNumber(e.target.value);
+                        setWorkerPhone(cleaned.slice(0, 10));
+                      }}
+                      placeholder="98765 43210"
+                      className="w-full pl-16 pr-3 py-2.5 bg-slate-800/90 border border-slate-700 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-sky-500 font-mono tracking-wider disabled:opacity-60"
                     />
                   </div>
                 </div>
@@ -552,7 +648,6 @@ export default function AuthModal({
                         id="newWorkerPin"
                         name="newWorkerPin"
                         type={showPin ? 'text' : 'password'}
-                        required
                         maxLength={6}
                         autoComplete="new-password"
                         value={newWorkerPin}

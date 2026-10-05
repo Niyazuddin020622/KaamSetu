@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Worker = require('../models/Worker');
 const { getCityByName, getCityFromPincode, calculateDistance } = require('../data/cityMaster');
+const { cleanPhoneNumber, isValidIndianPhone } = require('../utils/phoneHelper');
 
 // GET /api/workers - Fetch all workers with flexible filters, proximity calculation & search
 router.get('/', async (req, res) => {
@@ -204,9 +205,31 @@ router.post('/', async (req, res) => {
       finalCity = matchedCity.name;
     }
 
+    const cleanPhone = cleanPhoneNumber(phone);
+    if (!cleanPhone || cleanPhone.length !== 10) {
+      return res.status(400).json({
+        success: false,
+        message: 'कृपया 10 अंकों का मान्य भारतीय मोबाइल नंबर दर्ज करें।'
+      });
+    }
+
+    const existingWorker = await Worker.findOne({
+      $or: [
+        { phone: cleanPhone },
+        { phone: `+91 ${cleanPhone}` },
+        { phone: `+91${cleanPhone}` }
+      ]
+    });
+    if (existingWorker) {
+      return res.status(400).json({
+        success: false,
+        message: 'इस मोबाइल नंबर से कारीगर प्रोफाइल पहले से रजिस्टर्ड है। कृपया डैशबोर्ड में लॉगिन करें।'
+      });
+    }
+
     const worker = new Worker({
-      name,
-      phone,
+      name: name.trim(),
+      phone: cleanPhone,
       pin: pin ? pin.toString().trim() : '',
       email: email || '',
       category,

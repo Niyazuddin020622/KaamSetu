@@ -66,14 +66,38 @@ export default function AddWorkerModal({ onClose, onWorkerCreated }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (!formData.name.trim()) {
+      setError('Please provide worker full name.');
+      return;
+    }
+    const cleanPhone = (formData.phone || '').replace(/[^0-9]/g, '').slice(-10);
+    if (!cleanPhone || cleanPhone.length !== 10) {
+      setError('Please provide a valid 10-digit mobile number.');
+      return;
+    }
+    if (!formData.hourlyRate || Number(formData.hourlyRate) <= 0) {
+      setError('Please enter a valid hourly rate.');
+      return;
+    }
+    if (!formData.area.trim()) {
+      setError('Please provide service area/locality.');
+      return;
+    }
+    if (!formData.subSkills || formData.subSkills.length === 0) {
+      setError('Please select at least 1 skill.');
+      return;
+    }
+
     setLoading(true);
 
     try {
       const res = await createWorker({
         ...formData,
+        phone: cleanPhone,
         hourlyRate: Number(formData.hourlyRate),
-        dailyRate: Number(formData.dailyRate),
-        experienceYears: Number(formData.experienceYears)
+        dailyRate: Number(formData.dailyRate) || Number(formData.hourlyRate) * 7,
+        experienceYears: Number(formData.experienceYears) || 1
       });
 
       if (res.success) {
@@ -113,7 +137,7 @@ export default function AddWorkerModal({ onClose, onWorkerCreated }) {
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1 text-xs">
+        <form onSubmit={handleSubmit} noValidate className="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1 text-xs">
           {error && (
             <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
@@ -127,7 +151,6 @@ export default function AddWorkerModal({ onClose, onWorkerCreated }) {
               <input
                 type="text"
                 name="name"
-                required
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="e.g. Ramesh Kumar Mistri"
@@ -137,15 +160,25 @@ export default function AddWorkerModal({ onClose, onWorkerCreated }) {
 
             <div>
               <label className="font-bold text-slate-300 block mb-1">Phone Number *</label>
-              <input
-                type="text"
-                name="phone"
-                required
-                value={formData.phone}
-                onChange={handleChange}
-                placeholder="+91 98765 43210"
-                className="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:border-amber-400 text-xs"
-              />
+              <div className="relative flex items-center">
+                <span className="absolute left-2.5 text-xs font-bold text-amber-400 select-none flex items-center gap-1 z-10 pointer-events-none">
+                  <span>🇮🇳</span>
+                  <span>+91</span>
+                  <span className="text-slate-600">|</span>
+                </span>
+                <input
+                  type="tel"
+                  name="phone"
+                  maxLength={10}
+                  value={formData.phone}
+                  onChange={(e) => {
+                    const clean = e.target.value.replace(/[^0-9]/g, '').slice(0, 10);
+                    setFormData(prev => ({ ...prev, phone: clean }));
+                  }}
+                  placeholder="98765 43210"
+                  className="w-full pl-14 pr-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:border-amber-400 text-xs font-mono tracking-wider"
+                />
+              </div>
             </div>
           </div>
 
@@ -171,7 +204,6 @@ export default function AddWorkerModal({ onClose, onWorkerCreated }) {
                 name="experienceYears"
                 min="0"
                 max="50"
-                required
                 value={formData.experienceYears}
                 onChange={handleChange}
                 className="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none text-xs"
@@ -185,7 +217,6 @@ export default function AddWorkerModal({ onClose, onWorkerCreated }) {
               <input
                 type="number"
                 name="hourlyRate"
-                required
                 value={formData.hourlyRate}
                 onChange={handleChange}
                 className="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none text-xs"
@@ -241,7 +272,6 @@ export default function AddWorkerModal({ onClose, onWorkerCreated }) {
             <input
               type="text"
               name="area"
-              required
               value={formData.area}
               onChange={handleChange}
               placeholder="Satellite / SG Highway / Rohini"

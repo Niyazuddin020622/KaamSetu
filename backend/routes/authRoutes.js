@@ -7,20 +7,7 @@ const Booking = require('../models/Booking');
 const { verifyToken, requireCustomer, requireWorker, JWT_SECRET } = require('../middleware/auth');
 const { getCityByName, getCityFromPincode } = require('../data/cityMaster');
 
-// Helper to format clean 10-digit phone
-const cleanPhoneNumber = (p) => {
-  if (!p) return '';
-  const digits = p.toString().replace(/[^0-9]/g, '');
-  return digits.length >= 10 ? digits.slice(-10) : digits;
-};
-
-// Flexible regex for phone that handles spaces, dashes or country codes
-const getFlexiblePhoneRegex = (p) => {
-  if (!p) return null;
-  const last10 = cleanPhoneNumber(p);
-  if (!last10) return null;
-  return new RegExp(last10.split('').join('[^0-9]*'), 'i');
-};
+const { cleanPhoneNumber, formatPhoneWith91, getFlexiblePhoneRegex, isValidIndianPhone } = require('../utils/phoneHelper');
 
 // ==========================================
 // 1. CUSTOMER AUTHENTICATION (Phone + PIN)
@@ -164,7 +151,13 @@ router.post('/customer/login', async (req, res) => {
     }
 
     const cleanPhone = cleanPhoneNumber(phone);
-    const user = await User.findOne({ phone: cleanPhone });
+    const user = await User.findOne({
+      $or: [
+        { phone: cleanPhone },
+        { phone: `+91 ${cleanPhone}` },
+        { phone: `+91${cleanPhone}` }
+      ]
+    });
 
     if (!user) {
       return res.status(404).json({
@@ -296,8 +289,16 @@ router.post('/worker/login', async (req, res) => {
       });
     }
 
+    const cleanPhone = cleanPhoneNumber(phone);
     const phoneRegex = getFlexiblePhoneRegex(phone);
-    const worker = await Worker.findOne({ phone: phoneRegex });
+    const worker = await Worker.findOne({
+      $or: [
+        { phone: cleanPhone },
+        { phone: `+91 ${cleanPhone}` },
+        { phone: `+91${cleanPhone}` },
+        ...(phoneRegex ? [{ phone: phoneRegex }] : [])
+      ]
+    });
 
     if (!worker) {
       return res.status(404).json({
@@ -376,8 +377,16 @@ router.post('/worker/set-pin', async (req, res) => {
       });
     }
 
+    const cleanPhone = cleanPhoneNumber(phone);
     const phoneRegex = getFlexiblePhoneRegex(phone);
-    const worker = await Worker.findOne({ phone: phoneRegex });
+    const worker = await Worker.findOne({
+      $or: [
+        { phone: cleanPhone },
+        { phone: `+91 ${cleanPhone}` },
+        { phone: `+91${cleanPhone}` },
+        ...(phoneRegex ? [{ phone: phoneRegex }] : [])
+      ]
+    });
 
     if (!worker) {
       return res.status(404).json({

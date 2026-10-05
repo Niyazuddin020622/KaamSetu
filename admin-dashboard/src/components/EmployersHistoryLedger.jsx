@@ -19,6 +19,7 @@ import {
   List
 } from 'lucide-react';
 import { handleImageError } from '../utils/imageHelper';
+import { formatPhoneDisplay, formatPhoneTel } from '../utils/phoneHelper';
 
 export default function EmployersHistoryLedger({ employers = [] }) {
   const [search, setSearch] = useState('');
@@ -126,7 +127,7 @@ export default function EmployersHistoryLedger({ employers = [] }) {
                       </span>
                     </div>
                     <div className="text-[11px] font-semibold text-emerald-400/90 truncate">
-                      {emp.customerPhone} • <span className="text-slate-400 font-normal">{emp.city}</span>
+                      {formatPhoneDisplay(emp.customerPhone)} • <span className="text-slate-400 font-normal">{emp.city}</span>
                     </div>
                     <div className="text-[10px] text-slate-400 pt-0.5">
                       Completed: <strong className="text-emerald-400">{emp.completedBookings}</strong> • Spent: <strong className="text-white">₹{emp.totalSpent}</strong>
@@ -175,7 +176,7 @@ export default function EmployersHistoryLedger({ employers = [] }) {
                       </td>
 
                       <td className="p-3.5 font-semibold text-slate-200">
-                        {emp.customerPhone}
+                        {formatPhoneDisplay(emp.customerPhone)}
                       </td>
 
                       <td className="p-3.5 max-w-[180px]">
@@ -235,7 +236,7 @@ export default function EmployersHistoryLedger({ employers = [] }) {
                         <h4 className="text-base font-black text-white">{emp.customerName}</h4>
                         <div className="flex items-center gap-1.5 text-xs text-slate-400 mt-0.5">
                           <Phone className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                          <span className="font-semibold text-slate-300">{emp.customerPhone}</span>
+                          <span className="font-semibold text-slate-300">{formatPhoneDisplay(emp.customerPhone)}</span>
                         </div>
                       </div>
                     </div>
@@ -298,7 +299,7 @@ export default function EmployersHistoryLedger({ employers = [] }) {
                     </span>
                   </div>
                   <p className="text-xs text-slate-300 mt-0.5">
-                    Phone: <strong className="text-white">{selectedEmployerForHistory.customerPhone}</strong> • City: {selectedEmployerForHistory.city}
+                    Phone: <strong className="text-white">{formatPhoneDisplay(selectedEmployerForHistory.customerPhone)}</strong> • City: {selectedEmployerForHistory.city}
                   </p>
                 </div>
               </div>
@@ -377,7 +378,7 @@ export default function EmployersHistoryLedger({ employers = [] }) {
                             </span>
                           </div>
                           <p className="text-xs text-slate-300 mt-0.5">
-                            Worker Phone: <strong className="text-emerald-400">{record.workerPhone}</strong>
+                            Worker Phone: <strong className="text-emerald-400">{formatPhoneDisplay(record.workerPhone)}</strong>
                           </p>
                         </div>
                       </div>
@@ -457,15 +458,15 @@ export default function EmployersHistoryLedger({ employers = [] }) {
                     {/* Direct Contact Buttons */}
                     <div className="flex items-center gap-2 pt-1">
                       <a
-                        href={`tel:${record.workerPhone}`}
+                        href={`tel:${formatPhoneTel(record.workerPhone)}`}
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow"
                       >
                         <Phone className="w-3 h-3 fill-current" />
-                        <span>Call Worker ({record.workerPhone})</span>
+                        <span>Call Worker ({formatPhoneDisplay(record.workerPhone)})</span>
                       </a>
 
                       <a
-                        href={`https://wa.me/${(record.workerPhone || '').replace(/[^0-9]/g, '')}`}
+                        href={`https://wa.me/${formatPhoneTel(record.workerPhone).replace('+', '')}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-950 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-900 text-xs font-bold"

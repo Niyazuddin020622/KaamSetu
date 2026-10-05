@@ -15,6 +15,7 @@ import { registerWorker } from '../api';
 import { handleImageError } from '../utils/imageHelper';
 import { CITIES, getCityAreas, getCityFromPincode } from '../utils/cityMaster';
 import { TRADE_CATEGORIES, getSkillsByCategory } from '../utils/tradeSkills';
+import { cleanPhoneNumber } from '../utils/phoneHelper';
 
 const CATEGORIES = TRADE_CATEGORIES;
 
@@ -116,13 +117,29 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
     e.preventDefault();
     setError('');
 
-    if (!formData.name.trim() || !formData.phone.trim() || !formData.area.trim()) {
-      setError('कृपया अपना नाम, मोबाइल नंबर और सर्विस का इलाका भरें।');
+    if (!formData.name.trim()) {
+      setError('कृपया अपना पूरा नाम भरें।');
+      return;
+    }
+
+    const cleanPhone = cleanPhoneNumber(formData.phone);
+    if (!cleanPhone || cleanPhone.length !== 10) {
+      setError('कृपया 10 अंकों का मान्य भारतीय मोबाइल नंबर दर्ज करें।');
       return;
     }
 
     if (!formData.pin || formData.pin.toString().trim().length < 4) {
       setError('कृपया कम से कम 4 अंकों का गुप्त लॉगिन PIN बनाएं।');
+      return;
+    }
+
+    if (!formData.hourlyRate || Number(formData.hourlyRate) <= 0) {
+      setError('कृपया 1 घंटे का मान्य चार्ज (₹) दर्ज करें।');
+      return;
+    }
+
+    if (!formData.area.trim()) {
+      setError('कृपया अपनी सर्विस का इलाका / मोहल्ला भरें।');
       return;
     }
 
@@ -134,7 +151,8 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
     setLoading(true);
 
     try {
-      const res = await registerWorker(formData);
+      const cleanPhone = cleanPhoneNumber(formData.phone);
+      const res = await registerWorker({ ...formData, phone: cleanPhone });
       if (res.success && res.data) {
         setRegisteredSuccess(true);
         if (onWorkerRegistered) {
@@ -199,7 +217,7 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
           </div>
         ) : (
           /* Form */
-          <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-3.5 sm:space-y-4 overflow-y-auto flex-1">
+          <form onSubmit={handleSubmit} noValidate className="p-4 sm:p-6 space-y-3.5 sm:space-y-4 overflow-y-auto flex-1">
             {error && (
               <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
@@ -269,7 +287,6 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
                   id="workerRegName"
                   type="text"
                   name="name"
-                  required
                   autoComplete="name"
                   value={formData.name}
                   onChange={handleChange}
@@ -282,17 +299,27 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
                 <label htmlFor="workerRegPhone" className="text-xs font-bold text-slate-300 block mb-1">
                   मोबाइल नंबर (Phone Number) *
                 </label>
-                <input
-                  id="workerRegPhone"
-                  type="tel"
-                  name="phone"
-                  required
-                  autoComplete="tel"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  placeholder="उदा. 9876543210"
-                  className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
-                />
+                <div className="relative flex items-center">
+                  <span className="absolute left-3 text-xs font-bold text-amber-400 select-none flex items-center gap-1 z-10 pointer-events-none">
+                    <span>🇮🇳</span>
+                    <span>+91</span>
+                    <span className="text-slate-600">|</span>
+                  </span>
+                  <input
+                    id="workerRegPhone"
+                    type="tel"
+                    name="phone"
+                    maxLength={10}
+                    autoComplete="tel"
+                    value={formData.phone}
+                    onChange={(e) => {
+                      const cleaned = cleanPhoneNumber(e.target.value);
+                      setFormData(prev => ({ ...prev, phone: cleaned.slice(0, 10) }));
+                    }}
+                    placeholder="98765 43210"
+                    className="w-full pl-16 pr-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 font-mono tracking-wider"
+                  />
+                </div>
               </div>
 
               <div>
@@ -303,7 +330,6 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
                   id="workerRegPin"
                   type="password"
                   name="pin"
-                  required
                   maxLength={6}
                   autoComplete="new-password"
                   value={formData.pin}
@@ -343,7 +369,6 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
                   name="experienceYears"
                   min="0"
                   max="50"
-                  required
                   value={formData.experienceYears}
                   onChange={handleChange}
                   className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white focus:outline-none focus:border-amber-400"
@@ -363,7 +388,6 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
                   name="hourlyRate"
                   min="100"
                   step="50"
-                  required
                   value={formData.hourlyRate}
                   onChange={handleChange}
                   className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white focus:outline-none focus:border-amber-400"
@@ -434,7 +458,6 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
                 id="workerRegArea"
                 type="text"
                 name="area"
-                required
                 value={formData.area}
                 onChange={handleChange}
                 placeholder="उदा. SG Highway, Maninagar, Satellite..."

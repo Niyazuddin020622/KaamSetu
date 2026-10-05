@@ -14,6 +14,7 @@ import {
   ArrowRight, 
   Sparkles 
 } from 'lucide-react';
+import { formatPhoneDisplay } from '../utils/phoneHelper';
 
 export default function DashboardOverview({ 
   stats, 
@@ -257,7 +258,7 @@ export default function DashboardOverview({
                     </td>
                     <td className="py-3">
                       <div className="font-bold text-slate-200">{b.customerName}</div>
-                      <div className="text-[10px] text-slate-400">{b.customerPhone}</div>
+                      <div className="text-[10px] text-slate-400">{formatPhoneDisplay(b.customerPhone)}</div>
                     </td>
                     <td className="py-3 font-medium text-slate-300">
                       {b.serviceRequired}
