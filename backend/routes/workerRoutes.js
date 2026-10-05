@@ -25,7 +25,34 @@ router.get('/', async (req, res) => {
     const query = {};
 
     if (category && category !== 'All') {
-      query.category = category;
+      const catLower = category.toLowerCase();
+      if (catLower.includes('helper') || catLower.includes('labour') || catLower.includes('labor')) {
+        query.category = { $regex: /helper|labour|labor/i };
+      } else if (catLower.includes('cctv') || catLower.includes('security')) {
+        query.category = { $regex: /cctv|security/i };
+      } else if (catLower.includes('garden') || catLower.includes('mali')) {
+        query.category = { $regex: /garden|mali/i };
+      } else if (catLower.includes('pest')) {
+        query.category = { $regex: /pest/i };
+      } else if (catLower.includes('ceiling') || catLower.includes('pop')) {
+        query.category = { $regex: /ceiling|pop/i };
+      } else if (catLower.includes('glass') || catLower.includes('alumin')) {
+        query.category = { $regex: /glass|alumin/i };
+      } else if (catLower.includes('solar')) {
+        query.category = { $regex: /solar/i };
+      } else if (catLower.includes('locksmith') || catLower.includes('chabi') || catLower.includes('key')) {
+        query.category = { $regex: /locksmith|chabi|key/i };
+      } else if (catLower.includes('driver')) {
+        query.category = { $regex: /driver/i };
+      } else if (catLower.includes('mason') || catLower.includes('mistri')) {
+        query.category = { $regex: /mason|mistri/i };
+      } else if (catLower.includes('ac') || catLower.includes('appliance')) {
+        query.category = { $regex: /ac|appliance/i };
+      } else if (catLower.includes('clean') || catLower.includes('housekeep')) {
+        query.category = { $regex: /clean|housekeep/i };
+      } else {
+        query.category = { $regex: new RegExp(`^${category}$`, 'i') };
+      }
     }
 
     if (city && city !== 'All') {

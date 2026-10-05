@@ -106,24 +106,23 @@ export default function Navbar({
                 <span className="text-lg sm:text-xl md:text-2xl font-black tracking-tight bg-gradient-to-r from-amber-400 via-orange-300 to-amber-200 bg-clip-text text-transparent">
                   KaamSetu
                 </span>
-                <span className="hidden xs:inline-block px-1.5 py-0.2 sm:py-0.5 text-[8px] sm:text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/30 rounded-full">
+                <span className="hidden sm:inline-block px-1.5 py-0.2 sm:py-0.5 text-[8px] sm:text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/30 rounded-full">
                   कामसेतु
                 </span>
               </div>
-              <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold text-slate-300 truncate">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0 hidden sm:inline-block"></span>
-                <span className="hidden sm:inline bg-gradient-to-r from-amber-300 via-amber-200 to-emerald-300 bg-clip-text text-transparent font-medium">
+              <div className="hidden sm:flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold text-slate-300 truncate">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+                <span className="bg-gradient-to-r from-amber-300 via-amber-200 to-emerald-300 bg-clip-text text-transparent font-medium">
                   भारत का विश्वसनीय कारीगर नेटवर्क
                 </span>
                 <span className="hidden lg:inline text-slate-500">•</span>
                 <span className="hidden lg:inline text-emerald-400 font-bold">0% कमीशन</span>
-                <span className="sm:hidden text-[9px] text-amber-300/90 font-medium">विश्वसनीय कारीगर • 0% कमीशन</span>
               </div>
             </div>
           </div>
 
           {/* City Selector */}
-          <div className="flex items-center bg-slate-900/90 border border-slate-800 rounded-full px-2 sm:px-3 py-1 sm:py-1.5 gap-1 sm:gap-1.5 shadow-inner max-w-[120px] xs:max-w-[150px] sm:max-w-[200px] md:max-w-xs shrink min-w-0">
+          <div className="flex items-center bg-slate-900/90 border border-slate-800 rounded-full px-2 sm:px-3 py-1 sm:py-1.5 gap-1 sm:gap-1.5 shadow-inner max-w-[115px] sm:max-w-[200px] md:max-w-xs shrink min-w-0">
             <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0" />
             <select
               id="citySelector"

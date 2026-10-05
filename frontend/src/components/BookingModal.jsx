@@ -549,12 +549,12 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
                 <CheckCircle2 className="w-4 h-4 shrink-0" />
                 <span>
                   {loading 
-                    ? 'रिक्वेस्ट जा रही है...' 
+                    ? 'Processing...' 
                     : allSlotsBusy 
-                    ? 'सभी स्लॉट व्यस्त हैं' 
+                    ? 'All Slots Busy (Choose Another Date)' 
                     : isCurrentSlotBusy 
-                    ? 'यह समय व्यस्त है (स्लॉट बदलें)' 
-                    : 'कारीगर को बुक करें (Confirm)'}
+                    ? 'Slot Busy (Pick Available Time)' 
+                    : 'Confirm & Book Now'}
                 </span>
               </button>
             </div>

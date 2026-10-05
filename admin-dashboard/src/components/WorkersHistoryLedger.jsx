@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { handleImageError } from '../utils/imageHelper';
 import { formatPhoneDisplay } from '../utils/phoneHelper';
+import { formatSkill } from '../utils/tradeSkills';
 
 export default function WorkersHistoryLedger({ 
   workers = [], 
@@ -299,8 +300,8 @@ export default function WorkersHistoryLedger({
                           <span className="px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-300 font-bold text-[11px] border border-amber-500/30">
                             {worker.category}
                           </span>
-                          <div className="text-[10px] text-slate-400 truncate max-w-[150px] mt-1" title={worker.subSkills?.join(', ')}>
-                            {worker.subSkills?.slice(0, 2).join(', ')}
+                          <div className="text-[10px] text-slate-400 truncate max-w-[150px] mt-1" title={worker.subSkills?.map(formatSkill).join(', ')}>
+                            {worker.subSkills?.map(formatSkill).slice(0, 2).join(', ')}
                             {worker.subSkills?.length > 2 ? ` +${worker.subSkills.length - 2}` : ''}
                           </div>
                         </td>

@@ -11,6 +11,7 @@ import {
   MessageCircle
 } from 'lucide-react';
 import { handleImageError } from '../utils/imageHelper';
+import { formatSkill } from '../utils/tradeSkills';
 
 export default function WorkerCard({ 
   worker, 
@@ -95,9 +96,9 @@ export default function WorkerCard({
               {worker.subSkills.slice(0, 2).map((skill, idx) => (
                 <span
                   key={idx}
-                  className="text-[9px] px-1.5 py-0.5 rounded-md bg-slate-800/90 text-slate-300 border border-slate-700/60 truncate max-w-[110px]"
+                  className="text-[9px] px-1.5 py-0.5 rounded-md bg-slate-800/90 text-slate-300 border border-slate-700/60 truncate max-w-[125px]"
                 >
-                  {skill.split('(')[0].trim()}
+                  {formatSkill(skill)}
                 </span>
               ))}
               {worker.subSkills.length > 2 && (
@@ -116,20 +117,20 @@ export default function WorkerCard({
           type="button"
           onClick={handleCall}
           className="flex items-center justify-center gap-1 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold shadow-sm active:scale-95 transition-all"
-          title="सीधे फोन लगाएं"
+          title="Direct Call"
         >
           <Phone className="w-3 h-3 fill-current" />
-          <span>कॉल</span>
+          <span>Call</span>
         </button>
 
         <button
           type="button"
           onClick={handleWhatsApp}
           className="flex items-center justify-center gap-1 py-1.5 rounded-xl bg-emerald-950 border border-emerald-500/40 text-emerald-300 text-[11px] font-bold hover:bg-emerald-900 active:scale-95 transition-all"
-          title="व्हाट्सएप चैट"
+          title="WhatsApp Chat"
         >
           <MessageCircle className="w-3 h-3" />
-          <span>व्हाट्सएप</span>
+          <span>WhatsApp</span>
         </button>
 
         <button
@@ -139,10 +140,10 @@ export default function WorkerCard({
             onBookWorker(worker);
           }}
           className="flex items-center justify-center gap-1 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-[11px] font-black shadow-sm active:scale-95 transition-all"
-          title="अपॉइंटमेंट बुक करें"
+          title="Book Appointment"
         >
           <Calendar className="w-3 h-3" />
-          <span>बुक करें</span>
+          <span>Book</span>
         </button>
       </div>
     </div>
@@ -237,9 +238,9 @@ export default function WorkerCard({
           {worker.subSkills && worker.subSkills.slice(0, 3).map((skill, idx) => (
             <span 
               key={idx}
-              className="text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700/60 truncate max-w-[140px]"
+              className="text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700/60 truncate max-w-[155px]"
             >
-              {skill}
+              {formatSkill(skill)}
             </span>
           ))}
           {worker.subSkills && worker.subSkills.length > 3 && (
@@ -277,10 +278,10 @@ export default function WorkerCard({
             type="button"
             onClick={handleCall}
             className="flex items-center justify-center gap-1 py-2.5 sm:py-3 px-1 sm:px-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] sm:text-xs font-extrabold shadow-md shadow-emerald-950 transition-all active:scale-95"
-            title="सीधे फोन करें"
+            title="Direct Call"
           >
             <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 fill-current" />
-            <span className="truncate">कॉल</span>
+            <span className="truncate">Call</span>
           </button>
 
           {/* WhatsApp Button */}
@@ -288,10 +289,10 @@ export default function WorkerCard({
             type="button"
             onClick={handleWhatsApp}
             className="flex items-center justify-center gap-1 py-2.5 sm:py-3 px-1 sm:px-2 rounded-xl bg-emerald-950 border border-emerald-500/40 hover:bg-emerald-900 text-emerald-300 text-[11px] sm:text-xs font-bold transition-all active:scale-95"
-            title="व्हाट्सएप पर बात करें"
+            title="WhatsApp Chat"
           >
             <MessageCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-            <span className="truncate">व्हाट्सएप</span>
+            <span className="truncate">WhatsApp</span>
           </button>
 
           {/* Book Button */}
@@ -302,10 +303,10 @@ export default function WorkerCard({
               onBookWorker(worker);
             }}
             className="flex items-center justify-center gap-1 py-2.5 sm:py-3 px-1 sm:px-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-[11px] sm:text-xs font-black shadow-md shadow-amber-500/20 transition-all active:scale-95"
-            title="अपॉइंटमेंट बुक करें"
+            title="Book Appointment"
           >
             <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-            <span className="truncate">बुक करें</span>
+            <span className="truncate">Book Now</span>
           </button>
         </div>
       </div>

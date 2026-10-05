@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { addWorkerReview, getWorkerHistory } from '../api';
 import { handleImageError } from '../utils/imageHelper';
+import { formatSkill } from '../utils/tradeSkills';
 
 export default function WorkerDetailModal({ 
   worker, 
@@ -163,14 +164,14 @@ export default function WorkerDetailModal({
               className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black shadow transition-all active:scale-95"
             >
               <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current" />
-              <span>सीधे कॉल करें</span>
+              <span>Call Now</span>
             </a>
             <button
               onClick={handleWhatsApp}
               className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-emerald-950 border border-emerald-500/40 hover:bg-emerald-900 text-emerald-300 text-xs font-bold transition-all active:scale-95"
             >
               <MessageCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              <span>व्हाट्सएप</span>
+              <span>WhatsApp</span>
             </button>
           </div>
         </div>
@@ -283,7 +284,7 @@ export default function WorkerDetailModal({
                     className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-amber-500/10 text-amber-300 border border-amber-500/25 text-xs font-semibold"
                   >
                     <Check className="w-3 h-3 text-amber-400" />
-                    {skill}
+                    {formatSkill(skill)}
                   </span>
                 ))}
               </div>
@@ -601,7 +602,7 @@ export default function WorkerDetailModal({
               className="flex items-center justify-center gap-1.5 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-amber-500/20 active:scale-95 shrink-0"
             >
               <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-              <span>बुक करें</span>
+              <span>Book Now</span>
             </button>
           </div>
         </div>

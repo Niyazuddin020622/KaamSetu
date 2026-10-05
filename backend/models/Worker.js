@@ -11,21 +11,29 @@ const workerSchema = new mongoose.Schema({
   name: { type: String, required: true, trim: true },
   phone: { type: String, required: true, trim: true },
   email: { type: String, trim: true, default: '' },
-  category: { 
-    type: String, 
-    required: true, 
+  category: {
+    type: String,
+    required: true,
     enum: [
-      'Plumber', 
-      'Welder', 
-      'Electrician', 
-      'Carpenter', 
-      'Painter', 
-      'Mason (Mistri)', 
-      'AC & Appliance', 
-      'Mechanic', 
-      'Cleaner & Housekeeping', 
-      'General Helper / Labour'
-    ] 
+      'Plumber',
+      'Welder',
+      'Electrician',
+      'Carpenter',
+      'Painter',
+      'Mason (Mistri)',
+      'AC & Appliance',
+      'Mechanic',
+      'Cleaner & Housekeeping',
+      'General Helper / Labour',
+      'CCTV & Security',
+      'Gardener (Mali)',
+      'Pest Control',
+      'POP & False Ceiling',
+      'Glass & Aluminium',
+      'Solar Technician',
+      'Locksmith (Chabi Wala)',
+      'Driver'
+    ]
   },
   subSkills: [{ type: String, trim: true }],
   experienceYears: { type: Number, required: true, default: 2 },
@@ -55,7 +63,7 @@ const workerSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // Hash PIN before saving if modified and present
-workerSchema.pre('save', async function(next) {
+workerSchema.pre('save', async function (next) {
   if (!this.isModified('pin') || !this.pin) return next();
   try {
     const bcrypt = require('bcryptjs');
@@ -66,9 +74,8 @@ workerSchema.pre('save', async function(next) {
     next(err);
   }
 });
-
 // Compare PIN helper method
-workerSchema.methods.comparePin = async function(candidatePin) {
+workerSchema.methods.comparePin = async function (candidatePin) {
   if (!this.pin) return false;
   const bcrypt = require('bcryptjs');
   return await bcrypt.compare(candidatePin, this.pin);

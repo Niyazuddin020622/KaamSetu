@@ -91,6 +91,76 @@ export const TRADE_SKILLS = {
     'घर की शिफ्टिंग में मदद (Home Relocation Shifting Help)',
     'मलबे व कचरे की सफाई (Debris / Malba Clearing)',
     'गार्डन व प्लॉट की सफाई (Lawn, Garden & Plot Cleaning)'
+  ],
+  'CCTV & Security': [
+    'CCTV कैमरा इंस्टॉलेशन व सेटअप (CCTV Camera Installation & DVR/NVR)',
+    'कैमरा ऑफलाइन व नो-सिग्नल फॉल्ट (Camera Offline & No Signal Repair)',
+    'मोबाइल पर लाइव व्यू सेटअप (Mobile Live View & Cloud Setup)',
+    'स्मार्ट वाई-फाई वीडियो डोरबेल फिटिंग (Smart Wi-Fi Video Doorbell)',
+    'बायोमेट्रिक फिंगरप्रिंट व अटेंडेंस मशीन (Biometric & Access Control)',
+    'इंटरकॉम व ईपीएबीएक्स वायरिंग (Intercom & EPABX System Repair)',
+    'CCTV हार्ड डिस्क व बैकअप सेटअप (Hard Disk & Power Supply Fix)'
+  ],
+  'Gardener (Mali)': [
+    'लॉन घास कटिंग व रोलिंग (Lawn Mowing & Grass Trimming)',
+    'पौधों की छंटाई व कटिंग (Plant Pruning & Hedge Trimming)',
+    'गमले तैयार करना व नया पौधा लगाना (Potting & New Plant Planting)',
+    'खाद, वर्मीकम्पोस्ट व कीटनाशक स्प्रे (Organic Manure & Pest Spray)',
+    'ड्रिप इरिगेशन व वाटरिंग सिस्टम (Drip Irrigation & Sprinkler Setup)',
+    'बालकनी व रूफटॉप गार्डन सेटअप (Balcony & Terrace Garden Design)',
+    'सूखे पत्ते व गार्डन मलबे की सफाई (Lawn Cleanup & Weed Removal)'
+  ],
+  'Pest Control': [
+    'दीमक नियंत्रण व वुड प्रोटेक्शन (Termite / Deemak Treatment)',
+    'कॉकरोच जेल व हर्बल पेस्ट कंट्रोल (Cockroach Gel & Kitchen Spray)',
+    'खटमल व बिस्तर कीट खात्मा (Bed Bugs Elimination Treatment)',
+    'चूहे व रोडेंट कंट्रोल (Rat & Rodent Baiting / Trapping)',
+    'मच्छर व मक्खी फॉगिंग (Mosquito Fogging & Anti-Larval)',
+    'दीवार व छत एंटी-टर्माइट ड्रिलिंग (Pre & Post-Construction Pest Control)',
+    'एंटी-बैक्टीरियल होम सैनिटाइजेशन (Full House Disinfection Spray)'
+  ],
+  'POP & False Ceiling': [
+    'जिप्सम बोर्ड फॉल्स सीलिंग डिजाइन (Gypsum Board False Ceiling)',
+    'पीओपी पुट्टी व कॉर्निस बॉर्डर (POP Cornice & Molding Design)',
+    'पीवीसी पैनल सीलिंग व वॉल डिजाइन (PVC Wall & Ceiling Panels)',
+    'ग्रिड टी-बार टाइल्स सीलिंग (Grid T-Bar Acoustic Ceiling)',
+    'सीलिंग लाइट कटआउट व फ्रेमिंग (Channel Framing & Light Cutouts)',
+    'क्रैक व वॉटर डैमेज सीलिंग रिपेयर (Ceiling Cracks & Water Patch Repair)',
+    'थ्री-डी (3D) वॉल पैनल इंस्टॉलेशन (3D Decorative Wall Panels)'
+  ],
+  'Glass & Aluminium': [
+    'एल्युमिनियम खिड़की व स्लाइडिंग दरवाजा (Aluminium Sliding Windows & Doors)',
+    'टफन्ड ग्लास पार्टीशन व केबिन (Toughened Glass Office Partition)',
+    'बाथरूम ग्लास शॉवर क्यूबिकल (Glass Shower Enclosure & Fitting)',
+    'बालकनी ग्लास रेलिंग व क्लैंप (Toughened Glass Balcony Railing)',
+    'दुकान का फ्रंट ग्लास व स्पाइडर फिटिंग (Shop Front Glass & Spider Fitting)',
+    'विंडो नेट / मच्छर जाली फ्रेम (Mosquito Mesh Net Window Screen)',
+    'ग्लास डोर फ्लोर स्प्रिंग व हैंडल रिपेयर (Floor Spring & Patch Lock Repair)'
+  ],
+  'Solar Technician': [
+    'रूफटॉप सोलर पैनल इंस्टॉलेशन (On-Grid / Off-Grid Solar Rooftop)',
+    'सोलर इन्वर्टर व नेट मीटरिंग सेटअप (Solar Inverter & Net Metering Setup)',
+    'सोलर प्लेट क्लीनिंग व मेंटेनेंस (Solar Panel Jet Cleaning & Wash)',
+    'वायरिंग फॉल्ट व पावर ड्रॉप चेकिंग (Solar DC Wiring & MC4 Connector Fix)',
+    'सोलर वाटर हीटर इंस्टॉलेशन व रिपेयर (Solar Water Heater Fitting & Descaling)',
+    'सोलर बैटरी बैंक व बीएमएस सेटअप (Solar Tubular / Lithium Battery Setup)'
+  ],
+  'Locksmith (Chabi Wala)': [
+    'इमरजेंसी बंद ताला खोलना (Emergency Locked Door Opening)',
+    'डुप्लिकेट चाबी बनाना (Duplicate Key Making / Cut Key)',
+    'गोदरेज व मेन डोर लॉक रिप्लेसमेंट (Godrej & Main Door Lock Change)',
+    'डिजिटल व बायोमेट्रिक स्मार्ट लॉक (Digital Smart Door Lock Installation)',
+    'कार व बाइक चाबी प्रोग्रामिंग (Car & Bike Chip Key Duplicate)',
+    'तिजोरी व अलमारी लॉक रिपेयर (Safe / Vault Lock & Locker Repair)',
+    'मास्टर की व री-कीइंग सर्विस (Master Key Setup & Cylinder Change)'
+  ],
+  'Driver': [
+    'पर्सनल कार ड्राइवर प्रति घंटा / दिन (Personal Car Driver Hourly / Daily)',
+    'आउटस्टेशन राउंड ट्रिप ड्राइविंग (Outstation Long Drive Trip)',
+    'शादी व इवेंट्स ड्राइवर (Wedding & Event Driver Service)',
+    'कमर्शियल व पिकअप वाहन ड्राइवर (Commercial Pickup / Goods Vehicle)',
+    'ऑटोमैटिक व लक्ज़री कार विशेषज्ञ (Automatic & Luxury Car Specialist)',
+    'नाइट इमरजेंसी ड्राइविंग सर्विस (Night Emergency Drop & Pick)'
   ]
 };
 
@@ -99,6 +169,21 @@ export const TRADE_CATEGORIES = Object.keys(TRADE_SKILLS);
 export function getSkillsByCategory(category) {
   if (!category) return TRADE_SKILLS['Plumber'];
   return TRADE_SKILLS[category] || TRADE_SKILLS['Plumber'];
+}
+
+/**
+ * Standardizes worker skill display to clean, uniform English format
+ * Extracts English term from "हिंदी (English)" or returns clean English string
+ * e.g., "मेन गेट व चैनल गेट फैब्रिकेशन (Main Gate & Channel Gate)" -> "Main Gate & Channel Gate"
+ * e.g., "Modular Kitchen Cabinets" -> "Modular Kitchen Cabinets"
+ */
+export function formatSkill(skill) {
+  if (!skill || typeof skill !== 'string') return '';
+  const match = skill.match(/\(([^)]+)\)/);
+  if (match && match[1]) {
+    return match[1].trim();
+  }
+  return skill.trim();
 }
 
 export default TRADE_SKILLS;

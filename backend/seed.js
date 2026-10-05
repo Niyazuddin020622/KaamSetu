@@ -403,6 +403,262 @@ const sampleWorkers = [
         date: new Date('2026-03-15')
       }
     ]
+  },
+  {
+    name: 'Suresh Rathore',
+    phone: '+91 98254 99112',
+    email: 'suresh.cctv@kaamsetu.in',
+    category: 'CCTV & Security',
+    subSkills: ['CCTV Camera Setup', 'Wi-Fi Video Doorbell', 'Mobile Live View Setup', 'Biometric Machine', 'Hard Disk & Power Supply Fix'],
+    experienceYears: 6,
+    hourlyRate: 349,
+    dailyRate: 1800,
+    city: 'Ahmedabad',
+    area: 'Satellite',
+    pincode: '380015',
+    bio: 'Certified CP PLUS and Hikvision CCTV installation expert. 6+ years experience in commercial & home security surveillance, DVR configuration and remote mobile setup.',
+    avatar: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=600&auto=format&fit=crop&q=80',
+    isVerified: true,
+    isAvailable: true,
+    emergencyAvailable: true,
+    badge: 'Security Pro',
+    rating: 4.9,
+    reviewCount: 38,
+    completedJobs: 94,
+    languages: ['Hindi', 'Gujarati', 'English'],
+    toolsProvided: true,
+    reviews: [
+      {
+        customerName: 'Mehul Shah',
+        rating: 5,
+        comment: 'Installed 4 IP cameras and connected seamlessly to my phone in under 2 hours. Very clean concealed wiring.',
+        date: new Date('2026-03-12')
+      }
+    ]
+  },
+  {
+    name: 'Ram Sevak Mali',
+    phone: '+91 98251 44556',
+    email: 'ramsevak.gardener@kaamsetu.in',
+    category: 'Gardener (Mali)',
+    subSkills: ['Lawn Grass Cutting', 'Plant Pruning & Trimming', 'Potting & Fertilizer', 'Drip Watering Setup', 'Terrace Garden Care'],
+    experienceYears: 12,
+    hourlyRate: 299,
+    dailyRate: 1200,
+    city: 'Ahmedabad',
+    area: 'Bopal & South Bopal',
+    pincode: '380058',
+    bio: '12+ years experience in villa and terrace garden maintenance. Specialised in organic composting, lawn mowing and exotic seasonal flower care.',
+    avatar: 'https://images.unsplash.com/photo-1592417817098-8f3d6eb2251a?w=600&auto=format&fit=crop&q=80',
+    isVerified: true,
+    isAvailable: true,
+    emergencyAvailable: false,
+    badge: 'Senior Mali',
+    rating: 4.8,
+    reviewCount: 42,
+    completedJobs: 110,
+    languages: ['Hindi', 'Gujarati'],
+    toolsProvided: true,
+    reviews: [
+      {
+        customerName: 'Snehal Patel',
+        rating: 5,
+        comment: 'Transformed our terrace garden completely. Brought great organic manure and trimmed all hedges neatly.',
+        date: new Date('2026-03-08')
+      }
+    ]
+  },
+  {
+    name: 'Manoj Pest Solutions',
+    phone: '+91 98112 55443',
+    email: 'manoj.pest@kaamsetu.in',
+    category: 'Pest Control',
+    subSkills: ['Termite / Deemak Treatment', 'Cockroach Gel Treatment', 'Bed Bugs Removal', 'Rodent / Rat Control', 'Full Home Disinfection'],
+    experienceYears: 7,
+    hourlyRate: 499,
+    dailyRate: 2200,
+    city: 'New Delhi',
+    area: 'Lajpat Nagar & Defence Colony',
+    pincode: '110024',
+    bio: 'Government certified odourless pest control solutions. Safe for kids and pets. 1-year warranty on anti-termite wood drilling and cockroach eradication.',
+    avatar: 'https://images.unsplash.com/photo-1584467735871-8e85353a8413?w=600&auto=format&fit=crop&q=80',
+    isVerified: true,
+    isAvailable: true,
+    emergencyAvailable: true,
+    badge: 'Certified Pest Specialist',
+    rating: 4.9,
+    reviewCount: 56,
+    completedJobs: 140,
+    languages: ['Hindi', 'English'],
+    toolsProvided: true,
+    reviews: [
+      {
+        customerName: 'Anil Kapoor',
+        rating: 5,
+        comment: 'Completely eradicated kitchen cockroaches within 48 hours without any bad smell. Highly recommended.',
+        date: new Date('2026-03-05')
+      }
+    ]
+  },
+  {
+    name: 'Mohammad Farooq',
+    phone: '+91 98711 77889',
+    email: 'farooq.ceiling@kaamsetu.in',
+    category: 'POP & False Ceiling',
+    subSkills: ['Gypsum False Ceiling', 'POP Molding & Borders', 'PVC Wall & Ceiling Panels', 'Grid Ceiling Tiles', 'Crack & Ceiling Repair'],
+    experienceYears: 9,
+    hourlyRate: 449,
+    dailyRate: 2000,
+    city: 'New Delhi',
+    area: 'Okhla & Jasola',
+    pincode: '110025',
+    bio: 'Master craftsman in Saint-Gobain Gyproc false ceilings, LED profile groove designs, and moisture-resistant PVC wall claddings.',
+    avatar: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=600&auto=format&fit=crop&q=80',
+    isVerified: true,
+    isAvailable: true,
+    emergencyAvailable: false,
+    badge: 'Master Ceiling Contractor',
+    rating: 4.8,
+    reviewCount: 31,
+    completedJobs: 78,
+    languages: ['Hindi', 'Urdu'],
+    toolsProvided: true,
+    reviews: [
+      {
+        customerName: 'Tariq Anwar',
+        rating: 5,
+        comment: 'Outstanding drawing room false ceiling with cove lighting channel. Very crisp lines and laser leveling.',
+        date: new Date('2026-02-28')
+      }
+    ]
+  },
+  {
+    name: 'Dinesh Panchal',
+    phone: '+91 98250 88776',
+    email: 'dinesh.glass@kaamsetu.in',
+    category: 'Glass & Aluminium',
+    subSkills: ['Aluminium Sliding Window', 'Toughened Glass Partition', 'Shower Glass Cubicle', 'Mosquito Net Fitting', 'Balcony Glass Railing'],
+    experienceYears: 11,
+    hourlyRate: 399,
+    dailyRate: 1900,
+    city: 'Ahmedabad',
+    area: 'Maninagar',
+    pincode: '380008',
+    bio: 'Specialist in Jindal aluminium domal sections, 12mm toughened office partitions, glass shower cubicles, and magnetic mosquito nets.',
+    avatar: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&auto=format&fit=crop&q=80',
+    isVerified: true,
+    isAvailable: true,
+    emergencyAvailable: true,
+    badge: 'Fabrication Expert',
+    rating: 4.9,
+    reviewCount: 45,
+    completedJobs: 115,
+    languages: ['Hindi', 'Gujarati'],
+    toolsProvided: true,
+    reviews: [
+      {
+        customerName: 'Harish Vora',
+        rating: 5,
+        comment: 'Replaced all balcony sliding rollers and installed high quality mosquito net frames. Smooth sliding now.',
+        date: new Date('2026-03-01')
+      }
+    ]
+  },
+  {
+    name: 'Harsh Vardhan',
+    phone: '+91 98240 66778',
+    email: 'harsh.solar@kaamsetu.in',
+    category: 'Solar Technician',
+    subSkills: ['Rooftop Solar Installation', 'Solar Inverter Setup', 'Solar Plate Deep Wash', 'Wiring & Fault Repair', 'Solar Water Heater Fix'],
+    experienceYears: 5,
+    hourlyRate: 499,
+    dailyRate: 2400,
+    city: 'Ahmedabad',
+    area: 'SG Highway & Gota',
+    pincode: '380060',
+    bio: 'MNRE trained solar rooftop technician. Expert in on-grid net metering, high-pressure solar panel cleaning, inverter tripping fixes, and solar water heaters.',
+    avatar: 'https://images.unsplash.com/photo-1508873696983-2df5293cb32f?w=600&auto=format&fit=crop&q=80',
+    isVerified: true,
+    isAvailable: true,
+    emergencyAvailable: false,
+    badge: 'Certified Solar Pro',
+    rating: 4.9,
+    reviewCount: 29,
+    completedJobs: 65,
+    languages: ['Hindi', 'Gujarati', 'English'],
+    toolsProvided: true,
+    reviews: [
+      {
+        customerName: 'Nitin Desai',
+        rating: 5,
+        comment: 'Fixed our 5kW solar inverter communication error and did a thorough panel jet wash. Generation jumped 18%.',
+        date: new Date('2026-03-14')
+      }
+    ]
+  },
+  {
+    name: 'Kanhaiya Locksmith',
+    phone: '+91 98103 33221',
+    email: 'kanhaiya.keys@kaamsetu.in',
+    category: 'Locksmith (Chabi Wala)',
+    subSkills: ['Emergency Lock Opening', 'Duplicate Key Making', 'Godrej Lock Replacement', 'Smart Digital Door Lock', 'Car Key Duplicate'],
+    experienceYears: 15,
+    hourlyRate: 199,
+    dailyRate: 1100,
+    city: 'New Delhi',
+    area: 'Connaught Place & Karol Bagh',
+    pincode: '110001',
+    bio: '15+ years trusted locksmith. 24x7 emergency locked door unlocking without damaging the door or frame. Digital fingerprint locks and duplicate computer keys.',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80',
+    isVerified: true,
+    isAvailable: true,
+    emergencyAvailable: true,
+    badge: 'Master Locksmith',
+    rating: 5.0,
+    reviewCount: 68,
+    completedJobs: 210,
+    languages: ['Hindi', 'Punjabi'],
+    toolsProvided: true,
+    reviews: [
+      {
+        customerName: 'Deepak Sethi',
+        rating: 5,
+        comment: 'Got locked out of our flat at 11 PM. Kanhaiya ji reached in 25 mins and safely unlocked the Godrej lock without damage.',
+        date: new Date('2026-03-16')
+      }
+    ]
+  },
+  {
+    name: 'Kuldeep Singh',
+    phone: '+91 98188 44332',
+    email: 'kuldeep.driver@kaamsetu.in',
+    category: 'Driver',
+    subSkills: ['Personal Car Driver (Hourly)', 'Outstation Round Trip', 'Automatic / Luxury Car', 'Late Night Emergency Drop', 'Wedding / Event Driver'],
+    experienceYears: 10,
+    hourlyRate: 399,
+    dailyRate: 1500,
+    city: 'New Delhi',
+    area: 'Saket & Hauz Khas',
+    pincode: '110017',
+    bio: 'Professional verified commercial badge driver with clean police verification. Skilled with automatic, manual, SUV, and luxury sedans (BMW/Mercedes/Audi). Non-smoker and punctual.',
+    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&auto=format&fit=crop&q=80',
+    isVerified: true,
+    isAvailable: true,
+    emergencyAvailable: true,
+    badge: 'Top Rated Driver',
+    rating: 4.9,
+    reviewCount: 52,
+    completedJobs: 130,
+    languages: ['Hindi', 'Punjabi', 'English'],
+    toolsProvided: false,
+    reviews: [
+      {
+        customerName: 'Rohit Khanna',
+        rating: 5,
+        comment: 'Hired Kuldeep for a Delhi to Jaipur round trip. Extremely smooth driving, very polite, and very safe for family.',
+        date: new Date('2026-03-11')
+      }
+    ]
   }
 ];
 

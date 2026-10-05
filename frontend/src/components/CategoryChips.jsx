@@ -12,7 +12,15 @@ import {
   Users, 
   Layers,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  ShieldCheck,
+  Sprout,
+  Bug,
+  LayoutGrid,
+  Maximize2,
+  Sun,
+  Key,
+  Navigation
 } from 'lucide-react';
 
 const ICON_MAP = {
@@ -26,6 +34,14 @@ const ICON_MAP = {
   'Car': Car,
   'Sparkles': Sparkles,
   'Users': Users,
+  'ShieldCheck': ShieldCheck,
+  'Sprout': Sprout,
+  'Bug': Bug,
+  'LayoutGrid': LayoutGrid,
+  'Maximize2': Maximize2,
+  'Sun': Sun,
+  'Key': Key,
+  'Navigation': Navigation,
   'Default': Layers
 };
 
@@ -39,7 +55,15 @@ const HINDI_MAP = {
   'AC & Appliance': 'एसी रिपेयर',
   'Mechanic': 'मैकेनिक',
   'Cleaner & Housekeeping': 'सफाई कर्मी',
-  'General Helper / Labour': 'मजदूर / हेल्पर'
+  'General Helper / Labour': 'मजदूर / हेल्पर',
+  'CCTV & Security': 'सीसीटीवी व सुरक्षा',
+  'Gardener (Mali)': 'माली / बागवानी',
+  'Pest Control': 'पेस्ट कंट्रोल',
+  'POP & False Ceiling': 'पीओपी / सीलिंग',
+  'Glass & Aluminium': 'ग्लास व एल्युमिनियम',
+  'Solar Technician': 'सोलर पैनल',
+  'Locksmith (Chabi Wala)': 'ताला-चाबी',
+  'Driver': 'ड्राइवर'
 };
 
 export default function CategoryChips({ 
