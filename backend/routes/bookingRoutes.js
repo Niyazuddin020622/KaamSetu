@@ -7,6 +7,7 @@ const { verifyToken, optionalToken, requireCustomer, requireWorker } = require('
 const { getCityByName, getCityFromPincode, calculateDistance } = require('../data/cityMaster');
 
 const { cleanPhoneNumber, formatPhoneWith91, getFlexiblePhoneRegex, isValidIndianPhone } = require('../utils/phoneHelper');
+const { delCachePrefix } = require('../utils/cache');
 
 // Helper function to get Day of Week in Hindi and English
 const getDayName = (dateStr) => {
@@ -25,41 +26,70 @@ const getDayName = (dateStr) => {
   return days[date.getDay()];
 };
 
-// GET /api/bookings - Get list of bookings with flexible search
-router.get('/', async (req, res) => {
+// GET /api/bookings - Get list of bookings (Authenticated and role-scoped)
+router.get('/', optionalToken, async (req, res) => {
   try {
+    // If not authenticated, reject to protect user privacy
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Access Denied. कृपया पहले लॉगिन करें।'
+      });
+    }
+
     const { phone, workerId, status, search } = req.query;
     const query = {};
 
-    if (phone) {
-      const cleanPhone = cleanPhoneNumber(phone);
+    // Role-based scoping:
+    if (req.user.role === 'customer') {
+      const userPhone = cleanPhoneNumber(req.user.phone);
       query.$or = [
-        { customerPhone: cleanPhone },
-        { customerPhone: `+91 ${cleanPhone}` },
-        { customerPhone: `+91${cleanPhone}` },
-        { customerPhone: { $regex: cleanPhone, $options: 'i' } }
+        { customer: req.user.id },
+        { customerPhone: userPhone },
+        { customerPhone: `+91 ${userPhone}` },
+        { customerPhone: `+91${userPhone}` }
       ];
+    } else if (req.user.role === 'worker') {
+      const workerPhone = cleanPhoneNumber(req.user.phone);
+      query.$or = [
+        { worker: req.user.id },
+        { workerPhone: workerPhone },
+        { workerPhone: `+91 ${workerPhone}` },
+        { workerPhone: `+91${workerPhone}` }
+      ];
+    } else if (req.user.role === 'admin') {
+      if (phone) {
+        const cleanPhone = cleanPhoneNumber(phone);
+        query.$or = [
+          { customerPhone: cleanPhone },
+          { customerPhone: `+91 ${cleanPhone}` },
+          { customerPhone: `+91${cleanPhone}` }
+        ];
+      }
+      if (workerId) {
+        query.worker = workerId;
+      }
     }
-    if (workerId) {
-      query.worker = workerId;
-    }
+
     if (status && status !== 'all') {
       query.status = status;
     }
     if (search) {
+      const safeSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const searchRegex = new RegExp(safeSearch, 'i');
       query.$or = [
-        { customerName: { $regex: search, $options: 'i' } },
-        { customerPhone: { $regex: search, $options: 'i' } },
-        { workerName: { $regex: search, $options: 'i' } },
-        { workerCategory: { $regex: search, $options: 'i' } },
-        { serviceRequired: { $regex: search, $options: 'i' } },
-        { customerAddress: { $regex: search, $options: 'i' } },
-        { area: { $regex: search, $options: 'i' } },
-        { city: { $regex: search, $options: 'i' } }
+        { customerName: searchRegex },
+        { customerPhone: searchRegex },
+        { workerName: searchRegex },
+        { workerCategory: searchRegex },
+        { serviceRequired: searchRegex },
+        { customerAddress: searchRegex },
+        { area: searchRegex },
+        { city: searchRegex }
       ];
     }
 
-    const bookings = await Booking.find(query).sort({ createdAt: -1 });
+    const bookings = await Booking.find(query).sort({ createdAt: -1 }).lean();
     res.json({ success: true, count: bookings.length, data: bookings });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to fetch bookings', error: error.message });
@@ -563,6 +593,9 @@ router.post('/', optionalToken, async (req, res) => {
 
     await booking.save();
 
+    // Invalidate admin cache so stats are instantly updated
+    delCachePrefix('admin_');
+
     res.status(201).json({
       success: true,
       message: 'Booking request sent successfully to worker!',
@@ -682,7 +715,11 @@ router.patch('/:id/status', async (req, res) => {
     // If completed, increment worker's completedJobs count
     if (status === 'completed' && booking.worker) {
       await Worker.findByIdAndUpdate(booking.worker, { $inc: { completedJobs: 1 } });
+      delCachePrefix('workers_');
     }
+
+    // Invalidate admin cache
+    delCachePrefix('admin_');
 
     res.json({
       success: true,
@@ -704,6 +741,7 @@ router.delete('/:id', async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ success: false, message: 'Booking not found' });
     }
+    delCachePrefix('admin_');
     res.json({ success: true, message: 'Booking deleted successfully.' });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to delete booking', error: error.message });

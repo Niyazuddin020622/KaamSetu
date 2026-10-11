@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Worker = require('../models/Worker');
+const { getCache, setCache } = require('../utils/cache');
 
 const CATEGORIES_DATA = [
   {
@@ -213,16 +214,31 @@ function normalizeCategory(catStr) {
   return found ? found.name : catStr;
 }
 
-// GET /api/categories - Get all categories with real-time worker count
+// GET /api/categories - Get all categories with real-time worker count (Fast cached)
 router.get('/', async (req, res) => {
   try {
     const { city } = req.query;
-    const match = {};
-    if (city && city !== 'All') {
-      match.city = { $regex: new RegExp(`^${city}$`, 'i') };
+    const cacheKey = `categories_${city || 'All'}`;
+    const cached = getCache(cacheKey);
+
+    // Browser Cache Header: 5 min cache, 10 min stale-while-revalidate
+    res.setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=600');
+
+    if (cached) {
+      return res.json({
+        success: true,
+        source: 'cache',
+        data: cached
+      });
     }
 
-    // Fetch all workers matching city without discarding isAvailable: false
+    const match = {};
+    if (city && city !== 'All') {
+      const safeCity = city.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      match.city = { $regex: new RegExp(`^${safeCity}$`, 'i') };
+    }
+
+    // Fetch only needed fields
     const workers = await Worker.find(match, 'category isAvailable city').lean();
 
     const countMap = {};
@@ -235,6 +251,8 @@ router.get('/', async (req, res) => {
       ...cat,
       activeWorkers: countMap[cat.name] || 0
     }));
+
+    setCache(cacheKey, enrichedCategories, 600); // 10 min cache
 
     res.json({
       success: true,

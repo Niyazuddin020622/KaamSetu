@@ -145,28 +145,35 @@ export default function App() {
     showToast('कारीगर खाता सफलतापूर्वक लॉगआउट हो गया।');
   };
 
-  // Fetch initial data
-  const fetchData = async () => {
+  // 1. Load categories once on initial mount
+  useEffect(() => {
+    let isMounted = true;
+    getCategories()
+      .then((res) => {
+        if (isMounted && res.success) {
+          setCategories(res.data || []);
+        }
+      })
+      .catch((err) => console.error('Categories load error:', err));
+    return () => { isMounted = false; };
+  }, []);
+
+  // 2. Fetch workers when filters change
+  const fetchWorkers = async () => {
     setLoading(true);
     setError('');
     try {
-      const [workersRes, categoriesRes] = await Promise.all([
-        getWorkers({
-          category: selectedCategory,
-          city: selectedCity,
-          search: searchQuery,
-          emergencyOnly: emergencyOnly ? 'true' : undefined,
-          availableOnly: availableOnly ? 'true' : undefined,
-          sortBy
-        }),
-        getCategories()
-      ]);
+      const workersRes = await getWorkers({
+        category: selectedCategory,
+        city: selectedCity,
+        search: searchQuery,
+        emergencyOnly: emergencyOnly ? 'true' : undefined,
+        availableOnly: availableOnly ? 'true' : undefined,
+        sortBy
+      });
 
       if (workersRes.success) {
         setWorkers(workersRes.data || []);
-      }
-      if (categoriesRes.success) {
-        setCategories(categoriesRes.data || []);
       }
     } catch (err) {
       console.error('API Error:', err);
@@ -176,12 +183,22 @@ export default function App() {
     }
   };
 
+  // 3. Full refresh handler (workers + categories)
+  const fetchData = () => {
+    fetchWorkers();
+    getCategories(true)
+      .then((res) => {
+        if (res.success) setCategories(res.data || []);
+      })
+      .catch((err) => console.error('Categories refresh error:', err));
+  };
+
   useEffect(() => {
-    fetchData();
+    fetchWorkers();
   }, [selectedCategory, selectedCity, emergencyOnly, availableOnly, sortBy]);
 
   const handleSearchSubmit = () => {
-    fetchData();
+    fetchWorkers();
   };
 
   const handleWorkerRegistered = (newWorker) => {

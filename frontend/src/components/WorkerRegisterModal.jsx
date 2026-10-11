@@ -52,17 +52,41 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
   const [error, setError] = useState('');
   const [registeredSuccess, setRegisteredSuccess] = useState(false);
 
-  // File upload handler - converts camera or gallery picture to base64
+  // File upload handler - compresses camera or gallery picture to max 320x320 JPEG to avoid bloated payloads
   const handlePhotoUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        setError('Photo size should be less than 5MB.');
+      if (file.size > 8 * 1024 * 1024) {
+        setError('Photo size should be less than 8MB.');
         return;
       }
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData((prev) => ({ ...prev, avatar: reader.result }));
+      reader.onload = (event) => {
+        const img = document.createElement('img');
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_DIM = 320;
+          let width = img.width;
+          let height = img.height;
+          if (width > height) {
+            if (width > MAX_DIM) {
+              height = Math.round((height * MAX_DIM) / width);
+              width = MAX_DIM;
+            }
+          } else {
+            if (height > MAX_DIM) {
+              width = Math.round((width * MAX_DIM) / height);
+              height = MAX_DIM;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+          setFormData((prev) => ({ ...prev, avatar: compressedDataUrl }));
+        };
+        img.src = event.target.result;
       };
       reader.readAsDataURL(file);
     }

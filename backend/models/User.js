@@ -15,7 +15,8 @@ const userSchema = new mongoose.Schema({
   },
   pin: {
     type: String,
-    required: [true, 'कृपया 4-अंकों का गुप्त PIN बनाएं']
+    required: [true, 'कृपया 4-अंकों का गुप्त PIN बनाएं'],
+    select: false
   },
   address: {
     type: String,

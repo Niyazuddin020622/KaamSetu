@@ -1,13 +1,16 @@
 const express = require('express');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
 const Worker = require('../models/Worker');
 const Booking = require('../models/Booking');
 const User = require('../models/User');
+const { verifyToken, requireAdmin, JWT_SECRET } = require('../middleware/auth');
+const { getCache, setCache, delCachePrefix } = require('../utils/cache');
 
-// Admin PIN - Default is 'admin123'
+// Admin PIN - configured in .env or fallback
 const ADMIN_PIN = process.env.ADMIN_PIN || 'admin123';
 
-// POST /api/admin/login - Verify admin PIN
+// POST /api/admin/login - Verify admin PIN and issue signed JWT
 router.post('/login', (req, res) => {
   const { pin } = req.body;
   if (!pin) {
@@ -15,19 +18,35 @@ router.post('/login', (req, res) => {
   }
 
   if (pin === ADMIN_PIN || pin === '8825135461') {
+    // Generate secure admin JWT valid for 8 hours
+    const token = jwt.sign(
+      { role: 'admin', user: 'admin_master' },
+      JWT_SECRET,
+      { expiresIn: '8h' }
+    );
+
     return res.json({ 
       success: true, 
       message: 'Admin access granted.',
-      token: 'admin-session-' + Date.now()
+      token
     });
   }
 
   return res.status(401).json({ success: false, message: 'Invalid admin PIN. Please try again.' });
 });
 
-// GET /api/admin/stats - Overview analytics
-router.get('/stats', async (req, res) => {
+// GET /api/admin/stats - Overview analytics (Fast cached for 60s)
+router.get('/stats', verifyToken, requireAdmin, async (req, res) => {
   try {
+    const cachedStats = getCache('admin_stats');
+    if (cachedStats) {
+      return res.json({
+        success: true,
+        source: 'cache',
+        data: cachedStats
+      });
+    }
+
     const [
       totalWorkers,
       verifiedWorkers,
@@ -61,38 +80,43 @@ router.get('/stats', async (req, res) => {
         { $group: { _id: '$city', count: { $sum: 1 } } },
         { $sort: { count: -1 } }
       ]),
-      Booking.find({ status: { $in: ['accepted', 'completed', 'in_progress'] } })
+      Booking.find({ status: { $in: ['accepted', 'completed', 'in_progress'] } }).select('estimatedCost')
     ]);
 
     const totalEstimatedBusiness = allCompletedBookings.reduce((sum, b) => sum + (b.estimatedCost || 0), 0);
 
     // Latest 10 bookings
-    const recentBookings = await Booking.find().sort({ createdAt: -1 }).limit(10);
+    const recentBookings = await Booking.find().sort({ createdAt: -1 }).limit(10).lean();
+
+    const responseData = {
+      workers: {
+        total: totalWorkers,
+        verified: verifiedWorkers,
+        available: availableWorkers,
+        byCategory: categoryCounts,
+        byCity: cityCounts
+      },
+      customers: {
+        total: totalCustomers
+      },
+      bookings: {
+        total: totalBookings,
+        pending: pendingBookings,
+        accepted: acceptedBookings,
+        inProgress: inProgressBookings,
+        completed: completedBookings,
+        cancelled: cancelledBookings,
+        totalRevenue: totalEstimatedBusiness
+      },
+      recentBookings
+    };
+
+    // Cache stats for 60 seconds
+    setCache('admin_stats', responseData, 60);
 
     res.json({
       success: true,
-      data: {
-        workers: {
-          total: totalWorkers,
-          verified: verifiedWorkers,
-          available: availableWorkers,
-          byCategory: categoryCounts,
-          byCity: cityCounts
-        },
-        customers: {
-          total: totalCustomers
-        },
-        bookings: {
-          total: totalBookings,
-          pending: pendingBookings,
-          accepted: acceptedBookings,
-          inProgress: inProgressBookings,
-          completed: completedBookings,
-          cancelled: cancelledBookings,
-          totalRevenue: totalEstimatedBusiness
-        },
-        recentBookings
-      }
+      data: responseData
     });
   } catch (error) {
     console.error('Admin stats error:', error);
@@ -101,23 +125,50 @@ router.get('/stats', async (req, res) => {
 });
 
 // GET /api/admin/workers-ledger - Full ledger of all workers with their complete work history
-router.get('/workers-ledger', async (req, res) => {
+router.get('/workers-ledger', verifyToken, requireAdmin, async (req, res) => {
   try {
-    const workers = await Worker.find().sort({ createdAt: -1 });
-    const allBookings = await Booking.find().sort({ createdAt: -1 });
+    const cachedLedger = getCache('admin_workers_ledger');
+    if (cachedLedger) {
+      return res.json({ success: true, source: 'cache', count: cachedLedger.length, data: cachedLedger });
+    }
+
+    const workers = await Worker.find().select('-pin').sort({ createdAt: -1 }).lean();
+    const allBookings = await Booking.find().select('worker workerPhone status estimatedCost createdAt serviceRequired').sort({ createdAt: -1 }).lean();
+
+    // Map bookings by worker id and phone for O(1) lookup
+    const bookingsByWorker = new Map();
+    allBookings.forEach(b => {
+      const wId = b.worker ? b.worker.toString() : null;
+      const wPhone = b.workerPhone || null;
+      if (wId) {
+        if (!bookingsByWorker.has(wId)) bookingsByWorker.set(wId, []);
+        bookingsByWorker.get(wId).push(b);
+      }
+      if (wPhone) {
+        if (!bookingsByWorker.has(wPhone)) bookingsByWorker.set(wPhone, []);
+        bookingsByWorker.get(wPhone).push(b);
+      }
+    });
 
     const workersWithHistory = workers.map(worker => {
-      const workerJobs = allBookings.filter(b => 
-        (b.worker && b.worker.toString() === worker._id.toString()) || 
-        b.workerPhone === worker.phone
-      );
+      const workerJobsById = bookingsByWorker.get(worker._id.toString()) || [];
+      const workerJobsByPhone = bookingsByWorker.get(worker.phone) || [];
+      // Deduplicate jobs
+      const jobsSet = new Set();
+      const workerJobs = [];
+      [...workerJobsById, ...workerJobsByPhone].forEach(j => {
+        if (!jobsSet.has(j._id.toString())) {
+          jobsSet.add(j._id.toString());
+          workerJobs.push(j);
+        }
+      });
 
       const completed = workerJobs.filter(j => j.status === 'completed');
       const active = workerJobs.filter(j => ['pending', 'accepted', 'in_progress'].includes(j.status));
       const totalEarnings = completed.reduce((sum, j) => sum + (Number(j.estimatedCost) || 0), 0);
 
       return {
-        ...worker.toObject(),
+        ...worker,
         jobsCount: workerJobs.length,
         completedJobsCount: completed.length,
         activeJobsCount: active.length,
@@ -126,6 +177,8 @@ router.get('/workers-ledger', async (req, res) => {
       };
     });
 
+    setCache('admin_workers_ledger', workersWithHistory, 60);
+
     res.json({ success: true, count: workersWithHistory.length, data: workersWithHistory });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to fetch workers ledger', error: error.message });
@@ -133,9 +186,14 @@ router.get('/workers-ledger', async (req, res) => {
 });
 
 // GET /api/admin/employers - Full ledger of all employers/customers who hired workers
-router.get('/employers', async (req, res) => {
+router.get('/employers', verifyToken, requireAdmin, async (req, res) => {
   try {
-    const bookings = await Booking.find().sort({ createdAt: -1 });
+    const cachedEmployers = getCache('admin_employers_ledger');
+    if (cachedEmployers) {
+      return res.json({ success: true, source: 'cache', count: cachedEmployers.length, data: cachedEmployers });
+    }
+
+    const bookings = await Booking.find().sort({ createdAt: -1 }).lean();
     const employersMap = new Map();
 
     bookings.forEach((booking) => {
@@ -173,6 +231,8 @@ router.get('/employers', async (req, res) => {
     });
 
     const employersList = Array.from(employersMap.values());
+    setCache('admin_employers_ledger', employersList, 60);
+
     res.json({ success: true, count: employersList.length, data: employersList });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to fetch employers', error: error.message });
@@ -180,23 +240,38 @@ router.get('/employers', async (req, res) => {
 });
 
 // POST /api/admin/workers - Create new worker directly from admin
-router.post('/workers', async (req, res) => {
+router.post('/workers', verifyToken, requireAdmin, async (req, res) => {
   try {
     const newWorker = new Worker(req.body);
     await newWorker.save();
-    res.status(201).json({ success: true, message: 'Worker created successfully', data: newWorker });
+    
+    // Invalidate caches
+    delCachePrefix('admin_');
+    delCachePrefix('workers_');
+    delCachePrefix('categories_');
+
+    const safeWorker = newWorker.toObject();
+    delete safeWorker.pin;
+
+    res.status(201).json({ success: true, message: 'Worker created successfully', data: safeWorker });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to create worker', error: error.message });
   }
 });
 
 // PUT /api/admin/workers/:id - Update worker
-router.put('/workers/:id', async (req, res) => {
+router.put('/workers/:id', verifyToken, requireAdmin, async (req, res) => {
   try {
-    const updated = await Worker.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
+    const updated = await Worker.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true }).select('-pin');
     if (!updated) {
       return res.status(404).json({ success: false, message: 'Worker not found' });
     }
+
+    // Invalidate caches
+    delCachePrefix('admin_');
+    delCachePrefix('workers_');
+    delCachePrefix('categories_');
+
     res.json({ success: true, message: 'Worker updated successfully', data: updated });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to update worker', error: error.message });
@@ -204,12 +279,18 @@ router.put('/workers/:id', async (req, res) => {
 });
 
 // DELETE /api/admin/workers/:id - Delete a worker
-router.delete('/workers/:id', async (req, res) => {
+router.delete('/workers/:id', verifyToken, requireAdmin, async (req, res) => {
   try {
     const deleted = await Worker.findByIdAndDelete(req.params.id);
     if (!deleted) {
       return res.status(404).json({ success: false, message: 'Worker not found' });
     }
+
+    // Invalidate caches
+    delCachePrefix('admin_');
+    delCachePrefix('workers_');
+    delCachePrefix('categories_');
+
     res.json({ success: true, message: `${deleted.name} removed from directory.` });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to delete worker', error: error.message });
@@ -217,12 +298,16 @@ router.delete('/workers/:id', async (req, res) => {
 });
 
 // PATCH /api/admin/bookings/:id - Admin update booking
-router.patch('/bookings/:id', async (req, res) => {
+router.patch('/bookings/:id', verifyToken, requireAdmin, async (req, res) => {
   try {
     const updated = await Booking.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
     if (!updated) {
       return res.status(404).json({ success: false, message: 'Booking not found' });
     }
+
+    // Invalidate caches
+    delCachePrefix('admin_');
+
     res.json({ success: true, message: 'Booking updated successfully', data: updated });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to update booking', error: error.message });
@@ -230,12 +315,16 @@ router.patch('/bookings/:id', async (req, res) => {
 });
 
 // DELETE /api/admin/bookings/:id - Delete a booking
-router.delete('/bookings/:id', async (req, res) => {
+router.delete('/bookings/:id', verifyToken, requireAdmin, async (req, res) => {
   try {
     const deleted = await Booking.findByIdAndDelete(req.params.id);
     if (!deleted) {
       return res.status(404).json({ success: false, message: 'Booking not found' });
     }
+
+    // Invalidate caches
+    delCachePrefix('admin_');
+
     res.json({ success: true, message: 'Booking deleted successfully.' });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to delete booking', error: error.message });

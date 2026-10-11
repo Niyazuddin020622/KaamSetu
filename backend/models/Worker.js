@@ -53,7 +53,7 @@ const workerSchema = new mongoose.Schema({
   languages: [{ type: String }],
   emergencyAvailable: { type: Boolean, default: false },
   toolsProvided: { type: Boolean, default: true },
-  pin: { type: String, default: '' },
+  pin: { type: String, default: '', select: false },
   role: { type: String, default: 'worker' },
   portfolio: [{
     title: String,

@@ -23,14 +23,19 @@ api.interceptors.request.use((config) => {
   if (!config.headers.Authorization) {
     const customerToken = localStorage.getItem('kaamsetu_customer_token');
     const workerToken = localStorage.getItem('kaamsetu_worker_token');
+    const adminToken = localStorage.getItem('kaamsetu_admin_token');
     
-    // If calling worker specific endpoints, prioritize workerToken
-    if (config.url && config.url.includes('/worker') && workerToken) {
+    // Prioritize token by endpoint context
+    if (config.url && config.url.includes('/admin') && adminToken) {
+      config.headers.Authorization = `Bearer ${adminToken}`;
+    } else if (config.url && config.url.includes('/worker') && workerToken) {
       config.headers.Authorization = `Bearer ${workerToken}`;
     } else if (customerToken) {
       config.headers.Authorization = `Bearer ${customerToken}`;
     } else if (workerToken) {
       config.headers.Authorization = `Bearer ${workerToken}`;
+    } else if (adminToken) {
+      config.headers.Authorization = `Bearer ${adminToken}`;
     }
   }
   return config;
@@ -230,8 +235,20 @@ export const addWorkerReview = async (workerId, reviewData) => {
   return response.data;
 };
 
-export const getCategories = async () => {
+let categoriesCache = null;
+let categoriesCacheTime = 0;
+const CATEGORIES_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+export const getCategories = async (forceRefresh = false) => {
+  const now = Date.now();
+  if (!forceRefresh && categoriesCache && (now - categoriesCacheTime < CATEGORIES_CACHE_TTL)) {
+    return categoriesCache;
+  }
   const response = await api.get('/categories');
+  if (response.data && response.data.success) {
+    categoriesCache = response.data;
+    categoriesCacheTime = now;
+  }
   return response.data;
 };
 

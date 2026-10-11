@@ -157,7 +157,7 @@ router.post('/customer/login', async (req, res) => {
         { phone: `+91 ${cleanPhone}` },
         { phone: `+91${cleanPhone}` }
       ]
-    });
+    }).select('+pin');
 
     if (!user) {
       return res.status(404).json({
@@ -298,7 +298,7 @@ router.post('/worker/login', async (req, res) => {
         { phone: `+91${cleanPhone}` },
         ...(phoneRegex ? [{ phone: phoneRegex }] : [])
       ]
-    });
+    }).select('+pin');
 
     if (!worker) {
       return res.status(404).json({
@@ -386,7 +386,7 @@ router.post('/worker/set-pin', async (req, res) => {
         { phone: `+91${cleanPhone}` },
         ...(phoneRegex ? [{ phone: phoneRegex }] : [])
       ]
-    });
+    }).select('+pin');
 
     if (!worker) {
       return res.status(404).json({

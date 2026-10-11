@@ -25,9 +25,15 @@ const Worker = require('./models/Worker');
 const { sampleWorkers, sampleBookings } = require('./seed');
 const Booking = require('./models/Booking');
 
+const compression = require('compression');
+const mongoSanitize = require('express-mongo-sanitize');
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/worker_finder_db';
+
+// Lightning Fast Response Compression (Gzip/Brotli) - shrinks payloads by up to 80%
+app.use(compression());
 
 // Security Headers with Helmet
 app.use(helmet({
@@ -47,6 +53,21 @@ const apiLimiter = rateLimit({
 });
 app.use('/api', apiLimiter);
 
+// Strict Anti-Brute Force Protection for Login / PIN routes
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 15, // Max 15 attempts per IP per 15 minutes
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'सुरक्षा कारणों से बहुत अधिक प्रयास। कृपया 15 मिनट बाद पुनः प्रयास करें।'
+  }
+});
+app.use('/api/auth/customer/login', authLimiter);
+app.use('/api/auth/worker/login', authLimiter);
+app.use('/api/admin/login', authLimiter);
+
 // Middlewares
 app.use(cors({
   origin: '*',
@@ -57,6 +78,10 @@ app.use(cors({
 // Support up to 10MB payload for worker profile photo uploads
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Sanitize inputs against NoSQL injection
+app.use(mongoSanitize());
+
 app.use(morgan('dev'));
 
 // Routes

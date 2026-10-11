@@ -64,10 +64,22 @@ const requireWorker = (req, res, next) => {
   next();
 };
 
+// Ensure user has role 'admin'
+const requireAdmin = (req, res, next) => {
+  if (!req.user || req.user.role !== 'admin') {
+    return res.status(403).json({
+      success: false,
+      message: 'अनधिकृत पहुंच (Unauthorized). केवल एडमिन को ही यह अधिकार प्राप्त है।'
+    });
+  }
+  next();
+};
+
 module.exports = {
   verifyToken,
   optionalToken,
   requireCustomer,
   requireWorker,
+  requireAdmin,
   JWT_SECRET
 };

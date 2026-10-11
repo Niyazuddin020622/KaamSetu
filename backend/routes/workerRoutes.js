@@ -3,8 +3,12 @@ const router = express.Router();
 const Worker = require('../models/Worker');
 const { getCityByName, getCityFromPincode, calculateDistance } = require('../data/cityMaster');
 const { cleanPhoneNumber, isValidIndianPhone } = require('../utils/phoneHelper');
+const { getCache, setCache, delCachePrefix } = require('../utils/cache');
 
-// GET /api/workers - Fetch all workers with flexible filters, proximity calculation & search
+// Helper to escape regex special characters (ReDoS protection)
+const escapeRegex = (str) => str ? str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') : '';
+
+// GET /api/workers - Fetch all workers with flexible filters, proximity calculation & search (Fast & Cached)
 router.get('/', async (req, res) => {
   try {
     const { 
@@ -22,82 +26,101 @@ router.get('/', async (req, res) => {
       limit = 60 
     } = req.query;
 
-    const query = {};
+    // Cache key for search query without GPS coordinates (GPS is calculated dynamically)
+    const cacheKey = `workers_${category || 'All'}_${city || 'All'}_${availableOnly || 'f'}_${emergencyOnly || 'f'}_${minRating || '0'}_${maxRate || '0'}_${sortBy || 'rating'}_${search || ''}_${limit}`;
+    const cachedWorkers = getCache(cacheKey);
 
-    if (category && category !== 'All') {
-      const catLower = category.toLowerCase();
-      if (catLower.includes('helper') || catLower.includes('labour') || catLower.includes('labor')) {
-        query.category = { $regex: /helper|labour|labor/i };
-      } else if (catLower.includes('cctv') || catLower.includes('security')) {
-        query.category = { $regex: /cctv|security/i };
-      } else if (catLower.includes('garden') || catLower.includes('mali')) {
-        query.category = { $regex: /garden|mali/i };
-      } else if (catLower.includes('pest')) {
-        query.category = { $regex: /pest/i };
-      } else if (catLower.includes('ceiling') || catLower.includes('pop')) {
-        query.category = { $regex: /ceiling|pop/i };
-      } else if (catLower.includes('glass') || catLower.includes('alumin')) {
-        query.category = { $regex: /glass|alumin/i };
-      } else if (catLower.includes('solar')) {
-        query.category = { $regex: /solar/i };
-      } else if (catLower.includes('locksmith') || catLower.includes('chabi') || catLower.includes('key')) {
-        query.category = { $regex: /locksmith|chabi|key/i };
-      } else if (catLower.includes('driver')) {
-        query.category = { $regex: /driver/i };
-      } else if (catLower.includes('mason') || catLower.includes('mistri')) {
-        query.category = { $regex: /mason|mistri/i };
-      } else if (catLower.includes('ac') || catLower.includes('appliance')) {
-        query.category = { $regex: /ac|appliance/i };
-      } else if (catLower.includes('clean') || catLower.includes('housekeep')) {
-        query.category = { $regex: /clean|housekeep/i };
-      } else {
-        query.category = { $regex: new RegExp(`^${category}$`, 'i') };
+    // Set HTTP Cache Header
+    res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=120');
+
+    let baseWorkers;
+
+    if (cachedWorkers) {
+      baseWorkers = cachedWorkers;
+    } else {
+      const query = {};
+
+      if (category && category !== 'All') {
+        const catLower = category.toLowerCase();
+        if (catLower.includes('helper') || catLower.includes('labour') || catLower.includes('labor')) {
+          query.category = { $regex: /helper|labour|labor/i };
+        } else if (catLower.includes('cctv') || catLower.includes('security')) {
+          query.category = { $regex: /cctv|security/i };
+        } else if (catLower.includes('garden') || catLower.includes('mali')) {
+          query.category = { $regex: /garden|mali/i };
+        } else if (catLower.includes('pest')) {
+          query.category = { $regex: /pest/i };
+        } else if (catLower.includes('ceiling') || catLower.includes('pop')) {
+          query.category = { $regex: /ceiling|pop/i };
+        } else if (catLower.includes('glass') || catLower.includes('alumin')) {
+          query.category = { $regex: /glass|alumin/i };
+        } else if (catLower.includes('solar')) {
+          query.category = { $regex: /solar/i };
+        } else if (catLower.includes('locksmith') || catLower.includes('chabi') || catLower.includes('key')) {
+          query.category = { $regex: /locksmith|chabi|key/i };
+        } else if (catLower.includes('driver')) {
+          query.category = { $regex: /driver/i };
+        } else if (catLower.includes('mason') || catLower.includes('mistri')) {
+          query.category = { $regex: /mason|mistri/i };
+        } else if (catLower.includes('ac') || catLower.includes('appliance')) {
+          query.category = { $regex: /ac|appliance/i };
+        } else if (catLower.includes('clean') || catLower.includes('housekeep')) {
+          query.category = { $regex: /clean|housekeep/i };
+        } else {
+          query.category = { $regex: new RegExp(`^${escapeRegex(category)}$`, 'i') };
+        }
       }
+
+      if (city && city !== 'All') {
+        query.city = { $regex: new RegExp(`^${escapeRegex(city)}$`, 'i') };
+      }
+
+      if (availableOnly === 'true') {
+        query.isAvailable = true;
+      }
+
+      if (emergencyOnly === 'true') {
+        query.emergencyAvailable = true;
+      }
+
+      if (minRating) {
+        query.rating = { $gte: Number(minRating) };
+      }
+
+      if (maxRate) {
+        query.hourlyRate = { $lte: Number(maxRate) };
+      }
+
+      if (search) {
+        const safeSearch = escapeRegex(search.trim());
+        const searchRegex = new RegExp(safeSearch, 'i');
+        query.$or = [
+          { name: searchRegex },
+          { category: searchRegex },
+          { subSkills: searchRegex },
+          { area: searchRegex },
+          { city: searchRegex },
+          { bio: searchRegex }
+        ];
+      }
+
+      let sortOption = { rating: -1, completedJobs: -1 };
+      if (sortBy === 'rate_asc') sortOption = { hourlyRate: 1 };
+      else if (sortBy === 'rate_desc') sortOption = { hourlyRate: -1 };
+      else if (sortBy === 'experience') sortOption = { experienceYears: -1 };
+      else if (sortBy === 'rating') sortOption = { rating: -1, reviewCount: -1 };
+      else if (sortBy === 'completed') sortOption = { completedJobs: -1 };
+
+      // Performance Optimization: Exclude heavy fields (reviews array, portfolio, pin) from card listings
+      baseWorkers = await Worker.find(query)
+        .select('-pin -reviews -portfolio')
+        .sort(sortOption)
+        .limit(Number(limit))
+        .lean();
+
+      // Cache base results for 120 seconds
+      setCache(cacheKey, baseWorkers, 120);
     }
-
-    if (city && city !== 'All') {
-      query.city = { $regex: new RegExp(`^${city}$`, 'i') };
-    }
-
-    if (availableOnly === 'true') {
-      query.isAvailable = true;
-    }
-
-    if (emergencyOnly === 'true') {
-      query.emergencyAvailable = true;
-    }
-
-    if (minRating) {
-      query.rating = { $gte: Number(minRating) };
-    }
-
-    if (maxRate) {
-      query.hourlyRate = { $lte: Number(maxRate) };
-    }
-
-    if (search) {
-      const searchRegex = new RegExp(search, 'i');
-      query.$or = [
-        { name: searchRegex },
-        { category: searchRegex },
-        { subSkills: searchRegex },
-        { area: searchRegex },
-        { city: searchRegex },
-        { bio: searchRegex }
-      ];
-    }
-
-    let sortOption = { rating: -1, completedJobs: -1 };
-    if (sortBy === 'rate_asc') sortOption = { hourlyRate: 1 };
-    else if (sortBy === 'rate_desc') sortOption = { hourlyRate: -1 };
-    else if (sortBy === 'experience') sortOption = { experienceYears: -1 };
-    else if (sortBy === 'rating') sortOption = { rating: -1, reviewCount: -1 };
-    else if (sortBy === 'completed') sortOption = { completedJobs: -1 };
-
-    const workers = await Worker.find(query)
-      .sort(sortOption)
-      .limit(Number(limit))
-      .lean();
 
     // Determine reference coordinates for distance computation
     const userLat = lat ? Number(lat) : null;
@@ -114,7 +137,7 @@ router.get('/', async (req, res) => {
     }
 
     // Attach distanceKm to each worker
-    const enrichedWorkers = workers.map(w => {
+    const enrichedWorkers = baseWorkers.map(w => {
       let workerCoords = null;
       if (w.pincode) {
         const pinCity = getCityFromPincode(w.pincode);
@@ -161,10 +184,10 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET /api/workers/:id - Single worker details
+// GET /api/workers/:id - Single worker details (Never leaks PIN)
 router.get('/:id', async (req, res) => {
   try {
-    const worker = await Worker.findById(req.params.id);
+    const worker = await Worker.findById(req.params.id).select('-pin').lean();
     if (!worker) {
       return res.status(404).json({ success: false, message: 'Worker not found' });
     }
@@ -287,10 +310,18 @@ router.post('/', async (req, res) => {
 
     await worker.save();
 
+    // Invalidate caches
+    delCachePrefix('workers_');
+    delCachePrefix('admin_');
+    delCachePrefix('categories_');
+
+    const safeWorker = worker.toObject();
+    delete safeWorker.pin;
+
     res.status(201).json({
       success: true,
       message: 'Worker registered successfully!',
-      data: worker
+      data: safeWorker
     });
   } catch (error) {
     console.error('Error creating worker:', error);
@@ -302,6 +333,9 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const updateData = { ...req.body };
+    // Prevent updating PIN directly through public route
+    delete updateData.pin;
+
     if (updateData.city || updateData.pincode) {
       const pin = (updateData.pincode || '').toString().trim();
       const matchedCity = (pin ? getCityFromPincode(pin) : null) || (updateData.city ? getCityByName(updateData.city) : null);
@@ -314,10 +348,17 @@ router.put('/:id', async (req, res) => {
       req.params.id,
       { $set: updateData },
       { new: true, runValidators: true }
-    );
+    ).select('-pin');
+
     if (!updatedWorker) {
       return res.status(404).json({ success: false, message: 'Worker not found' });
     }
+
+    // Invalidate caches
+    delCachePrefix('workers_');
+    delCachePrefix('admin_');
+    delCachePrefix('categories_');
+
     res.json({ success: true, message: 'Profile updated', data: updatedWorker });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Update failed', error: error.message });
@@ -353,10 +394,17 @@ router.post('/:id/reviews', async (req, res) => {
 
     await worker.save();
 
+    // Invalidate caches
+    delCachePrefix('workers_');
+    delCachePrefix('admin_');
+
+    const safeWorker = worker.toObject();
+    delete safeWorker.pin;
+
     res.status(201).json({
       success: true,
       message: 'Review submitted successfully',
-      data: worker
+      data: safeWorker
     });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to submit review', error: error.message });
