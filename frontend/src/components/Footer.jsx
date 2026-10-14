@@ -14,17 +14,17 @@ export default function Footer({ onSelectCategory }) {
   ];
 
   return (
-    <footer className="border-t border-slate-800 bg-slate-950 text-slate-400 text-sm pb-28 md:pb-10">
+    <footer className="border-t border-slate-200 bg-slate-900 text-slate-400 text-sm pb-28 md:pb-10">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-8">
           
           {/* Brand Info */}
           <div className="space-y-3">
             <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-bold">
+              <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 text-amber-400 flex items-center justify-center font-bold">
                 <Hammer className="w-5 h-5 transform -rotate-12" />
               </div>
-              <span className="text-xl font-black text-white">KaamSetu</span>
+              <span className="text-xl font-black text-white">Kaam<span className="text-amber-400">Setu</span></span>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed">
               भारत का अपना भरोसेमंद कारीगर नेटवर्क। नल, वेल्डिंग, बिजली, लकड़ी और राजमिस्त्री के काम के लिए सीधे लोकल कारीगरों से संपर्क करें।

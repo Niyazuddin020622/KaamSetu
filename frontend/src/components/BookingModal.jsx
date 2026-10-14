@@ -194,23 +194,23 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-slate-950/85 backdrop-blur-md overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
       <div 
-        className="relative w-full max-w-xl bg-slate-900 border border-slate-700/90 rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden max-h-[92vh] flex flex-col"
+        className="relative w-full max-w-xl bg-white border border-slate-200 rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden max-h-[92vh] flex flex-col text-slate-900"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="px-5 py-4 bg-gradient-to-r from-amber-500/20 via-slate-800 to-slate-900 border-b border-slate-800 flex items-center justify-between shrink-0">
+        <div className="px-5 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             <img
               src={worker.avatar}
               alt={worker.name}
               onError={handleImageError}
-              className="w-10 h-10 rounded-xl object-cover border border-amber-400"
+              className="w-10 h-10 rounded-xl object-cover border border-slate-200 shadow-xs"
             />
             <div>
-              <h2 className="text-base sm:text-lg font-black text-white">{worker.name} को बुक करें</h2>
-              <p className="text-[11px] text-amber-400 font-semibold">
+              <h2 className="text-base sm:text-lg font-bold text-slate-900">{worker.name} को बुक करें</h2>
+              <p className="text-[11px] text-amber-700 font-semibold">
                 {worker.category} • ₹{worker.hourlyRate}/घंटा
               </p>
             </div>
@@ -218,7 +218,7 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
 
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition-colors"
+            className="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600 hover:text-slate-900 flex items-center justify-center transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -227,51 +227,51 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
         {/* Confirmation Screen */}
         {bookingConfirmed ? (
           <div className="p-6 sm:p-8 text-center space-y-4 overflow-y-auto">
-            <div className="w-16 h-16 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 rounded-full flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/20 animate-bounce">
+            <div className="w-16 h-16 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-full flex items-center justify-center mx-auto shadow-sm animate-bounce">
               <CheckCircle2 className="w-10 h-10" />
             </div>
 
             <div>
-              <h3 className="text-xl sm:text-2xl font-black text-white mb-1">बुकिंग सफल रही!</h3>
-              <p className="text-xs sm:text-sm text-slate-300">
-                <span className="text-amber-400 font-bold">{worker.name}</span> को आपका काम भेज दिया गया है।
+              <h3 className="text-xl sm:text-2xl font-black text-slate-900 mb-1">बुकिंग सफल रही!</h3>
+              <p className="text-xs sm:text-sm text-slate-600">
+                <span className="text-slate-900 font-bold">{worker.name}</span> को आपका काम भेज दिया गया है।
               </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-800/90 border border-slate-700 text-left text-xs space-y-2 max-w-md mx-auto">
-              <div className="flex justify-between text-slate-400">
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-left text-xs space-y-2 max-w-md mx-auto">
+              <div className="flex justify-between text-slate-500">
                 <span>बुकिंग संख्या:</span>
-                <span className="font-mono text-white font-bold">{bookingConfirmed._id.slice(-8).toUpperCase()}</span>
+                <span className="font-mono text-slate-900 font-bold">{bookingConfirmed._id.slice(-8).toUpperCase()}</span>
               </div>
-              <div className="flex justify-between text-slate-400">
+              <div className="flex justify-between text-slate-500">
                 <span>कारीगर:</span>
-                <span className="text-white font-semibold">{bookingConfirmed.workerName} ({bookingConfirmed.workerCategory})</span>
+                <span className="text-slate-900 font-semibold">{bookingConfirmed.workerName} ({bookingConfirmed.workerCategory})</span>
               </div>
-              <div className="flex justify-between text-slate-400">
+              <div className="flex justify-between text-slate-500">
                 <span>दिनांक व समय:</span>
-                <span className="text-white font-semibold">{bookingConfirmed.preferredDate}</span>
+                <span className="text-slate-900 font-semibold">{bookingConfirmed.preferredDate}</span>
               </div>
-              <div className="flex justify-between text-slate-400">
+              <div className="flex justify-between text-slate-500">
                 <span>विजिटिंग चार्ज:</span>
-                <span className="text-amber-400 font-black">₹{bookingConfirmed.estimatedCost}</span>
+                <span className="text-slate-900 font-black">₹{bookingConfirmed.estimatedCost}</span>
               </div>
             </div>
 
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-500">
               कारीगर थोड़ी देर में आपको सीधे कॉल करेगा। या आप अभी खुद भी कॉल कर सकते हैं:
             </p>
 
             <div className="flex flex-col sm:flex-row gap-2.5 justify-center pt-2 w-full">
               <a
                 href={`tel:${worker.phone}`}
-                className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs sm:text-sm shadow-md active:scale-95 truncate"
+                className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm shadow-xs active:scale-95 truncate"
               >
                 <Phone className="w-4 h-4 fill-current shrink-0" />
                 <span className="truncate">कारीगर को तुरंत कॉल करें ({worker.phone})</span>
               </a>
               <button
                 onClick={onClose}
-                className="px-5 py-2.5 sm:py-3 rounded-xl border border-slate-700 text-slate-300 hover:text-white text-xs font-bold"
+                className="px-5 py-2.5 sm:py-3 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-bold"
               >
                 बंद करें (Close)
               </button>
@@ -281,7 +281,7 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
           /* Form */
           <form onSubmit={handleSubmit} noValidate className="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1">
             {error && (
-              <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
+              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{error}</span>
               </div>
@@ -289,15 +289,15 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
 
             {/* City Mismatch Notice Banner */}
             {activeUser?.city && worker?.city && activeUser.city.toLowerCase() !== worker.city.toLowerCase() && (
-              <div className="p-3.5 rounded-2xl bg-amber-500/15 border border-amber-500/40 text-amber-200 text-xs space-y-2">
-                <div className="flex items-center gap-2 font-black text-amber-300">
-                  <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
+              <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-2">
+                <div className="flex items-center gap-2 font-bold text-amber-800">
+                  <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
                   <span>सावधानी: शहर अलग है (City Mismatch Notice)</span>
                 </div>
                 <p className="leading-relaxed">
-                  आपका पंजीकृत शहर <strong className="text-white">{activeUser.city}</strong> है, जबकि कारीगर <strong className="text-white">{worker.name}</strong> केवल <strong className="text-amber-300">{worker.city}</strong> में उपलब्ध हैं।
+                  आपका पंजीकृत शहर <strong className="text-slate-900">{activeUser.city}</strong> है, जबकि कारीगर <strong className="text-slate-900">{worker.name}</strong> केवल <strong className="text-amber-800">{worker.city}</strong> में उपलब्ध हैं।
                 </p>
-                <div className="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-[11px] text-slate-300 space-y-1">
+                <div className="p-2.5 rounded-xl bg-white border border-amber-200 text-[11px] text-slate-600 space-y-1">
                   <p>• यदि आप <strong>{worker.city}</strong> के पते के लिए काम करवाना चाहते हैं, तो नीचे {worker.city} का सटीक पता दर्ज करें।</p>
                   <p>• यदि आप अपने शहर <strong>{activeUser.city}</strong> में कारीगर चाहते हैं, तो कृपया बैक जाकर {activeUser.city} का कारीगर चुनें।</p>
                 </div>
@@ -306,7 +306,7 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
 
             {/* Urgency Selection - Big Tap Friendly Buttons */}
             <div>
-              <label className="text-xs font-bold text-slate-200 block mb-1.5">
+              <label className="text-xs font-bold text-slate-700 block mb-1.5">
                 काम कब करवाना है? (When do you need service?)
               </label>
               <div className="grid grid-cols-3 gap-2">
@@ -321,12 +321,12 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
                     onClick={() => setUrgency(u.id)}
                     className={`p-2.5 rounded-xl text-center border transition-all active:scale-95 ${
                       urgency === u.id
-                        ? 'bg-amber-400 text-slate-950 font-black border-amber-400 shadow-md'
-                        : 'bg-slate-800 border-slate-700 text-slate-300'
+                        ? 'bg-slate-900 text-white font-bold border-slate-900 shadow-xs'
+                        : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                     }`}
                   >
                     <div className="text-xs font-bold">{u.label}</div>
-                    <div className="text-[10px] opacity-80">{u.sub}</div>
+                    <div className="text-[10px] opacity-75">{u.sub}</div>
                   </button>
                 ))}
               </div>
@@ -336,7 +336,7 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
             <div className="space-y-2">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label htmlFor="preferredDate" className="text-xs font-bold text-slate-300 block mb-1">
+                  <label htmlFor="preferredDate" className="text-xs font-bold text-slate-700 block mb-1">
                     तारीख चुनें (Select Date)
                   </label>
                   <input
@@ -346,17 +346,17 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
                     min={new Date().toISOString().split('T')[0]}
                     value={preferredDate}
                     onChange={(e) => setPreferredDate(e.target.value)}
-                    className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white focus:outline-none focus:border-amber-400 font-semibold"
+                    className="w-full px-3 py-2 text-sm rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:bg-white focus:outline-none focus:border-slate-900 font-semibold"
                   />
                 </div>
 
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label htmlFor="preferredTimeSlot" className="text-xs font-bold text-slate-300 block">
+                    <label htmlFor="preferredTimeSlot" className="text-xs font-bold text-slate-700 block">
                       पसंदीदा समय (Time Slot)
                     </label>
                     {loadingSlots && (
-                      <span className="text-[10px] text-amber-400 flex items-center gap-1 font-semibold">
+                      <span className="text-[10px] text-slate-500 flex items-center gap-1 font-semibold">
                         <Loader2 className="w-3 h-3 animate-spin" />
                         <span>जांच रहे हैं...</span>
                       </span>
@@ -367,10 +367,10 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
                     name="preferredTimeSlot"
                     value={preferredTimeSlot}
                     onChange={(e) => setPreferredTimeSlot(e.target.value)}
-                    className={`w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border text-white focus:outline-none font-semibold ${
+                    className={`w-full px-3 py-2 text-sm rounded-xl bg-slate-50 border text-slate-900 focus:bg-white focus:outline-none font-semibold ${
                       isCurrentSlotBusy 
-                        ? 'border-rose-500/80 text-rose-300' 
-                        : 'border-slate-700 focus:border-amber-400'
+                        ? 'border-rose-400 text-rose-800' 
+                        : 'border-slate-300 focus:border-slate-900'
                     }`}
                   >
                     {TIME_SLOTS.map((slot) => {
@@ -380,7 +380,7 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
                           key={slot.key} 
                           value={slot.label} 
                           disabled={busy}
-                          className={busy ? 'bg-slate-900 text-slate-500' : 'bg-slate-800 text-white'}
+                          className={busy ? 'bg-slate-100 text-slate-400' : 'bg-white text-slate-900'}
                         >
                           {slot.label} {busy ? '🔴 पहले से बुक (Booked)' : '🟢 उपलब्ध'}
                         </option>
@@ -392,18 +392,18 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
 
               {/* Slot availability banners */}
               {allSlotsBusy ? (
-                <div className="p-2.5 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+                <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
                   <span>कारीगर {worker.name} इस तारीख ({preferredDate}) के सभी स्लॉट में व्यस्त हैं। कृपया दूसरी तारीख चुनें।</span>
                 </div>
               ) : isCurrentSlotBusy ? (
-                <div className="p-2.5 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+                <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
                   <span>यह समय स्लॉट पहले से बुक है। कृपया ऊपर से कोई हरा (🟢 उपलब्ध) समय चुनें।</span>
                 </div>
               ) : busySlots.length > 0 ? (
-                <div className="p-2 rounded-xl bg-slate-800/80 border border-slate-700/60 text-[11px] text-slate-300 flex items-center gap-2">
-                  <span className="text-amber-400 font-bold">ℹ️ सूचना:</span>
+                <div className="p-2 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-600 flex items-center gap-2">
+                  <span className="text-amber-700 font-bold">ℹ️ सूचना:</span>
                   <span>इस तारीख को कारीगर का {busySlots.length} समय स्लॉट पहले से बुक है, बाकी उपलब्ध समय नीचे से चुन सकते हैं।</span>
                 </div>
               ) : null}
@@ -411,7 +411,7 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
 
             {/* Problem Description */}
             <div>
-              <label htmlFor="jobDescription" className="text-xs font-bold text-slate-300 block mb-1">
+              <label htmlFor="jobDescription" className="text-xs font-bold text-slate-700 block mb-1">
                 काम क्या है? (Describe the problem)
               </label>
               <textarea
@@ -421,21 +421,21 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
                 value={jobDescription}
                 onChange={(e) => setJobDescription(e.target.value)}
                 placeholder="उदा. नल टपक रहा है, पाइप बदलना है, या गेट का कब्जा वेल्ड करना है..."
-                className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
+                className="w-full px-3 py-2 text-sm rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-slate-900"
               />
             </div>
 
             {/* Customer Contact */}
-            <div className="pt-2 border-t border-slate-800 space-y-3">
+            <div className="pt-2 border-t border-slate-200 space-y-3">
               <div className="flex items-center justify-between">
-                <h4 className="text-xs font-extrabold uppercase tracking-wider text-amber-400">
+                <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-800">
                   आपका नाम व पता (Customer Information)
                 </h4>
                 {activeUser && (
                   <button
                     type="button"
                     onClick={() => setShowEditAddress(!showEditAddress)}
-                    className="text-[11px] font-bold text-amber-400 hover:text-amber-300 underline"
+                    className="text-[11px] font-bold text-amber-700 hover:text-amber-800 underline"
                   >
                     {showEditAddress ? '✓ सहेजा गया पता रखें' : '✏️ पता बदलें'}
                   </button>
@@ -444,18 +444,18 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
 
               {activeUser && !showEditAddress ? (
                 /* 1-Tap Fast Checkout Card */
-                <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-800/80 border border-emerald-500/30 flex items-center justify-between gap-3">
+                <div className="p-3 sm:p-3.5 rounded-2xl bg-emerald-50/50 border border-emerald-200 flex items-center justify-between gap-3">
                   <div className="min-w-0 space-y-0.5">
                     <div className="flex items-center gap-1.5">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                      <span className="font-bold text-white text-xs sm:text-sm truncate">{customerName}</span>
-                      <span className="text-slate-400 text-xs">({customerPhone})</span>
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span className="font-bold text-slate-900 text-xs sm:text-sm truncate">{customerName}</span>
+                      <span className="text-slate-500 text-xs">({customerPhone})</span>
                     </div>
-                    <p className="text-[11px] text-slate-300 truncate">
+                    <p className="text-[11px] text-slate-600 truncate">
                       📍 {customerAddress || `${area}, ${city}`}
                     </p>
                   </div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shrink-0">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 shrink-0">
                     सत्यापित पता
                   </span>
                 </div>
@@ -463,7 +463,7 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
                 <>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label htmlFor="bookingCustomerName" className="text-xs font-bold text-slate-300 block mb-1">आपका नाम (Your Name) *</label>
+                      <label htmlFor="bookingCustomerName" className="text-xs font-bold text-slate-700 block mb-1">आपका नाम (Your Name) *</label>
                       <input
                         id="bookingCustomerName"
                         name="customerName"
@@ -472,16 +472,16 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
                         value={customerName}
                         onChange={(e) => setCustomerName(e.target.value)}
                         placeholder="उदा. राहुल शर्मा"
-                        className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
+                        className="w-full px-3 py-2 text-sm rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-slate-900"
                       />
                     </div>
 
                     <div>
-                      <label htmlFor="bookingCustomerPhone" className="text-xs font-bold text-slate-300 block mb-1">
+                      <label htmlFor="bookingCustomerPhone" className="text-xs font-bold text-slate-700 block mb-1">
                         मोबाइल नंबर (Phone Number) *
                       </label>
                       <div className="relative flex items-center">
-                        <div className="absolute left-0 top-0 bottom-0 px-2.5 bg-slate-800 border-r border-slate-700 rounded-l-xl flex items-center gap-1 text-xs font-bold text-amber-400 select-none z-10">
+                        <div className="absolute left-0 top-0 bottom-0 px-2.5 bg-slate-100 border-r border-slate-300 rounded-l-xl flex items-center gap-1 text-xs font-bold text-slate-700 select-none z-10">
                           <span>🇮🇳</span>
                           <span>+91</span>
                         </div>
@@ -498,7 +498,7 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
                             setCustomerPhone(clean);
                           }}
                           placeholder="98765 43210"
-                          className="w-full pl-16 pr-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 font-mono tracking-wider"
+                          className="w-full pl-16 pr-3 py-2 text-sm rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-slate-900 font-mono tracking-wider"
                         />
                       </div>
                     </div>
@@ -517,12 +517,12 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
             </div>
 
             {/* Rate Banner */}
-            <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-between">
+            <div className="p-3 rounded-2xl bg-amber-50/70 border border-amber-200 flex items-center justify-between">
               <div>
-                <span className="text-xs text-amber-300 font-bold block">विजिटिंग चार्ज: ₹{worker.hourlyRate}</span>
-                <span className="text-[10px] text-slate-400">काम पूरा होने पर कारीगर को सीधे भुगतान करें</span>
+                <span className="text-xs text-amber-900 font-bold block">विजिटिंग चार्ज: ₹{worker.hourlyRate}</span>
+                <span className="text-[10px] text-slate-500">काम पूरा होने पर कारीगर को सीधे भुगतान करें</span>
               </div>
-              <span className="text-xs font-black text-white bg-slate-900 px-3 py-1 rounded-full border border-slate-700">
+              <span className="text-xs font-black text-slate-800 bg-white px-3 py-1 rounded-full border border-slate-200">
                 0% कमीशन
               </span>
             </div>
@@ -532,7 +532,7 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
               <button
                 type="button"
                 onClick={onClose}
-                className="w-full sm:w-auto px-4 py-2.5 sm:py-3 rounded-xl border border-slate-700 text-slate-300 hover:text-white text-xs font-bold"
+                className="w-full sm:w-auto px-4 py-2.5 sm:py-3 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-bold"
               >
                 रद्द करें
               </button>
@@ -540,13 +540,13 @@ export default function BookingModal({ worker, onClose, onBookingSuccess, curren
               <button
                 type="submit"
                 disabled={loading || allSlotsBusy || isCurrentSlotBusy}
-                className={`w-full sm:w-auto px-5 sm:px-6 py-3 rounded-xl font-black text-xs sm:text-sm shadow-lg transition-all flex items-center justify-center gap-2 active:scale-95 ${
+                className={`w-full sm:w-auto px-5 sm:px-6 py-3 rounded-xl font-bold text-xs sm:text-sm shadow-xs transition-all flex items-center justify-center gap-2 active:scale-95 ${
                   allSlotsBusy || isCurrentSlotBusy
-                    ? 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed shadow-none'
-                    : 'bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 shadow-amber-500/20'
+                    ? 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed shadow-none'
+                    : 'bg-slate-900 hover:bg-slate-800 text-white'
                 }`}
               >
-                <CheckCircle2 className="w-4 h-4 shrink-0" />
+                <CheckCircle2 className="w-4 h-4 shrink-0 text-amber-400" />
                 <span>
                   {loading 
                     ? 'Processing...' 

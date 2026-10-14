@@ -240,7 +240,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-amber-500 selection:text-slate-950 pb-24 md:pb-0 overflow-x-hidden">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-amber-100 selection:text-amber-900 pb-24 md:pb-0 overflow-x-hidden">
       
       {/* Dynamic SEO Meta Tags via Helmet */}
       <SEO 
@@ -251,8 +251,8 @@ export default function App() {
       {/* Floating Toast Notification */}
       {toast && (
         <div className="fixed top-16 sm:top-20 right-3 sm:right-6 z-50 animate-bounce max-w-[90vw]">
-          <div className="flex items-center gap-2 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-2xl bg-amber-400 text-slate-950 font-black text-xs sm:text-sm shadow-2xl shadow-amber-500/40 border border-amber-300">
-            <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-slate-950 shrink-0" />
+          <div className="flex items-center gap-2 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-2xl bg-slate-900 text-white font-bold text-xs sm:text-sm shadow-xl border border-slate-700">
+            <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400 shrink-0" />
             <span className="truncate">{toast.message}</span>
           </div>
         </div>
@@ -294,21 +294,21 @@ export default function App() {
         
         {/* Customer Location Context Banner */}
         {currentUser?.city && (
-          <div className="mb-3 sm:mb-4 p-3 rounded-2xl bg-slate-900/80 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-sm">
+          <div className="mb-3 sm:mb-4 p-3 rounded-2xl bg-white border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-xs">
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
+              <div className="w-8 h-8 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-700 shrink-0">
                 <MapPin className="w-4 h-4" />
               </div>
               <div className="min-w-0">
-                <p className="text-xs font-bold text-white truncate">
-                  आपका पंजीकृत शहर: <span className="text-amber-300 font-extrabold">{currentUser.city}</span>
+                <p className="text-xs font-bold text-slate-900 truncate">
+                  आपका पंजीकृत शहर: <span className="text-amber-700 font-extrabold">{currentUser.city}</span>
                 </p>
-                <p className="text-[11px] text-slate-400">
+                <p className="text-[11px] text-slate-500">
                   {selectedCity === currentUser.city ? (
-                    <span className="text-emerald-400 font-medium">✓ आपके शहर के स्थानीय कारीगर दिखाए जा रहे हैं</span>
+                    <span className="text-emerald-700 font-semibold">✓ आपके शहर के स्थानीय कारीगर दिखाए जा रहे हैं</span>
                   ) : (
                     <span>
-                      अभी आप <strong className="text-white">'{selectedCity === 'All' ? 'सभी शहरों' : selectedCity}'</strong> के कारीगर देख रहे हैं।
+                      अभी आप <strong className="text-slate-800">'{selectedCity === 'All' ? 'सभी शहरों' : selectedCity}'</strong> के कारीगर देख रहे हैं।
                     </span>
                   )}
                 </p>
@@ -318,7 +318,7 @@ export default function App() {
             {selectedCity !== currentUser.city && (
               <button
                 onClick={() => setSelectedCity(currentUser.city)}
-                className="self-start sm:self-auto px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition-all shadow-sm active:scale-95 shrink-0"
+                className="self-start sm:self-auto px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-all shadow-xs active:scale-95 shrink-0"
               >
                 📍 वापस {currentUser.city} के कारीगर देखें
               </button>
@@ -335,15 +335,15 @@ export default function App() {
         />
 
         {/* Directory Header & Sorting Controls */}
-        <div className="mt-3 sm:mt-8 mb-4 sm:mb-6 flex flex-col md:flex-row md:items-center justify-between gap-3 p-3 sm:p-4 rounded-2xl bg-slate-900/60 border border-slate-800">
+        <div className="mt-3 sm:mt-8 mb-4 sm:mb-6 flex flex-col md:flex-row md:items-center justify-between gap-3 p-3 sm:p-4 rounded-2xl bg-white border border-slate-200 shadow-xs">
           <div className="min-w-0">
-            <h2 className="text-sm xs:text-base sm:text-xl font-black text-white flex flex-wrap items-center gap-1.5 sm:gap-2">
+            <h2 className="text-sm xs:text-base sm:text-xl font-black text-slate-900 flex flex-wrap items-center gap-1.5 sm:gap-2">
               <span>{selectedCategory === 'All' ? 'उपलब्ध कारीगर (Available Workers)' : `${selectedCategory} कारीगर`}</span>
-              <span className="text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300 font-bold border border-amber-500/30 shrink-0">
+              <span className="text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-800 font-bold border border-slate-200 shrink-0">
                 {workers.length} हाजिर
               </span>
             </h2>
-            <p className="text-[11px] sm:text-xs text-slate-400 mt-0.5">
+            <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">
               {selectedCity !== 'All' ? `स्थान: ${selectedCity}` : 'सभी शहरों में'}
             </p>
           </div>
@@ -355,37 +355,37 @@ export default function App() {
               onClick={() => setAvailableOnly(!availableOnly)}
               className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs font-bold border transition-all active:scale-95 shrink-0 ${
                 availableOnly
-                  ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300'
-                  : 'bg-slate-800 border-slate-700 text-slate-300 hover:text-white'
+                  ? 'bg-emerald-50 border-emerald-300 text-emerald-800 shadow-xs'
+                  : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
               }`}
             >
-              <span className={`w-2 h-2 rounded-full ${availableOnly ? 'bg-emerald-400' : 'bg-slate-500'}`} />
+              <span className={`w-2 h-2 rounded-full ${availableOnly ? 'bg-emerald-500' : 'bg-slate-400'}`} />
               <span className="text-[11px] sm:text-xs">अभी खाली (Available)</span>
             </button>
 
             {/* Sort Selector */}
-            <div className="flex items-center gap-1 bg-slate-800 border border-slate-700 rounded-xl px-2 sm:px-2.5 py-1.5 text-xs shrink-0 max-w-[170px] xs:max-w-none">
+            <div className="flex items-center gap-1 bg-slate-50 border border-slate-200 rounded-xl px-2 sm:px-2.5 py-1.5 text-xs shrink-0 max-w-[170px] xs:max-w-none">
               <ArrowUpDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="bg-transparent text-white font-bold focus:outline-none cursor-pointer text-[11px] sm:text-xs truncate w-full"
+                className="bg-transparent text-slate-800 font-semibold focus:outline-none cursor-pointer text-[11px] sm:text-xs truncate w-full"
               >
-                <option value="rating" className="bg-slate-900">⭐ रेटिंग (Rating)</option>
-                <option value="rate_asc" className="bg-slate-900">₹ कम रेट (Lowest)</option>
-                <option value="rate_desc" className="bg-slate-900">₹ ज्यादा रेट (Highest)</option>
-                <option value="experience" className="bg-slate-900">अनुभव (Experience)</option>
-                <option value="completed" className="bg-slate-900">ज्यादा काम (Jobs)</option>
+                <option value="rating" className="bg-white text-slate-800">⭐ रेटिंग (Rating)</option>
+                <option value="rate_asc" className="bg-white text-slate-800">₹ कम रेट (Lowest)</option>
+                <option value="rate_desc" className="bg-white text-slate-800">₹ ज्यादा रेट (Highest)</option>
+                <option value="experience" className="bg-white text-slate-800">अनुभव (Experience)</option>
+                <option value="completed" className="bg-white text-slate-800">ज्यादा काम (Jobs)</option>
               </select>
             </div>
 
             {/* View Mode Toggle: Grid vs Compact List */}
-            <div className="flex items-center bg-slate-800 border border-slate-700 rounded-xl p-0.5 shrink-0">
+            <div className="flex items-center bg-slate-100 border border-slate-200 rounded-xl p-0.5 shrink-0">
               <button
                 type="button"
                 onClick={() => setViewMode('compact')}
                 className={`p-1.5 rounded-lg text-xs font-bold transition-all ${
-                  viewMode === 'compact' ? 'bg-amber-400 text-slate-950 shadow' : 'text-slate-400 hover:text-white'
+                  viewMode === 'compact' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-800'
                 }`}
                 title="कॉम्पैक्ट लिस्ट व्यू (स्मार्टफोन के लिए बेस्ट)"
               >
@@ -395,7 +395,7 @@ export default function App() {
                 type="button"
                 onClick={() => setViewMode('grid')}
                 className={`p-1.5 rounded-lg text-xs font-bold transition-all ${
-                  viewMode === 'grid' ? 'bg-amber-400 text-slate-950 shadow' : 'text-slate-400 hover:text-white'
+                  viewMode === 'grid' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-800'
                 }`}
                 title="ग्रिड कार्ड व्यू"
               >
@@ -407,7 +407,7 @@ export default function App() {
             <button
               onClick={fetchData}
               title="रिफ्रेश करें"
-              className="p-1.5 sm:p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors shrink-0"
+              className="p-1.5 sm:p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 transition-colors shrink-0"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             </button>
@@ -418,50 +418,50 @@ export default function App() {
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 my-8">
             {[1, 2, 3, 4, 5, 6].map((n) => (
-              <div key={n} className="p-5 rounded-2xl bg-slate-900/40 border border-slate-800 animate-pulse space-y-3">
+              <div key={n} className="p-5 rounded-2xl bg-white border border-slate-200 animate-pulse space-y-3 shadow-xs">
                 <div className="flex items-center gap-3">
-                  <div className="w-16 h-16 rounded-2xl bg-slate-800" />
+                  <div className="w-16 h-16 rounded-2xl bg-slate-100" />
                   <div className="space-y-2 flex-1">
-                    <div className="h-4 bg-slate-800 rounded w-3/4" />
-                    <div className="h-3 bg-slate-800 rounded w-1/2" />
+                    <div className="h-4 bg-slate-100 rounded w-3/4" />
+                    <div className="h-3 bg-slate-100 rounded w-1/2" />
                   </div>
                 </div>
-                <div className="h-3 bg-slate-800 rounded w-full" />
-                <div className="h-10 bg-slate-800 rounded w-full" />
+                <div className="h-3 bg-slate-100 rounded w-full" />
+                <div className="h-10 bg-slate-100 rounded w-full" />
               </div>
             ))}
           </div>
         ) : error ? (
-          <div className="p-6 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-center max-w-lg mx-auto my-8 space-y-3">
-            <AlertCircle className="w-10 h-10 text-rose-400 mx-auto" />
-            <h3 className="text-base font-bold text-white">कनेक्शन में समस्या</h3>
-            <p className="text-xs text-rose-300">{error}</p>
+          <div className="p-6 rounded-2xl bg-rose-50 border border-rose-200 text-center max-w-lg mx-auto my-8 space-y-3 shadow-xs">
+            <AlertCircle className="w-10 h-10 text-rose-600 mx-auto" />
+            <h3 className="text-base font-bold text-slate-900">कनेक्शन में समस्या</h3>
+            <p className="text-xs text-rose-700">{error}</p>
             <button
               onClick={fetchData}
-              className="px-5 py-2.5 rounded-xl bg-rose-500 hover:bg-rose-400 text-slate-950 font-black text-xs"
+              className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs"
             >
               दोबारा कोशिश करें
             </button>
           </div>
         ) : workers.length === 0 ? (
-          <div className="text-center py-12 px-4 bg-slate-900/30 border border-slate-800 rounded-3xl my-6 max-w-2xl mx-auto space-y-3">
-            <div className="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center mx-auto">
+          <div className="text-center py-12 px-4 bg-white border border-slate-200 rounded-3xl my-6 max-w-2xl mx-auto space-y-3 shadow-xs">
+            <div className="w-14 h-14 rounded-2xl bg-slate-100 text-slate-600 flex items-center justify-center mx-auto">
               <Search className="w-6 h-6" />
             </div>
-            <h3 className="text-lg font-bold text-white">इस इलाके में कोई कारीगर नहीं मिला</h3>
-            <p className="text-xs sm:text-sm text-slate-400">
+            <h3 className="text-lg font-bold text-slate-900">इस इलाके में कोई कारीगर नहीं मिला</h3>
+            <p className="text-xs sm:text-sm text-slate-500">
               कृपया दूसरा शहर या दूसरा काम चुनकर देखें, या सभी फिल्टर रीसेट करें।
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-2.5 pt-2">
               <button
                 onClick={handleResetFilters}
-                className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs shadow"
+                className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-xs"
               >
                 सभी फिल्टर हटाएं (Reset)
               </button>
               <button
                 onClick={() => setShowRegisterModal(true)}
-                className="px-5 py-2.5 rounded-xl border border-slate-700 hover:bg-slate-800 text-slate-200 text-xs font-semibold"
+                className="px-5 py-2.5 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-800 text-xs font-semibold"
               >
                 इस इलाके का पहला कारीगर बनें
               </button>

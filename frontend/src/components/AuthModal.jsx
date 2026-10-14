@@ -86,39 +86,39 @@ export default function AuthModal({
   if (activeSessionUser) {
     const isWorker = Boolean(currentWorker);
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/85 backdrop-blur-md">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm">
         <div 
-          className="relative w-full max-w-md bg-slate-900 border border-slate-700/80 rounded-3xl shadow-2xl overflow-hidden p-6 sm:p-8 text-center space-y-5"
+          className="relative w-full max-w-md bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden p-6 sm:p-8 text-center space-y-5 text-slate-900"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="w-16 h-16 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center justify-center mx-auto shadow-lg shadow-amber-500/10">
-            <ShieldCheck className="w-8 h-8" />
+          <div className="w-16 h-16 rounded-2xl bg-slate-100 border border-slate-200 text-slate-900 flex items-center justify-center mx-auto shadow-xs">
+            <ShieldCheck className="w-8 h-8 text-slate-800" />
           </div>
 
           <div className="space-y-1.5">
-            <span className="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+            <span className="text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
               सत्र सक्रिय (Active Session)
             </span>
-            <h3 className="text-lg font-black text-white">
+            <h3 className="text-lg font-bold text-slate-900">
               आप पहले से लॉगिन हैं!
             </h3>
-            <p className="text-xs text-slate-300">
+            <p className="text-xs text-slate-500">
               सुरक्षा नियमों के अनुसार, बिना लॉगआउट किए दोबारा लॉगिन करने की अनुमति नहीं है।
             </p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 text-left space-y-2">
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-left space-y-2">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-400">नाम:</span>
-              <span className="font-bold text-white">{activeSessionUser.name}</span>
+              <span className="text-slate-500">नाम:</span>
+              <span className="font-bold text-slate-900">{activeSessionUser.name}</span>
             </div>
             <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-400">मोबाइल:</span>
-              <span className="font-bold text-amber-300">{activeSessionUser.phone}</span>
+              <span className="text-slate-500">मोबाइल:</span>
+              <span className="font-bold text-slate-900">{activeSessionUser.phone}</span>
             </div>
             <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-400">खाता प्रकार:</span>
-              <span className="font-bold text-sky-400">{isWorker ? 'कारीगर (Worker Pro)' : 'ग्राहक / नियोक्ता (Customer)'}</span>
+              <span className="text-slate-500">खाता प्रकार:</span>
+              <span className="font-bold text-slate-800">{isWorker ? 'कारीगर (Worker Pro)' : 'ग्राहक / नियोक्ता (Customer)'}</span>
             </div>
           </div>
 
@@ -129,7 +129,7 @@ export default function AuthModal({
                 else onCustomerLogout();
                 onClose();
               }}
-              className="w-full py-3 rounded-2xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 font-bold text-xs border border-rose-500/30 transition-all flex items-center justify-center gap-2"
+              className="w-full py-3 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200 transition-all flex items-center justify-center gap-2"
             >
               <LogOut className="w-4 h-4" />
               <span>लॉगआउट करें (Logout to Switch Account)</span>
@@ -137,7 +137,7 @@ export default function AuthModal({
 
             <button
               onClick={onClose}
-              className="w-full py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs border border-slate-700 transition-all"
+              className="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs border border-slate-200 transition-all"
             >
               रद्द करें / वापस जाएं
             </button>
@@ -277,40 +277,40 @@ export default function AuthModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
       <div 
-        className={`relative w-full ${role === 'customer' && mode === 'register' ? 'max-w-4xl' : 'max-w-md'} bg-slate-900 border border-slate-700/80 rounded-3xl shadow-2xl overflow-hidden my-auto transition-all duration-300`}
+        className={`relative w-full ${role === 'customer' && mode === 'register' ? 'max-w-4xl' : 'max-w-md'} bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden my-auto transition-all duration-300 text-slate-900`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header decoration */}
-        <div className="bg-gradient-to-r from-amber-500/20 via-sky-500/20 to-emerald-500/20 px-6 pt-6 pb-4 border-b border-slate-800">
+        <div className="bg-slate-50 px-6 pt-6 pb-4 border-b border-slate-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400">
-                <KeyRound className="w-5 h-5" />
+              <div className="w-10 h-10 rounded-2xl bg-slate-200 text-slate-800 flex items-center justify-center">
+                <KeyRound className="w-5 h-5 text-slate-800" />
               </div>
               <div>
-                <h3 className="text-lg font-black text-white">सुरक्षित लॉगिन (Secure Access)</h3>
-                <p className="text-xs text-slate-400">प्राइवेट हिस्ट्री और डेटा सुरक्षा के लिए</p>
+                <h3 className="text-lg font-bold text-slate-900">सुरक्षित लॉगिन (Secure Access)</h3>
+                <p className="text-xs text-slate-500">प्राइवेट हिस्ट्री और डेटा सुरक्षा के लिए</p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition-colors"
+              className="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600 hover:text-slate-900 flex items-center justify-center transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
 
           {/* Role Selector Tabs */}
-          <div className="grid grid-cols-2 gap-2 mt-4 p-1 bg-slate-950/60 rounded-2xl border border-slate-800">
+          <div className="grid grid-cols-2 gap-2 mt-4 p-1 bg-slate-200/70 rounded-2xl border border-slate-200">
             <button
               type="button"
               onClick={() => { setRole('customer'); setError(''); setSuccessMsg(''); }}
               className={`flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-all ${
                 role === 'customer'
-                  ? 'bg-amber-500 text-slate-950 shadow-md scale-[1.02]'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-slate-900 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <User className="w-4 h-4" />
@@ -321,8 +321,8 @@ export default function AuthModal({
               onClick={() => { setRole('worker'); setError(''); setSuccessMsg(''); }}
               className={`flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-all ${
                 role === 'worker'
-                  ? 'bg-sky-500 text-slate-950 shadow-md scale-[1.02]'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-slate-900 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <Briefcase className="w-4 h-4" />
@@ -335,15 +335,15 @@ export default function AuthModal({
         <div className="p-5 sm:p-6 space-y-4">
           {/* Status Message */}
           {error && (
-            <div className="p-3 rounded-2xl bg-rose-500/15 border border-rose-500/30 flex items-start gap-2.5 text-rose-300 text-xs">
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+            <div className="p-3 rounded-2xl bg-rose-50 border border-rose-200 flex items-start gap-2.5 text-rose-800 text-xs">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600" />
               <span>{error}</span>
             </div>
           )}
 
           {successMsg && (
-            <div className="p-3 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-start gap-2.5 text-emerald-300 text-xs font-semibold">
-              <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
+            <div className="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-start gap-2.5 text-emerald-800 text-xs font-semibold">
+              <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-emerald-600" />
               <span>{successMsg}</span>
             </div>
           )}
@@ -352,14 +352,14 @@ export default function AuthModal({
           {role === 'customer' && (
             <div>
               {/* Login / Register Toggle */}
-              <div className="flex border-b border-slate-800 mb-4">
+              <div className="flex border-b border-slate-200 mb-4">
                 <button
                   type="button"
                   onClick={() => { setMode('login'); setError(''); }}
                   className={`flex-1 pb-2.5 text-xs font-bold text-center border-b-2 transition-all ${
                     mode === 'login'
-                      ? 'border-amber-500 text-amber-400'
-                      : 'border-transparent text-slate-400 hover:text-slate-300'
+                      ? 'border-slate-900 text-slate-900'
+                      : 'border-transparent text-slate-500 hover:text-slate-800'
                   }`}
                 >
                   लॉगिन करें (Sign In)
@@ -369,8 +369,8 @@ export default function AuthModal({
                   onClick={() => { setMode('register'); setError(''); }}
                   className={`flex-1 pb-2.5 text-xs font-bold text-center border-b-2 transition-all ${
                     mode === 'register'
-                      ? 'border-amber-500 text-amber-400'
-                      : 'border-transparent text-slate-400 hover:text-slate-300'
+                      ? 'border-slate-900 text-slate-900'
+                      : 'border-transparent text-slate-500 hover:text-slate-800'
                   }`}
                 >
                   नया खाता बनाएं (Sign Up)
@@ -382,15 +382,15 @@ export default function AuthModal({
                   /* HORIZONTAL 2-COLUMN RESPONSIVE LAYOUT */
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 items-start">
                     {/* Left Column: Personal Credentials */}
-                    <div className="space-y-3.5 bg-slate-950/40 p-4 rounded-2xl border border-slate-800/80">
-                      <div className="flex items-center gap-1.5 pb-1 border-b border-slate-800 text-xs font-bold text-amber-400 uppercase tracking-wider">
-                        <User className="w-3.5 h-3.5" />
+                    <div className="space-y-3.5 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                      <div className="flex items-center gap-1.5 pb-1 border-b border-slate-200 text-xs font-bold text-slate-800 uppercase tracking-wider">
+                        <User className="w-3.5 h-3.5 text-slate-600" />
                         <span>1. व्यक्तिगत विवरण (Personal Details)</span>
                       </div>
 
                       <div>
-                        <label htmlFor="customerName" className="block text-xs font-medium text-slate-300 mb-1">
-                          आपका पूरा नाम <span className="text-rose-400">*</span>
+                        <label htmlFor="customerName" className="block text-xs font-semibold text-slate-700 mb-1">
+                          आपका पूरा नाम <span className="text-rose-500">*</span>
                         </label>
                         <div className="relative">
                           <User className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
@@ -402,20 +402,20 @@ export default function AuthModal({
                             value={customerName}
                             onChange={(e) => setCustomerName(e.target.value)}
                             placeholder="जैसे: राहुल शर्मा"
-                            className="w-full pl-9 pr-3 py-2.5 bg-slate-800/90 border border-slate-700 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-amber-500"
+                            className="w-full pl-9 pr-3 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-900 text-xs placeholder-slate-400 focus:outline-none focus:border-slate-900"
                           />
                         </div>
                       </div>
 
                       <div>
-                        <label htmlFor="customerPhone" className="block text-xs font-medium text-slate-300 mb-1">
-                          मोबाइल नंबर <span className="text-rose-400">*</span>
+                        <label htmlFor="customerPhone" className="block text-xs font-semibold text-slate-700 mb-1">
+                          मोबाइल नंबर <span className="text-rose-500">*</span>
                         </label>
                         <div className="relative flex items-center">
-                          <span className="absolute left-3 text-xs font-bold text-amber-400 select-none flex items-center gap-1 z-10 pointer-events-none">
+                          <span className="absolute left-3 text-xs font-bold text-slate-700 select-none flex items-center gap-1 z-10 pointer-events-none">
                             <span>🇮🇳</span>
                             <span>+91</span>
-                            <span className="text-slate-600">|</span>
+                            <span className="text-slate-300">|</span>
                           </span>
                           <input
                             id="customerPhone"
@@ -429,14 +429,14 @@ export default function AuthModal({
                               setCustomerPhone(cleaned.slice(0, 10));
                             }}
                             placeholder="98765 43210"
-                            className="w-full pl-16 pr-3 py-2.5 bg-slate-800/90 border border-slate-700 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-amber-500 font-mono tracking-wider"
+                            className="w-full pl-16 pr-3 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-900 text-xs placeholder-slate-400 focus:outline-none focus:border-slate-900 font-mono tracking-wider"
                           />
                         </div>
                       </div>
 
                       <div>
-                        <label htmlFor="customerPin" className="block text-xs font-medium text-slate-300 mb-1">
-                          4-अंकों का गुप्त PIN <span className="text-rose-400">*</span>
+                        <label htmlFor="customerPin" className="block text-xs font-semibold text-slate-700 mb-1">
+                          4-अंकों का गुप्त PIN <span className="text-rose-500">*</span>
                         </label>
                         <div className="relative">
                           <Lock className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
@@ -449,27 +449,27 @@ export default function AuthModal({
                             value={customerPin}
                             onChange={(e) => setCustomerPin(e.target.value.replace(/[^0-9]/g, ''))}
                             placeholder="अपना 4-अंकों का PIN बनाएं (उदा. 1234)"
-                            className="w-full pl-9 pr-10 py-2.5 bg-slate-800/90 border border-slate-700 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-amber-500 font-mono tracking-widest"
+                            className="w-full pl-9 pr-10 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-900 text-xs placeholder-slate-400 focus:outline-none focus:border-slate-900 font-mono tracking-widest"
                           />
                           <button
                             type="button"
                             onClick={() => setShowPin(!showPin)}
-                            className="absolute right-3 top-3 text-slate-400 hover:text-slate-200"
+                            className="absolute right-3 top-3 text-slate-400 hover:text-slate-600"
                             aria-label={showPin ? "PIN छुपाएं" : "PIN देखें"}
                           >
                             {showPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                           </button>
                         </div>
-                        <p className="text-[10px] text-slate-400 mt-1">
+                        <p className="text-[10px] text-slate-500 mt-1">
                           💡 यह 4 अंकों का गुप्त पिन ATM पिन जैसा है। इसे याद रखें।
                         </p>
                       </div>
                     </div>
 
                     {/* Right Column: Divided Address */}
-                    <div className="space-y-2 bg-slate-950/40 p-4 rounded-2xl border border-slate-800/80">
-                      <div className="flex items-center gap-1.5 pb-1 border-b border-slate-800 text-xs font-bold text-amber-400 uppercase tracking-wider">
-                        <MapPin className="w-3.5 h-3.5" />
+                    <div className="space-y-2 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                      <div className="flex items-center gap-1.5 pb-1 border-b border-slate-200 text-xs font-bold text-slate-800 uppercase tracking-wider">
+                        <MapPin className="w-3.5 h-3.5 text-slate-600" />
                         <span>2. सेवा का पता (Service Address - वैकल्पिक)</span>
                       </div>
                       <AddressInputFields
@@ -488,14 +488,14 @@ export default function AuthModal({
                   /* LOGIN MODE (Compact single-column) */
                   <div className="space-y-3.5">
                     <div>
-                      <label htmlFor="customerPhone" className="block text-xs font-medium text-slate-300 mb-1">
-                        मोबाइल नंबर <span className="text-rose-400">*</span>
+                      <label htmlFor="customerPhone" className="block text-xs font-semibold text-slate-700 mb-1">
+                        मोबाइल नंबर <span className="text-rose-500">*</span>
                       </label>
                       <div className="relative flex items-center">
-                        <span className="absolute left-3 text-xs font-bold text-amber-400 select-none flex items-center gap-1 z-10 pointer-events-none">
+                        <span className="absolute left-3 text-xs font-bold text-slate-700 select-none flex items-center gap-1 z-10 pointer-events-none">
                           <span>🇮🇳</span>
                           <span>+91</span>
-                          <span className="text-slate-600">|</span>
+                          <span className="text-slate-300">|</span>
                         </span>
                         <input
                           id="customerPhone"
@@ -509,14 +509,14 @@ export default function AuthModal({
                             setCustomerPhone(cleaned.slice(0, 10));
                           }}
                           placeholder="98765 43210"
-                          className="w-full pl-16 pr-3 py-2.5 bg-slate-800/90 border border-slate-700 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-amber-500 font-mono tracking-wider"
+                          className="w-full pl-16 pr-3 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-900 text-xs placeholder-slate-400 focus:outline-none focus:border-slate-900 font-mono tracking-wider"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label htmlFor="customerPin" className="block text-xs font-medium text-slate-300 mb-1">
-                        4-अंकों का गुप्त PIN <span className="text-rose-400">*</span>
+                      <label htmlFor="customerPin" className="block text-xs font-semibold text-slate-700 mb-1">
+                        4-अंकों का गुप्त PIN <span className="text-rose-500">*</span>
                       </label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
@@ -529,18 +529,18 @@ export default function AuthModal({
                           value={customerPin}
                           onChange={(e) => setCustomerPin(e.target.value.replace(/[^0-9]/g, ''))}
                           placeholder="अपना 4-अंकों का PIN दर्ज करें"
-                          className="w-full pl-9 pr-10 py-2.5 bg-slate-800/90 border border-slate-700 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-amber-500 font-mono tracking-widest"
+                          className="w-full pl-9 pr-10 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-900 text-xs placeholder-slate-400 focus:outline-none focus:border-slate-900 font-mono tracking-widest"
                         />
                         <button
                           type="button"
                           onClick={() => setShowPin(!showPin)}
-                          className="absolute right-3 top-3 text-slate-400 hover:text-slate-200"
+                          className="absolute right-3 top-3 text-slate-400 hover:text-slate-600"
                           aria-label={showPin ? "PIN छुपाएं" : "PIN देखें"}
                         >
                           {showPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                         </button>
                       </div>
-                      <p className="text-[10px] text-slate-400 mt-1">
+                      <p className="text-[10px] text-slate-500 mt-1">
                         सिर्फ आपका मोबाइल नंबर और PIN चाहिए, कोई OTP की प्रतीक्षा नहीं।
                       </p>
                     </div>
@@ -550,14 +550,14 @@ export default function AuthModal({
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full mt-3 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 active:scale-98 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="w-full mt-3 py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-xs active:scale-98 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   {loading ? (
-                    <div className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   ) : (
                     <>
                       <span>{mode === 'register' ? 'खाता बनाएं और लॉगिन करें' : 'सुरक्षित लॉगिन करें'}</span>
-                      <ArrowRight className="w-4 h-4" />
+                      <ArrowRight className="w-4 h-4 text-amber-400" />
                     </>
                   )}
                 </button>
@@ -568,8 +568,8 @@ export default function AuthModal({
           {/* ================= WORKER FORM ================= */}
           {role === 'worker' && (
             <div>
-              <div className="mb-3 p-3 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex items-start gap-2 text-sky-300 text-xs">
-                <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5" />
+              <div className="mb-3 p-3 rounded-2xl bg-sky-50 border border-sky-200 flex items-start gap-2 text-sky-800 text-xs">
+                <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5 text-sky-600" />
                 <span>
                   {needsWorkerPinSetup 
                     ? `नमस्ते ${workerPromptName}! कृपया पहली बार अपना 4-अंकों का गुप्त PIN बनाएं।`
@@ -579,14 +579,14 @@ export default function AuthModal({
 
               <form onSubmit={handleWorkerSubmit} className="space-y-3.5" noValidate>
                 <div>
-                  <label htmlFor="workerPhone" className="block text-xs font-medium text-slate-300 mb-1">
-                    कारीगर मोबाइल नंबर <span className="text-rose-400">*</span>
+                  <label htmlFor="workerPhone" className="block text-xs font-semibold text-slate-700 mb-1">
+                    कारीगर मोबाइल नंबर <span className="text-rose-500">*</span>
                   </label>
                   <div className="relative flex items-center">
-                    <span className="absolute left-3 text-xs font-bold text-sky-400 select-none flex items-center gap-1 z-10 pointer-events-none">
+                    <span className="absolute left-3 text-xs font-bold text-slate-700 select-none flex items-center gap-1 z-10 pointer-events-none">
                       <span>🇮🇳</span>
                       <span>+91</span>
-                      <span className="text-slate-600">|</span>
+                      <span className="text-slate-300">|</span>
                     </span>
                     <input
                       id="workerPhone"
@@ -601,14 +601,14 @@ export default function AuthModal({
                         setWorkerPhone(cleaned.slice(0, 10));
                       }}
                       placeholder="98765 43210"
-                      className="w-full pl-16 pr-3 py-2.5 bg-slate-800/90 border border-slate-700 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-sky-500 font-mono tracking-wider disabled:opacity-60"
+                      className="w-full pl-16 pr-3 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-900 text-xs placeholder-slate-400 focus:outline-none focus:border-slate-900 font-mono tracking-wider disabled:opacity-60"
                     />
                   </div>
                 </div>
 
                 {!needsWorkerPinSetup ? (
                   <div>
-                    <label htmlFor="workerPin" className="block text-xs font-medium text-slate-300 mb-1">
+                    <label htmlFor="workerPin" className="block text-xs font-semibold text-slate-700 mb-1">
                       4-अंकों का कारीगर PIN
                     </label>
                     <div className="relative">
@@ -622,28 +622,28 @@ export default function AuthModal({
                         value={workerPin}
                         onChange={(e) => setWorkerPin(e.target.value.replace(/[^0-9]/g, ''))}
                         placeholder="आपका 4-अंकों का गुप्त PIN"
-                        className="w-full pl-9 pr-10 py-2.5 bg-slate-800/90 border border-slate-700 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-sky-500 font-mono tracking-widest"
+                        className="w-full pl-9 pr-10 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-900 text-xs placeholder-slate-400 focus:outline-none focus:border-slate-900 font-mono tracking-widest"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPin(!showPin)}
-                        className="absolute right-3 top-3 text-slate-400 hover:text-slate-200"
+                        className="absolute right-3 top-3 text-slate-400 hover:text-slate-600"
                         aria-label={showPin ? "PIN छुपाएं" : "PIN देखें"}
                       >
                         {showPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
                     </div>
-                    <p className="text-[10px] text-slate-400 mt-1">
+                    <p className="text-[10px] text-slate-500 mt-1">
                       (अगर पहली बार लॉगिन कर रहे हैं और PIN नहीं है, तो सिर्फ नंबर डालकर लॉगिन दबाएं)
                     </p>
                   </div>
                 ) : (
                   <div>
-                    <label htmlFor="newWorkerPin" className="block text-xs font-medium text-amber-300 mb-1">
-                      नया 4-अंकों का PIN बनाएं <span className="text-rose-400">*</span>
+                    <label htmlFor="newWorkerPin" className="block text-xs font-semibold text-slate-700 mb-1">
+                      नया 4-अंकों का PIN बनाएं <span className="text-rose-500">*</span>
                     </label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-3 w-4 h-4 text-amber-400" />
+                      <Lock className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
                       <input
                         id="newWorkerPin"
                         name="newWorkerPin"
@@ -653,18 +653,18 @@ export default function AuthModal({
                         value={newWorkerPin}
                         onChange={(e) => setNewWorkerPin(e.target.value.replace(/[^0-9]/g, ''))}
                         placeholder="जैसे: 2468"
-                        className="w-full pl-9 pr-10 py-2.5 bg-slate-800/90 border border-amber-500/50 rounded-xl text-white text-xs placeholder-slate-500 focus:outline-none focus:border-amber-400 font-mono tracking-widest"
+                        className="w-full pl-9 pr-10 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-900 text-xs placeholder-slate-400 focus:outline-none focus:border-slate-900 font-mono tracking-widest"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPin(!showPin)}
-                        className="absolute right-3 top-3 text-slate-400 hover:text-slate-200"
+                        className="absolute right-3 top-3 text-slate-400 hover:text-slate-600"
                         aria-label={showPin ? "PIN छुपाएं" : "PIN देखें"}
                       >
                         {showPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
                     </div>
-                    <p className="text-[10px] text-slate-400 mt-1">
+                    <p className="text-[10px] text-slate-500 mt-1">
                       भविष्य में लॉगिन करने के लिए इस 4 अंकों के गुप्त पिन को याद रखें।
                     </p>
                   </div>
@@ -673,22 +673,22 @@ export default function AuthModal({
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full mt-2 py-3 px-4 rounded-xl bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-400 hover:to-sky-500 text-slate-950 font-black text-xs shadow-lg shadow-sky-500/20 active:scale-98 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="w-full mt-2 py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-xs active:scale-98 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   {loading ? (
-                    <div className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   ) : (
                     <>
                       <span>{needsWorkerPinSetup ? 'PIN सेट करें और डैशबोर्ड खोलें' : 'कारीगर डैशबोर्ड में लॉगिन करें'}</span>
-                      <ArrowRight className="w-4 h-4" />
+                      <ArrowRight className="w-4 h-4 text-amber-400" />
                     </>
                   )}
                 </button>
               </form>
 
               {/* Link to Worker Registration */}
-              <div className="mt-4 pt-3 border-t border-slate-800 text-center">
-                <p className="text-xs text-slate-400">
+              <div className="mt-4 pt-3 border-t border-slate-200 text-center">
+                <p className="text-xs text-slate-500">
                   क्या आप नए कारीगर हैं और अभी तक रजिस्टर नहीं किया?
                 </p>
                 <button
@@ -697,7 +697,7 @@ export default function AuthModal({
                     onClose();
                     if (onOpenWorkerRegister) onOpenWorkerRegister();
                   }}
-                  className="mt-1 text-xs font-bold text-sky-400 hover:text-sky-300 underline"
+                  className="mt-1 text-xs font-bold text-slate-900 hover:underline"
                 >
                   यहाँ नया कारीगर प्रोफाइल बनाएं (Register as Worker)
                 </button>
@@ -706,8 +706,8 @@ export default function AuthModal({
           )}
 
           {/* Privacy badge guarantee */}
-          <div className="flex items-center justify-center gap-1.5 pt-2 text-[11px] text-slate-400">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+          <div className="flex items-center justify-center gap-1.5 pt-2 text-[11px] text-slate-500">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
             <span>100% प्राइवेट: आपकी हिस्ट्री सिर्फ आपको ही दिखाई देगी।</span>
           </div>
         </div>

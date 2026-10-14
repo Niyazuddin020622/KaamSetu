@@ -17,43 +17,43 @@ export default function TrustSection({ onSelectCategory, onOpenRegister }) {
       subtitle: 'Choose Trade Category',
       desc: 'प्लंबर, वेल्डर, इलेक्ट्रीशियन, बढ़ई, पेंटर या राजमिस्त्री में से अपनी जरूरत के अनुसार कारीगर चुनें।',
       icon: Search,
-      color: 'from-amber-500/20 to-orange-500/20 text-amber-400'
+      iconColor: 'text-amber-600'
     },
     {
       num: '02',
-      title: 'रेट और फोटो देखें',
+      title: 'रेट और प्रोफाइल देखें',
       subtitle: 'Compare Rates & Ratings',
-      desc: 'कारीगर का प्रति घंटे का रेट, अनुभव, ग्राहकों की रेटिंग और पिछले काम की जानकारी देखें।',
+      desc: 'कारीगर का प्रति घंटे का रेट, अनुभव, ग्राहकों की समीक्षा और पिछले काम की जानकारी पारदर्शी रूप से देखें।',
       icon: ThumbsUp,
-      color: 'from-sky-500/20 to-blue-500/20 text-sky-400'
+      iconColor: 'text-blue-600'
     },
     {
       num: '03',
       title: 'सीधे फोन या व्हाट्सएप करें',
       subtitle: 'Direct Call or Book in 1-Click',
-      desc: 'बिना किसी बिचौलिये या कमीशन के कारीगर के मोबाइल पर सीधे बात करें या अपनी सुविधा अनुसार बुक करें।',
+      desc: 'बिना किसी बिचौलिये या कमीशन के कारीगर के मोबाइल पर सीधे बात करें या अपनी सुविधा अनुसार समय तय करें।',
       icon: PhoneCall,
-      color: 'from-emerald-500/20 to-teal-500/20 text-emerald-400'
+      iconColor: 'text-emerald-600'
     }
   ];
 
   return (
-    <section className="py-12 sm:py-16 border-t border-slate-800/80 bg-slate-950/60">
+    <section className="py-12 sm:py-16 border-t border-slate-200 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto mb-10">
-          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold bg-amber-400/10 text-amber-400 border border-amber-400/25 mb-3">
-            <Zap className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-800 border border-slate-200 mb-3 shadow-xs">
+            <Zap className="w-3.5 h-3.5 text-amber-600" />
             <span>सरल, सुरक्षित और सीधा संपर्क</span>
           </div>
-          <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
+          <h2 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight">
             यह कैसे काम करता है?
-            <span className="text-slate-400 text-sm sm:text-lg font-bold block mt-1">
+            <span className="text-slate-500 text-sm sm:text-lg font-bold block mt-1">
               (How KaamSetu Works for Everyone)
             </span>
           </h2>
-          <p className="text-xs sm:text-sm text-slate-300 mt-2">
+          <p className="text-xs sm:text-sm text-slate-600 mt-2">
             कोई दलाली नहीं, कोई कमीशन नहीं। मेहनत का पूरा पैसा कारीगर को, सही काम ग्राहक को।
           </p>
         </div>
@@ -65,24 +65,24 @@ export default function TrustSection({ onSelectCategory, onOpenRegister }) {
             return (
               <div 
                 key={step.num}
-                className="relative p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-slate-900/60 border border-slate-800/80 hover:border-amber-400/40 transition-all group"
+                className="relative p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-slate-50 border border-slate-200 hover:border-slate-300 transition-all shadow-xs group"
               >
                 <div className="flex items-center justify-between mb-4">
-                  <div className={`w-12 h-12 rounded-2xl bg-gradient-to-tr ${step.color} border border-white/5 flex items-center justify-center`}>
+                  <div className={`w-12 h-12 rounded-2xl bg-white border border-slate-200 shadow-xs flex items-center justify-center ${step.iconColor}`}>
                     <Icon className="w-6 h-6" />
                   </div>
-                  <span className="font-mono text-3xl font-black text-slate-700 group-hover:text-amber-400/50 transition-colors">
+                  <span className="font-mono text-3xl font-black text-slate-300 group-hover:text-slate-400 transition-colors">
                     {step.num}
                   </span>
                 </div>
 
-                <h3 className="text-base sm:text-lg font-black text-white mb-0.5">
+                <h3 className="text-base sm:text-lg font-black text-slate-900 mb-0.5">
                   {step.title}
                 </h3>
-                <span className="text-xs font-bold text-amber-400 block mb-2">
+                <span className="text-xs font-bold text-amber-700 block mb-2">
                   {step.subtitle}
                 </span>
-                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                   {step.desc}
                 </p>
               </div>
@@ -91,9 +91,9 @@ export default function TrustSection({ onSelectCategory, onOpenRegister }) {
         </div>
 
         {/* Join as Worker Banner */}
-        <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-r from-amber-500/20 via-orange-500/15 to-amber-600/10 border border-amber-500/30 p-5 sm:p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-5 sm:gap-6">
+        <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-slate-900 text-white p-6 sm:p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-5 sm:gap-6 shadow-md">
           <div className="space-y-2 text-center md:text-left min-w-0">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold bg-amber-400/20 text-amber-300">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold bg-white/10 text-amber-300">
               <Users className="w-3.5 h-3.5" />
               <span>कारीगर भाइयों के लिए (For Tradesmen)</span>
             </div>
@@ -107,7 +107,7 @@ export default function TrustSection({ onSelectCategory, onOpenRegister }) {
 
           <button
             onClick={onOpenRegister}
-            className="w-full md:w-auto px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-black text-xs sm:text-sm tracking-wide shadow-xl shadow-amber-500/25 transition-all transform active:scale-95 shrink-0 text-center"
+            className="w-full md:w-auto px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs sm:text-sm tracking-wide shadow-md transition-all transform active:scale-95 shrink-0 text-center"
           >
             कारीगर बनें (Join as Worker)
           </button>

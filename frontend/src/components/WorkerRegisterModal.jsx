@@ -193,20 +193,20 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-slate-950/85 backdrop-blur-md overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
       <div 
-        className="relative w-full max-w-2xl bg-slate-900 border border-slate-700/90 rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden max-h-[92vh] flex flex-col"
+        className="relative w-full max-w-2xl bg-white border border-slate-200 rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden max-h-[92vh] flex flex-col text-slate-900"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="px-4 sm:px-5 py-3 sm:py-4 bg-gradient-to-r from-amber-500/20 via-orange-500/10 to-slate-900 border-b border-slate-800 flex items-center justify-between shrink-0">
+        <div className="px-4 sm:px-5 py-3 sm:py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-bold shrink-0">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-900 text-amber-400 flex items-center justify-center font-bold shrink-0 shadow-xs">
               <UserCheck className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div className="min-w-0">
-              <h2 className="text-sm xs:text-base sm:text-lg font-black text-white truncate">कारीगर रजिस्ट्रेशन (Join as Worker)</h2>
-              <p className="text-[10px] sm:text-[11px] text-slate-400 truncate">
+              <h2 className="text-sm xs:text-base sm:text-lg font-bold text-slate-900 truncate">कारीगर रजिस्ट्रेशन (Join as Worker)</h2>
+              <p className="text-[10px] sm:text-[11px] text-slate-500 truncate">
                 सीधे ग्राहकों से काम पाएं • 0% कमीशन • तुरंत शुरुआत
               </p>
             </div>
@@ -214,7 +214,7 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
 
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition-colors shrink-0 ml-2"
+            className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors shrink-0 ml-2"
           >
             <X className="w-4 h-4" />
           </button>
@@ -223,18 +223,18 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
         {/* Success Screen */}
         {registeredSuccess ? (
           <div className="p-6 sm:p-8 text-center space-y-4">
-            <div className="w-16 h-16 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 rounded-full flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/20">
+            <div className="w-16 h-16 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-full flex items-center justify-center mx-auto shadow-xs">
               <CheckCircle2 className="w-10 h-10" />
             </div>
 
-            <h3 className="text-xl sm:text-2xl font-black text-white">आपका प्रोफाइल बन गया है!</h3>
-            <p className="text-xs sm:text-sm text-slate-300 max-w-md mx-auto">
+            <h3 className="text-xl sm:text-2xl font-bold text-slate-900">आपका प्रोफाइल बन गया है!</h3>
+            <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto">
               आपकी प्रोफाइल अब KaamSetu पर लाइव है। ग्राहक अब सीधे आपके फोन पर कॉल और व्हाट्सएप कर सकेंगे।
             </p>
 
             <button
               onClick={onClose}
-              className="mt-4 px-6 py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-sm shadow-md"
+              className="mt-4 px-6 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm shadow-sm transition-colors"
             >
               कारीगर लिस्ट में देखें (View in Directory)
             </button>
@@ -243,15 +243,15 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
           /* Form */
           <form onSubmit={handleSubmit} noValidate className="p-4 sm:p-6 space-y-3.5 sm:space-y-4 overflow-y-auto flex-1">
             {error && (
-              <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
+              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{error}</span>
               </div>
             )}
 
             {/* Profile Photo Uploader Section */}
-            <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-800/60 border border-slate-700/80">
-              <label className="text-xs font-bold text-amber-400 block mb-2">
+            <div className="p-3 sm:p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+              <label className="text-xs font-bold text-slate-900 block mb-2">
                 📸 कारीगर की प्रोफाइल फोटो (Worker Profile Photo) *
               </label>
 
@@ -260,11 +260,11 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
                   src={formData.avatar}
                   alt="Profile Preview"
                   onError={handleImageError}
-                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border-2 border-amber-400/80 shadow bg-slate-900 shrink-0"
+                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover border border-slate-300 shadow-xs bg-white shrink-0"
                 />
 
                 <div className="flex-1 space-y-1.5 sm:space-y-2 w-full min-w-0">
-                  <label className="inline-flex items-center justify-center gap-2 px-3 sm:px-3.5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs cursor-pointer shadow transition-all active:scale-95 w-full xs:w-auto">
+                  <label className="inline-flex items-center justify-center gap-2 px-3 sm:px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer shadow-xs transition-all active:scale-95 w-full xs:w-auto">
                     <Camera className="w-4 h-4 shrink-0" />
                     <span>फोटो अपलोड करें</span>
                     <input
@@ -275,23 +275,23 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
                       className="hidden"
                     />
                   </label>
-                  <p className="text-[10px] text-slate-400">
+                  <p className="text-[10px] text-slate-500">
                     अपने फोन से अपनी साफ फोटो चुनें ताकि ग्राहक आप पर तुरंत भरोसा कर सकें।
                   </p>
                 </div>
               </div>
 
               {/* Ready-made avatar presets */}
-              <div className="mt-3 pt-2.5 border-t border-slate-700/60">
-                <span className="text-[10px] text-slate-400 block mb-1.5 font-medium">या इनमें से कोई फोटो चुनें:</span>
+              <div className="mt-3 pt-2.5 border-t border-slate-200">
+                <span className="text-[10px] text-slate-500 block mb-1.5 font-medium">या इनमें से कोई फोटो चुनें:</span>
                 <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
                   {PRESET_AVATARS.map((av, idx) => (
                     <button
                       type="button"
                       key={idx}
                       onClick={() => setFormData((prev) => ({ ...prev, avatar: av.url }))}
-                      className={`relative rounded-xl overflow-hidden border-2 shrink-0 ${
-                        formData.avatar === av.url ? 'border-amber-400 ring-2 ring-amber-400/40' : 'border-slate-700'
+                      className={`relative rounded-xl overflow-hidden border-2 shrink-0 transition-all ${
+                        formData.avatar === av.url ? 'border-slate-900 ring-2 ring-slate-900/20' : 'border-slate-200 hover:border-slate-300'
                       }`}
                     >
                       <img src={av.url} alt={av.label} onError={handleImageError} className="w-10 h-10 object-cover" />
@@ -304,7 +304,7 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
             {/* Basic Info */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label htmlFor="workerRegName" className="text-xs font-bold text-slate-300 block mb-1">
+                <label htmlFor="workerRegName" className="text-xs font-bold text-slate-700 block mb-1">
                   पूरा नाम (Full Name) *
                 </label>
                 <input
@@ -315,19 +315,19 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="उदा. रमेश भाई पटेल"
-                  className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
+                  className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900"
                 />
               </div>
 
               <div>
-                <label htmlFor="workerRegPhone" className="text-xs font-bold text-slate-300 block mb-1">
+                <label htmlFor="workerRegPhone" className="text-xs font-bold text-slate-700 block mb-1">
                   मोबाइल नंबर (Phone Number) *
                 </label>
                 <div className="relative flex items-center">
-                  <span className="absolute left-3 text-xs font-bold text-amber-400 select-none flex items-center gap-1 z-10 pointer-events-none">
+                  <span className="absolute left-3 text-xs font-bold text-slate-600 select-none flex items-center gap-1 z-10 pointer-events-none">
                     <span>🇮🇳</span>
                     <span>+91</span>
-                    <span className="text-slate-600">|</span>
+                    <span className="text-slate-300">|</span>
                   </span>
                   <input
                     id="workerRegPhone"
@@ -341,13 +341,13 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
                       setFormData(prev => ({ ...prev, phone: cleaned.slice(0, 10) }));
                     }}
                     placeholder="98765 43210"
-                    className="w-full pl-16 pr-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 font-mono tracking-wider"
+                    className="w-full pl-16 pr-3 py-2.5 text-sm rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 font-mono tracking-wider"
                   />
                 </div>
               </div>
 
               <div>
-                <label htmlFor="workerRegPin" className="text-xs font-bold text-amber-300 block mb-1">
+                <label htmlFor="workerRegPin" className="text-xs font-bold text-slate-700 block mb-1">
                   4-अंकों का गुप्त PIN (Login PIN) *
                 </label>
                 <input
@@ -359,7 +359,7 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
                   value={formData.pin}
                   onChange={handleChange}
                   placeholder="उदा. 2468 (डैशबोर्ड लॉगिन के लिए)"
-                  className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-amber-500/40 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 font-mono tracking-widest"
+                  className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 font-mono tracking-widest"
                 />
               </div>
             </div>
@@ -367,7 +367,7 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
             {/* Trade & Experience */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label htmlFor="workerRegCategory" className="text-xs font-bold text-slate-300 block mb-1">
+                <label htmlFor="workerRegCategory" className="text-xs font-bold text-slate-700 block mb-1">
                   काम का प्रकार (Trade Category) *
                 </label>
                 <select
@@ -375,7 +375,7 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
-                  className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white focus:outline-none focus:border-amber-400 font-semibold"
+                  className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:bg-white focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 font-semibold"
                 >
                   {CATEGORIES.map((cat) => (
                     <option key={cat} value={cat}>{cat}</option>
@@ -384,7 +384,7 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
               </div>
 
               <div>
-                <label htmlFor="workerRegExp" className="text-xs font-bold text-slate-300 block mb-1">
+                <label htmlFor="workerRegExp" className="text-xs font-bold text-slate-700 block mb-1">
                   कितने साल का अनुभव है? (Years of Exp) *
                 </label>
                 <input
@@ -395,7 +395,7 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
                   max="50"
                   value={formData.experienceYears}
                   onChange={handleChange}
-                  className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white focus:outline-none focus:border-amber-400"
+                  className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:bg-white focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900"
                 />
               </div>
             </div>
@@ -403,7 +403,7 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
             {/* Rates */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label htmlFor="workerRegHourly" className="text-xs font-bold text-slate-300 block mb-1">
+                <label htmlFor="workerRegHourly" className="text-xs font-bold text-slate-700 block mb-1">
                   1 घंटे का चार्ज (₹ / hour) *
                 </label>
                 <input
@@ -414,12 +414,12 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
                   step="50"
                   value={formData.hourlyRate}
                   onChange={handleChange}
-                  className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white focus:outline-none focus:border-amber-400"
+                  className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:bg-white focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 font-semibold"
                 />
               </div>
 
               <div>
-                <label htmlFor="workerRegDaily" className="text-xs font-bold text-slate-300 block mb-1">
+                <label htmlFor="workerRegDaily" className="text-xs font-bold text-slate-700 block mb-1">
                   पूरे दिन (8 घंटे) का रेट (₹ / day)
                 </label>
                 <input
@@ -430,7 +430,7 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
                   step="100"
                   value={formData.dailyRate}
                   onChange={handleChange}
-                  className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white focus:outline-none focus:border-amber-400"
+                  className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:bg-white focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 font-semibold"
                 />
               </div>
             </div>
@@ -438,7 +438,7 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
             {/* City, PIN & Area */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label htmlFor="workerRegCity" className="text-xs font-bold text-slate-300 block mb-1">
+                <label htmlFor="workerRegCity" className="text-xs font-bold text-slate-700 block mb-1">
                   शहर (City) *
                 </label>
                 <select
@@ -446,10 +446,10 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
                   name="city"
                   value={formData.city}
                   onChange={handleChange}
-                  className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white focus:outline-none focus:border-amber-400 font-semibold"
+                  className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:bg-white focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 font-semibold"
                 >
                   {CITIES.map((c) => (
-                    <option key={c.id} value={c.name} className="bg-slate-900 text-white">
+                    <option key={c.id} value={c.name} className="bg-white text-slate-900">
                       {c.name} ({c.hindiName}) - {c.state}
                     </option>
                   ))}
@@ -457,7 +457,7 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
               </div>
 
               <div>
-                <label htmlFor="workerRegPincode" className="text-xs font-bold text-slate-300 block mb-1">
+                <label htmlFor="workerRegPincode" className="text-xs font-bold text-slate-700 block mb-1">
                   पिन कोड (PIN Code)
                 </label>
                 <input
@@ -469,13 +469,13 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
                   value={formData.pincode}
                   onChange={handleChange}
                   placeholder="उदा. 380015 (ऑटो शहर खोज)"
-                  className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 font-mono"
+                  className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 font-mono"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="workerRegArea" className="text-xs font-bold text-slate-300 block mb-1">
+              <label htmlFor="workerRegArea" className="text-xs font-bold text-slate-700 block mb-1">
                 इलाका / मोहल्ला (Area / Locality) *
               </label>
               <input
@@ -485,18 +485,18 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
                 value={formData.area}
                 onChange={handleChange}
                 placeholder="उदा. SG Highway, Maninagar, Satellite..."
-                className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-800/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
+                className="w-full px-3 py-2.5 text-sm rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900"
               />
               {/* Quick Area Chips */}
               {getCityAreas(formData.city).length > 0 && (
                 <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
-                  <span className="text-[10px] text-slate-400">त्वरित सुझाव:</span>
+                  <span className="text-[10px] text-slate-500 font-medium">त्वरित सुझाव:</span>
                   {getCityAreas(formData.city).slice(0, 6).map((area) => (
                     <button
                       key={area}
                       type="button"
                       onClick={() => setFormData((prev) => ({ ...prev, area }))}
-                      className="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 hover:bg-amber-500/20 hover:text-amber-300 text-slate-300 border border-slate-700 transition-colors"
+                      className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition-colors"
                     >
                       {area}
                     </button>
@@ -505,14 +505,14 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
               )}
             </div>
 
-            {/* Sub-skills: Checkboxes per category (NO manual typing mistakes) */}
-            <div className="p-3 sm:p-4 rounded-2xl bg-slate-800/60 border border-slate-700/80 space-y-2.5">
+            {/* Sub-skills: Checkboxes per category */}
+            <div className="p-3 sm:p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2.5">
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <div>
-                  <label className="text-xs font-bold text-amber-300 block">
+                  <label className="text-xs font-bold text-slate-900 block">
                     विशेष कौशल (Special Skills / काम का विवरण) *
                   </label>
-                  <p className="text-[10px] sm:text-xs text-slate-400">
+                  <p className="text-[10px] sm:text-xs text-slate-500">
                     आप <strong>{formData.category}</strong> में क्या-क्या काम करते हैं? चेकबॉक्स चुनिए (टाइप करने की आवश्यकता नहीं):
                   </p>
                 </div>
@@ -520,14 +520,14 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
                   <button
                     type="button"
                     onClick={handleSelectAllSkills}
-                    className="text-[10px] font-bold px-2 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 transition-colors"
+                    className="text-[10px] font-bold px-2 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 transition-colors"
                   >
                     सभी चुनें (Select All)
                   </button>
                   <button
                     type="button"
                     onClick={handleClearSkills}
-                    className="text-[10px] font-bold px-2 py-1 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 hover:text-white transition-colors"
+                    className="text-[10px] font-bold px-2 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 transition-colors"
                   >
                     हटाएं (Clear)
                   </button>
@@ -541,17 +541,17 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
                   return (
                     <label
                       key={skill}
-                      className={`flex items-start gap-2.5 p-2 rounded-xl border text-xs font-semibold cursor-pointer transition-all ${
+                      className={`flex items-start gap-2.5 p-2 rounded-xl border text-xs font-medium cursor-pointer transition-all ${
                         isSelected
-                          ? 'bg-amber-500/15 border-amber-500/50 text-amber-200 shadow-sm'
-                          : 'bg-slate-900/60 border-slate-700/70 text-slate-300 hover:bg-slate-800 hover:border-slate-600'
+                          ? 'bg-amber-50 border-amber-300 text-amber-950 shadow-xs'
+                          : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100/60'
                       }`}
                     >
                       <input
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => handleToggleSkill(skill)}
-                        className="w-4 h-4 rounded text-amber-400 bg-slate-800 border-slate-600 focus:ring-amber-400 shrink-0 mt-0.5"
+                        className="w-4 h-4 rounded text-slate-900 bg-white border-slate-300 focus:ring-slate-900 shrink-0 mt-0.5"
                       />
                       <span className="leading-snug select-none">{skill}</span>
                     </label>
@@ -560,36 +560,36 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
               </div>
 
               {/* Counter / Validation status */}
-              <div className="flex items-center justify-between pt-1 border-t border-slate-700/50 text-[11px] text-slate-400">
+              <div className="flex items-center justify-between pt-1 border-t border-slate-200 text-[11px] text-slate-500">
                 <span>
-                  चुने गए कौशल: <strong className="text-amber-400">{formData.subSkills?.length || 0}</strong>
+                  चुने गए कौशल: <strong className="text-slate-900 font-bold">{formData.subSkills?.length || 0}</strong>
                 </span>
                 {(!formData.subSkills || formData.subSkills.length === 0) && (
-                  <span className="text-rose-400 font-bold">⚠️ कम से कम 1 काम अवश्य चुनें</span>
+                  <span className="text-rose-600 font-bold">⚠️ कम से कम 1 काम अवश्य चुनें</span>
                 )}
               </div>
             </div>
 
             {/* Emergency Checkbox */}
             <div className="pt-1">
-              <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-200 font-semibold">
+              <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-700 font-medium">
                 <input
                   type="checkbox"
                   name="emergencyAvailable"
                   checked={formData.emergencyAvailable}
                   onChange={handleChange}
-                  className="w-4 h-4 rounded text-amber-400 bg-slate-800 border-slate-700"
+                  className="w-4 h-4 rounded text-slate-900 bg-white border-slate-300 focus:ring-slate-900"
                 />
                 <span>🚨 मैं 24x7 इमरजेंसी काम के लिए उपलब्ध हूँ</span>
               </label>
             </div>
 
             {/* Submit */}
-            <div className="pt-3 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-2.5 sm:gap-3 border-t border-slate-800">
+            <div className="pt-3 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-2.5 sm:gap-3 border-t border-slate-200">
               <button
                 type="button"
                 onClick={onClose}
-                className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-700 text-slate-300 hover:text-white text-xs font-semibold"
+                className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 text-xs font-semibold transition-colors"
               >
                 रद्द करें (Cancel)
               </button>
@@ -597,15 +597,14 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-2 active:scale-95"
+                className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm shadow-sm transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-60"
               >
-                <Sparkles className="w-4 h-4 shrink-0" />
+                <Sparkles className="w-4 h-4 shrink-0 text-amber-400" />
                 <span>{loading ? 'जमा हो रहा है...' : 'प्रोफाइल बनाएं (Register)'}</span>
               </button>
             </div>
           </form>
         )}
-
       </div>
     </div>
   );

@@ -34,12 +34,12 @@ export default function WorkerCard({
   };
 
   // ─────────────────────────────────────────────────────────────
-  // 1. MOBILE COMPACT SMART CARD (High-density: 3-4 cards per screen)
+  // 1. MOBILE COMPACT SMART CARD (High-density clean view)
   // ─────────────────────────────────────────────────────────────
   const renderCompactCard = () => (
     <div 
       onClick={() => onSelectWorker(worker)}
-      className="glass-card rounded-2xl p-3 border border-slate-800 hover:border-amber-400/50 flex flex-col gap-2.5 transition-all active:scale-[0.99] cursor-pointer shadow-sm relative"
+      className="bg-white rounded-2xl p-3 border border-slate-200 shadow-xs hover:shadow-md hover:border-slate-300 flex flex-col gap-2.5 transition-all active:scale-[0.99] cursor-pointer relative"
     >
       {/* Upper Row: Photo + Main Info + Price */}
       <div className="flex items-start gap-2.5 min-w-0">
@@ -49,16 +49,16 @@ export default function WorkerCard({
             src={worker.avatar}
             alt={worker.name}
             onError={handleImageError}
-            className="w-14 h-14 rounded-2xl object-cover border border-slate-700 bg-slate-800 shadow-sm"
+            className="w-14 h-14 rounded-xl object-cover border border-slate-200 bg-slate-100 shadow-xs"
           />
           {worker.isAvailable && (
             <span 
-              className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-slate-900 rounded-full" 
+              className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full" 
               title="अभी उपलब्ध हैं"
             />
           )}
-          <div className="flex items-center gap-0.5 mt-1 text-[10px] font-black text-amber-400 bg-slate-950/90 px-1.5 py-0.5 rounded-full border border-slate-800">
-            <Star className="w-2.5 h-2.5 fill-amber-400" />
+          <div className="flex items-center gap-0.5 mt-1 text-[10px] font-bold text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded-full border border-amber-200">
+            <Star className="w-2.5 h-2.5 fill-amber-500 text-amber-500" />
             <span>{worker.rating}</span>
           </div>
         </div>
@@ -67,26 +67,26 @@ export default function WorkerCard({
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-1">
             <div className="flex items-center gap-1 min-w-0">
-              <h3 className="text-sm font-black text-white truncate">{worker.name}</h3>
+              <h3 className="text-sm font-bold text-slate-900 truncate">{worker.name}</h3>
               {worker.isVerified && (
-                <CheckCircle className="w-3.5 h-3.5 text-sky-400 shrink-0" title="सत्यापित" />
+                <CheckCircle className="w-3.5 h-3.5 text-sky-600 shrink-0" title="सत्यापित" />
               )}
             </div>
             {/* Visiting Charge */}
             <div className="text-right shrink-0">
-              <span className="text-sm font-black text-amber-400">₹{worker.hourlyRate}</span>
-              <span className="text-[10px] text-slate-400">/hr</span>
+              <span className="text-sm font-black text-slate-900">₹{worker.hourlyRate}</span>
+              <span className="text-[10px] text-slate-500">/hr</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 text-[11px] text-slate-300 mt-0.5">
-            <span className="font-bold text-amber-300 truncate">{worker.category}</span>
-            <span className="text-slate-600">•</span>
-            <span className="text-slate-400 shrink-0">{worker.experienceYears}+ वर्ष अनुभव</span>
+          <div className="flex items-center gap-1.5 text-[11px] text-slate-600 mt-0.5">
+            <span className="font-bold text-amber-700 truncate">{worker.category}</span>
+            <span className="text-slate-300">•</span>
+            <span className="text-slate-500 shrink-0">{worker.experienceYears}+ वर्ष अनुभव</span>
           </div>
 
-          <div className="flex items-center gap-1 text-[11px] text-slate-400 truncate mt-0.5">
-            <MapPin className="w-3 h-3 text-amber-400 shrink-0" />
+          <div className="flex items-center gap-1 text-[11px] text-slate-500 truncate mt-0.5">
+            <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
             <span className="truncate">{worker.area}, {worker.city}</span>
           </div>
 
@@ -96,7 +96,7 @@ export default function WorkerCard({
               {worker.subSkills.slice(0, 2).map((skill, idx) => (
                 <span
                   key={idx}
-                  className="text-[9px] px-1.5 py-0.5 rounded-md bg-slate-800/90 text-slate-300 border border-slate-700/60 truncate max-w-[125px]"
+                  className="text-[9px] px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200/80 truncate max-w-[125px]"
                 >
                   {formatSkill(skill)}
                 </span>
@@ -112,11 +112,11 @@ export default function WorkerCard({
       </div>
 
       {/* Quick 1-Tap Action Row */}
-      <div className="grid grid-cols-3 gap-1.5 pt-2 border-t border-slate-800/60">
+      <div className="grid grid-cols-3 gap-1.5 pt-2 border-t border-slate-100">
         <button
           type="button"
           onClick={handleCall}
-          className="flex items-center justify-center gap-1 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold shadow-sm active:scale-95 transition-all"
+          className="flex items-center justify-center gap-1 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold shadow-xs active:scale-95 transition-all"
           title="Direct Call"
         >
           <Phone className="w-3 h-3 fill-current" />
@@ -126,7 +126,7 @@ export default function WorkerCard({
         <button
           type="button"
           onClick={handleWhatsApp}
-          className="flex items-center justify-center gap-1 py-1.5 rounded-xl bg-emerald-950 border border-emerald-500/40 text-emerald-300 text-[11px] font-bold hover:bg-emerald-900 active:scale-95 transition-all"
+          className="flex items-center justify-center gap-1 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold shadow-xs active:scale-95 transition-all"
           title="WhatsApp Chat"
         >
           <MessageCircle className="w-3 h-3" />
@@ -139,7 +139,7 @@ export default function WorkerCard({
             e.stopPropagation();
             onBookWorker(worker);
           }}
-          className="flex items-center justify-center gap-1 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-[11px] font-black shadow-sm active:scale-95 transition-all"
+          className="flex items-center justify-center gap-1 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-[11px] font-bold shadow-xs active:scale-95 transition-all"
           title="Book Appointment"
         >
           <Calendar className="w-3 h-3" />
@@ -155,21 +155,21 @@ export default function WorkerCard({
   const renderGridCard = () => (
     <div 
       onClick={() => onSelectWorker(worker)}
-      className="glass-card rounded-2xl sm:rounded-3xl p-4 sm:p-5 flex flex-col justify-between cursor-pointer border border-slate-800 hover:border-amber-400/50 relative group transition-all"
+      className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-5 flex flex-col justify-between cursor-pointer border border-slate-200/90 shadow-xs hover:shadow-md hover:border-slate-300 relative group transition-all"
     >
       <div>
-        {/* Top: Photo, Online status & Verified Badge */}
+        {/* Top: Photo, Online status & Badges */}
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="relative">
             <img
               src={worker.avatar}
               alt={worker.name}
               onError={handleImageError}
-              className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border-2 border-slate-700 shadow-md group-hover:border-amber-400 transition-colors bg-slate-800"
+              className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border border-slate-200 shadow-xs group-hover:border-slate-400 transition-colors bg-slate-100"
             />
             {worker.isAvailable && (
               <span 
-                className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-slate-900 rounded-full shadow-md" 
+                className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full shadow-xs" 
                 title="अभी उपलब्ध हैं (Available Now)" 
               />
             )}
@@ -177,13 +177,13 @@ export default function WorkerCard({
 
           <div className="flex flex-col items-end gap-1.5">
             {worker.emergencyAvailable && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-extrabold bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse">
-                <Zap className="w-3 h-3 text-rose-400" />
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                <Zap className="w-3 h-3 text-rose-600" />
                 24x7 इमरजेंसी
               </span>
             )}
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-amber-500/10 text-amber-300 border border-amber-500/30">
-              <ShieldCheck className="w-3 h-3 text-amber-400" />
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200/70">
+              <ShieldCheck className="w-3 h-3 text-amber-600" />
               {worker.badge || 'सत्यापित कारीगर'}
             </span>
           </div>
@@ -192,25 +192,25 @@ export default function WorkerCard({
         {/* Worker Name & Trade Category */}
         <div className="mb-2 min-w-0">
           <div className="flex items-center gap-1.5 min-w-0">
-            <h3 className="text-base sm:text-lg font-black text-white group-hover:text-amber-300 transition-colors truncate">
+            <h3 className="text-base sm:text-lg font-black text-slate-900 group-hover:text-amber-700 transition-colors truncate">
               {worker.name}
             </h3>
             {worker.isVerified && (
-              <CheckCircle className="w-4 h-4 text-sky-400 shrink-0" title="Verified Worker" />
+              <CheckCircle className="w-4 h-4 text-sky-600 shrink-0" title="Verified Worker" />
             )}
           </div>
-          <p className="text-xs sm:text-sm font-bold text-amber-400 flex items-center gap-1.5 mt-0.5 min-w-0">
+          <p className="text-xs sm:text-sm font-bold text-amber-700 flex items-center gap-1.5 mt-0.5 min-w-0">
             <span className="truncate">{worker.category}</span>
-            <span className="text-slate-600 shrink-0">•</span>
-            <span className="text-slate-400 text-xs font-semibold shrink-0">{worker.experienceYears}+ साल अनुभव</span>
+            <span className="text-slate-300 shrink-0">•</span>
+            <span className="text-slate-500 text-xs font-semibold shrink-0">{worker.experienceYears}+ साल अनुभव</span>
           </p>
         </div>
 
         {/* Ratings & Completed Jobs */}
-        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-slate-300 mb-2.5">
+        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-slate-600 mb-2.5">
           <div className="flex items-center gap-1 shrink-0">
-            <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400 shrink-0" />
-            <span className="font-black text-white">{worker.rating}</span>
+            <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500 shrink-0" />
+            <span className="font-bold text-slate-900">{worker.rating}</span>
             <span className="text-slate-400 text-[11px]">({worker.reviewCount})</span>
           </div>
           <button
@@ -219,17 +219,17 @@ export default function WorkerCard({
               e.stopPropagation();
               onSelectWorker({ ...worker, defaultTab: 'history' });
             }}
-            className="flex items-center gap-1 text-amber-300 hover:text-amber-200 bg-amber-500/10 hover:bg-amber-500/20 px-2 py-0.5 rounded-lg border border-amber-500/30 text-[11px] font-semibold transition-all truncate"
+            className="flex items-center gap-1 text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-2 py-0.5 rounded-lg border border-slate-200 text-[11px] font-semibold transition-all truncate"
             title="कार्य इतिहास देखें"
           >
-            <Briefcase className="w-3 h-3 text-amber-400 shrink-0" />
+            <Briefcase className="w-3 h-3 text-slate-500 shrink-0" />
             <span className="truncate">{worker.completedJobs} काम किए</span>
           </button>
         </div>
 
         {/* Location */}
-        <div className="flex items-center gap-1.5 text-xs text-slate-300 mb-3 min-w-0">
-          <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+        <div className="flex items-center gap-1.5 text-xs text-slate-600 mb-3 min-w-0">
+          <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
           <span className="truncate font-medium">{worker.area}, {worker.city}</span>
         </div>
 
@@ -238,46 +238,46 @@ export default function WorkerCard({
           {worker.subSkills && worker.subSkills.slice(0, 3).map((skill, idx) => (
             <span 
               key={idx}
-              className="text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700/60 truncate max-w-[155px]"
+              className="text-[10px] sm:text-[11px] font-medium px-2 py-0.5 rounded-lg bg-slate-50 text-slate-700 border border-slate-200 truncate max-w-[155px]"
             >
               {formatSkill(skill)}
             </span>
           ))}
           {worker.subSkills && worker.subSkills.length > 3 && (
-            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-lg bg-slate-800/60 text-slate-400 shrink-0">
+            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-lg bg-slate-50 text-slate-500 border border-slate-200 shrink-0">
               +{worker.subSkills.length - 3}
             </span>
           )}
         </div>
       </div>
 
-      {/* Bottom: Pricing & Big Mobile Action Buttons */}
-      <div className="pt-3 border-t border-slate-800/80 mt-auto">
+      {/* Bottom: Pricing & Big Action Buttons */}
+      <div className="pt-3 border-t border-slate-100 mt-auto">
         <div className="flex items-baseline justify-between mb-3 min-w-0">
           <div className="min-w-0">
-            <span className="text-[10px] text-slate-400 block font-medium truncate">विजिटिंग चार्ज:</span>
-            <div className="text-base sm:text-lg font-black text-white">
+            <span className="text-[10px] text-slate-500 block font-medium truncate">विजिटिंग चार्ज:</span>
+            <div className="text-base sm:text-lg font-black text-slate-900">
               ₹{worker.hourlyRate}
-              <span className="text-xs font-normal text-slate-400"> / घंटा</span>
+              <span className="text-xs font-normal text-slate-500"> / घंटा</span>
             </div>
           </div>
           {worker.dailyRate && (
             <div className="text-right min-w-0">
-              <span className="text-[10px] text-slate-400 block font-medium truncate">पूरा दिन (8 घंटे):</span>
-              <div className="text-xs sm:text-sm font-bold text-slate-300">
+              <span className="text-[10px] text-slate-500 block font-medium truncate">पूरा दिन (8 घंटे):</span>
+              <div className="text-xs sm:text-sm font-bold text-slate-700">
                 ₹{worker.dailyRate}
               </div>
             </div>
           )}
         </div>
 
-        {/* Action Buttons - Large touch targets */}
+        {/* Action Buttons */}
         <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
           {/* Direct Call Button */}
           <button
             type="button"
             onClick={handleCall}
-            className="flex items-center justify-center gap-1 py-2.5 sm:py-3 px-1 sm:px-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] sm:text-xs font-extrabold shadow-md shadow-emerald-950 transition-all active:scale-95"
+            className="flex items-center justify-center gap-1 py-2.5 sm:py-3 px-1 sm:px-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-[11px] sm:text-xs font-bold shadow-xs transition-all active:scale-95"
             title="Direct Call"
           >
             <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 fill-current" />
@@ -288,7 +288,7 @@ export default function WorkerCard({
           <button
             type="button"
             onClick={handleWhatsApp}
-            className="flex items-center justify-center gap-1 py-2.5 sm:py-3 px-1 sm:px-2 rounded-xl bg-emerald-950 border border-emerald-500/40 hover:bg-emerald-900 text-emerald-300 text-[11px] sm:text-xs font-bold transition-all active:scale-95"
+            className="flex items-center justify-center gap-1 py-2.5 sm:py-3 px-1 sm:px-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] sm:text-xs font-bold shadow-xs transition-all active:scale-95"
             title="WhatsApp Chat"
           >
             <MessageCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
@@ -302,11 +302,11 @@ export default function WorkerCard({
               e.stopPropagation();
               onBookWorker(worker);
             }}
-            className="flex items-center justify-center gap-1 py-2.5 sm:py-3 px-1 sm:px-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-[11px] sm:text-xs font-black shadow-md shadow-amber-500/20 transition-all active:scale-95"
+            className="flex items-center justify-center gap-1 py-2.5 sm:py-3 px-1 sm:px-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-[11px] sm:text-xs font-bold shadow-xs transition-all active:scale-95"
             title="Book Appointment"
           >
             <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-            <span className="truncate">Book Now</span>
+            <span className="truncate">Book</span>
           </button>
         </div>
       </div>

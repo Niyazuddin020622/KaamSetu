@@ -85,11 +85,11 @@ export default function CategoryChips({
     <div className="w-full py-2 sm:py-4">
       <div className="flex items-center justify-between mb-2 sm:mb-3">
         <div>
-          <h2 className="text-base sm:text-xl md:text-2xl font-black text-white tracking-tight flex items-center gap-1.5 sm:gap-2">
+          <h2 className="text-base sm:text-xl md:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-1.5 sm:gap-2">
             <span>कारीगर चुनें</span>
-            <span className="text-xs sm:text-sm font-semibold text-amber-400">(Choose Trade)</span>
+            <span className="text-xs sm:text-sm font-semibold text-slate-500">(Choose Trade)</span>
           </h2>
-          <p className="text-[11px] sm:text-xs text-slate-400 mt-0.5">
+          <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">
             अपनी पसंद के काम पर क्लिक करें और पास के कारीगर देखें
           </p>
         </div>
@@ -98,14 +98,14 @@ export default function CategoryChips({
         <div className="hidden sm:flex items-center gap-1.5">
           <button
             onClick={() => scroll('left')}
-            className="w-8 h-8 rounded-full bg-slate-900 border border-slate-800 hover:border-amber-400/50 text-slate-400 hover:text-white flex items-center justify-center transition-all shadow-sm active:scale-95"
+            className="w-8 h-8 rounded-full bg-white border border-slate-200 hover:border-slate-300 text-slate-600 hover:text-slate-900 flex items-center justify-center transition-all shadow-xs active:scale-95"
             title="Scroll Left"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
           <button
             onClick={() => scroll('right')}
-            className="w-8 h-8 rounded-full bg-slate-900 border border-slate-800 hover:border-amber-400/50 text-slate-400 hover:text-white flex items-center justify-center transition-all shadow-sm active:scale-95"
+            className="w-8 h-8 rounded-full bg-white border border-slate-200 hover:border-slate-300 text-slate-600 hover:text-slate-900 flex items-center justify-center transition-all shadow-xs active:scale-95"
             title="Scroll Right"
           >
             <ChevronRight className="w-4 h-4" />
@@ -122,16 +122,16 @@ export default function CategoryChips({
         {/* 'All' Category Chip */}
         <button
           onClick={() => onSelectCategory('All')}
-          className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200 shrink-0 active:scale-95 ${
+          className={`flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200 shrink-0 active:scale-95 ${
             selectedCategory === 'All'
-              ? 'bg-amber-400 text-slate-950 shadow-md shadow-amber-500/25 scale-[1.02]'
-              : 'bg-slate-900/90 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800'
+              ? 'bg-slate-900 text-white shadow-sm'
+              : 'bg-white text-slate-700 hover:text-slate-900 hover:bg-slate-50 border border-slate-200 shadow-xs'
           }`}
         >
           <Layers className="w-4 h-4 shrink-0" />
           <span>सभी (All)</span>
-          <span className={`text-[10px] sm:text-xs px-1.5 py-0.2 rounded-full font-black ${
-            selectedCategory === 'All' ? 'bg-slate-950/20 text-slate-950' : 'bg-slate-800 text-slate-400'
+          <span className={`text-[10px] sm:text-xs px-1.5 py-0.2 rounded-full font-bold ${
+            selectedCategory === 'All' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'
           }`}>
             {totalWorkers}
           </span>
@@ -147,17 +147,17 @@ export default function CategoryChips({
             <button
               key={cat.id || cat.name}
               onClick={() => onSelectCategory(cat.name)}
-              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200 shrink-0 active:scale-95 ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200 shrink-0 active:scale-95 ${
                 isSelected
-                  ? 'bg-amber-400 text-slate-950 shadow-md shadow-amber-500/25 scale-[1.02]'
-                  : 'bg-slate-900/90 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800'
+                  ? 'bg-slate-900 text-white shadow-sm'
+                  : 'bg-white text-slate-700 hover:text-slate-900 hover:bg-slate-50 border border-slate-200 shadow-xs'
               }`}
             >
-              <IconComponent className={`w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 ${isSelected ? 'text-slate-950' : 'text-amber-400'}`} />
+              <IconComponent className={`w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 ${isSelected ? 'text-amber-400' : 'text-slate-600'}`} />
               <span>{hindiLabel} ({cat.name})</span>
               {cat.activeWorkers !== undefined && (
-                <span className={`text-[10px] sm:text-xs px-1.5 py-0.2 rounded-full font-black ${
-                  isSelected ? 'bg-slate-950/20 text-slate-950' : 'bg-slate-800 text-slate-400'
+                <span className={`text-[10px] sm:text-xs px-1.5 py-0.2 rounded-full font-bold ${
+                  isSelected ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'
                 }`}>
                   {cat.activeWorkers}
                 </span>
