@@ -49,11 +49,11 @@ export default function WorkerCard({
             src={worker.avatar}
             alt={worker.name}
             onError={handleImageError}
-            className="w-14 h-14 rounded-xl object-cover border border-slate-200 bg-slate-100 shadow-xs"
+            className="w-14 h-14 rounded-xl object-cover object-top border border-slate-200 bg-slate-100 shadow-xs"
           />
           {worker.isAvailable && (
             <span 
-              className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full" 
+              className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full live-indicator shadow-xs" 
               title="अभी उपलब्ध हैं"
             />
           )}
@@ -165,11 +165,11 @@ export default function WorkerCard({
               src={worker.avatar}
               alt={worker.name}
               onError={handleImageError}
-              className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border border-slate-200 shadow-xs group-hover:border-slate-400 transition-colors bg-slate-100"
+              className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover object-top border border-slate-200 shadow-xs group-hover:border-slate-400 transition-colors bg-slate-100"
             />
             {worker.isAvailable && (
               <span 
-                className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full shadow-xs" 
+                className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full shadow-xs live-indicator" 
                 title="अभी उपलब्ध हैं (Available Now)" 
               />
             )}

@@ -109,68 +109,82 @@ export default function WorkerDetailModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
       <div 
-        className="relative w-full max-w-2xl bg-white border border-slate-200 rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden max-h-[92vh] flex flex-col text-slate-900"
+        className="relative w-full max-w-2xl bg-white border border-slate-200 rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden max-h-[92vh] sm:max-h-[90vh] flex flex-col text-slate-900 mx-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header Cover Banner */}
-        <div className="relative h-24 sm:h-32 bg-slate-100 border-b border-slate-200 p-4 sm:p-6 flex justify-between items-start shrink-0">
+        <div className="relative h-24 sm:h-28 bg-gradient-to-r from-slate-900 via-slate-800 to-amber-950/80 border-b border-slate-700 p-4 sm:p-6 flex justify-between items-start shrink-0">
           <div className="flex gap-2">
             {worker.emergencyAvailable && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
-                <Zap className="w-3.5 h-3.5 text-rose-600" />
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-rose-500/20 backdrop-blur-md text-rose-300 border border-rose-400/40 shadow-xs">
+                <Zap className="w-3.5 h-3.5 text-rose-400" />
                 24x7 इमरजेंसी
               </span>
             )}
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold bg-white text-slate-800 border border-slate-200 shadow-xs">
-              <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold bg-white/15 backdrop-blur-md text-amber-300 border border-amber-400/30 shadow-xs">
+              <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
               {worker.badge || 'सत्यापित कारीगर'}
             </span>
           </div>
 
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 flex items-center justify-center transition-colors border border-slate-200 shadow-xs"
+            className="w-8 h-8 rounded-full bg-slate-900/60 hover:bg-slate-900 text-white flex items-center justify-center transition-colors border border-white/20 backdrop-blur-md shadow-xs shrink-0"
+            title="बंद करें"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Profile Card Header Info */}
-        <div className="px-3 sm:px-6 pb-3 pt-0 -mt-8 sm:-mt-12 flex flex-col sm:flex-row sm:items-end justify-between gap-3 shrink-0">
-          <div className="flex items-end gap-2.5 sm:gap-4 min-w-0">
-            <img
-              src={worker.avatar}
-              alt={worker.name}
-              onError={handleImageError}
-              className="w-16 h-16 xs:w-20 xs:h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border-4 border-white shadow-md bg-slate-100 shrink-0"
-            />
-            <div className="mb-0.5 sm:mb-1 min-w-0">
+        <div className="px-4 sm:px-6 pb-3 pt-0 flex flex-col md:flex-row md:items-end justify-between gap-3.5 shrink-0">
+          <div className="flex items-end gap-3 sm:gap-4 min-w-0">
+            {/* Only the avatar pulls up into the banner with -mt-12 */}
+            <div className="relative -mt-12 sm:-mt-14 z-20 shrink-0">
+              <img
+                src={worker.avatar}
+                alt={worker.name}
+                onError={handleImageError}
+                className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover object-top border-4 border-white shadow-xl bg-white"
+              />
+              {worker.isAvailable && (
+                <span 
+                  className="absolute bottom-1 right-1 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full live-indicator shadow-xs" 
+                  title="अभी उपलब्ध हैं"
+                />
+              )}
+            </div>
+
+            {/* Name and title sit cleanly in white body area with zero overlap */}
+            <div className="pt-2 sm:pt-0 pb-0.5 min-w-0 flex-1">
               <div className="flex items-center gap-1.5 min-w-0">
-                <h2 className="text-lg xs:text-xl sm:text-2xl font-black text-slate-900 truncate">{worker.name}</h2>
-                <CheckCircle className="w-4 h-4 text-sky-600 shrink-0" title="Verified Worker" />
+                <h2 className="text-lg sm:text-2xl font-black text-slate-900 truncate leading-tight">
+                  {worker.name}
+                </h2>
+                <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-sky-600 shrink-0" title="Verified Worker" />
               </div>
-              <p className="text-amber-700 font-bold text-xs sm:text-sm truncate">
+              <p className="text-amber-700 font-bold text-xs sm:text-sm truncate mt-0.5">
                 {worker.category} • <span className="text-slate-500 font-semibold">{worker.experienceYears}+ साल अनुभव</span>
               </p>
             </div>
           </div>
 
           {/* Quick Call & WhatsApp Buttons */}
-          <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="flex items-center gap-2 w-full md:w-auto shrink-0">
             <a
               href={`tel:${worker.phone}`}
-              className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-xs transition-all active:scale-95"
+              className="flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-xs transition-all active:scale-95 whitespace-nowrap"
             >
-              <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current" />
+              <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current shrink-0" />
               <span>Call Now</span>
             </a>
             <button
               onClick={handleWhatsApp}
-              className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-all active:scale-95"
+              className="flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-all active:scale-95 whitespace-nowrap"
             >
-              <MessageCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <MessageCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
               <span>WhatsApp</span>
             </button>
           </div>
@@ -223,7 +237,7 @@ export default function WorkerDetailModal({
         {activeTab === 'about' && (
           <div className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1">
             {/* Rates & Highlights Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
               <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200">
                 <span className="text-[10px] text-slate-500 block mb-0.5">प्रति घंटा रेट</span>
                 <span className="text-lg font-black text-slate-900">₹{worker.hourlyRate}</span>
@@ -574,18 +588,18 @@ export default function WorkerDetailModal({
         )}
 
         {/* Modal Bottom Footer with Book CTA */}
-        <div className="p-3 sm:p-5 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-2 sm:gap-3 shrink-0">
-          <div className="min-w-0">
+        <div className="p-3 sm:p-5 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-2.5 shrink-0">
+          <div className="min-w-0 flex-1">
             <span className="text-[10px] text-slate-500 block truncate">विजिटिंग चार्ज:</span>
-            <div className="text-sm xs:text-base sm:text-lg font-black text-slate-900 whitespace-nowrap">
-              ₹{worker.hourlyRate} <span className="text-[10px] xs:text-xs text-slate-500 font-normal">/ घंटा</span>
+            <div className="text-sm sm:text-lg font-black text-slate-900 whitespace-nowrap">
+              ₹{worker.hourlyRate} <span className="text-[10px] sm:text-xs text-slate-500 font-normal">/ घंटा</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={onClose}
-              className="px-2.5 sm:px-3.5 py-2 sm:py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 text-xs font-bold shrink-0"
+              className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 text-xs font-bold shrink-0 whitespace-nowrap"
             >
               बंद करें
             </button>
@@ -594,7 +608,7 @@ export default function WorkerDetailModal({
                 onClose();
                 onBookWorker(worker);
               }}
-              className="flex items-center justify-center gap-1.5 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm shadow-xs active:scale-95 shrink-0"
+              className="flex items-center justify-center gap-1.5 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm shadow-xs active:scale-95 shrink-0 whitespace-nowrap"
             >
               <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 shrink-0" />
               <span>Book Now</span>

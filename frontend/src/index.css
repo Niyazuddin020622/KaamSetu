@@ -5,7 +5,7 @@
   color-scheme: light;
 }
 
-/* Prevent horizontal page wobble / viewport overflow on mobile & tablets */
+/* Base Body Layout */
 html, body {
   background-color: #f8fafc;
   color: #0f172a;
@@ -23,7 +23,7 @@ html, body {
 
 /* Safe Area Insets for iOS Home Indicator / Android Gesture Bar */
 .safe-area-pb {
-  padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0.75rem));
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 1rem));
 }
 
 .safe-area-pt {
@@ -39,10 +39,11 @@ html, body {
   scrollbar-width: none;
 }
 
-/* Modern Production Card & Panel System (Clean Light Elevation) */
+/* Clean Elevation Tokens (Stripe / Urban Company Style) */
 .card-clean {
   background: #ffffff;
   border: 1px solid #e2e8f0;
+  border-radius: 1rem;
   box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 1px 2px -1px rgba(15, 23, 42, 0.04);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -52,18 +53,18 @@ html, body {
   box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
 }
 
-/* Backward-compatible classes mapped to clean light surfaces */
+/* Backward-compatible classes */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(226, 232, 240, 0.9);
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.05);
 }
 
 .glass-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.05);
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -71,6 +72,47 @@ html, body {
   border-color: #cbd5e1;
   box-shadow: 0 10px 20px -4px rgba(15, 23, 42, 0.08);
   transform: translateY(-2px);
+}
+
+/* Live Availability Pulse Animation */
+@keyframes livePulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+.live-indicator {
+  animation: livePulse 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+}
+
+/* Mobile Bottom Sheet Modal Animation */
+@keyframes slideUpSheet {
+  from {
+    transform: translateY(100%);
+    opacity: 0.8;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 640px) {
+  .modal-bottom-sheet {
+    animation: slideUpSheet 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    max-height: 90vh;
+  }
 }
 
 /* Custom Scrollbar - Clean Neutral */

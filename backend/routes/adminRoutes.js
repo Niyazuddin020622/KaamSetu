@@ -6,11 +6,12 @@ const Booking = require('../models/Booking');
 const User = require('../models/User');
 const { verifyToken, requireAdmin, JWT_SECRET } = require('../middleware/auth');
 const { getCache, setCache, delCachePrefix } = require('../utils/cache');
+const { setSessionCookie, clearSessionCookie } = require('../utils/cookieHelper');
 
 // Admin PIN - configured in .env or fallback
 const ADMIN_PIN = process.env.ADMIN_PIN || 'admin123';
 
-// POST /api/admin/login - Verify admin PIN and issue signed JWT
+// POST /api/admin/login - Verify admin PIN and issue signed JWT + HTTP-only session cookie
 router.post('/login', (req, res) => {
   const { pin } = req.body;
   if (!pin) {
@@ -25,6 +26,9 @@ router.post('/login', (req, res) => {
       { expiresIn: '8h' }
     );
 
+    // Set HTTP-only admin session cookie (8 hours)
+    setSessionCookie(res, token, 'kaamsetu_admin_session', 8 * 60 * 60 * 1000);
+
     return res.json({ 
       success: true, 
       message: 'Admin access granted.',
@@ -33,6 +37,12 @@ router.post('/login', (req, res) => {
   }
 
   return res.status(401).json({ success: false, message: 'Invalid admin PIN. Please try again.' });
+});
+
+// POST /api/admin/logout - Clear admin session cookie
+router.post('/logout', (req, res) => {
+  clearSessionCookie(res, 'kaamsetu_admin_session');
+  return res.json({ success: true, message: 'Admin logged out successfully.' });
 });
 
 // GET /api/admin/stats - Overview analytics (Fast cached for 60s)

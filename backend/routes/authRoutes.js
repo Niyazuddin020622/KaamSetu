@@ -8,6 +8,7 @@ const { verifyToken, requireCustomer, requireWorker, JWT_SECRET } = require('../
 const { getCityByName, getCityFromPincode } = require('../data/cityMaster');
 
 const { cleanPhoneNumber, formatPhoneWith91, getFlexiblePhoneRegex, isValidIndianPhone } = require('../utils/phoneHelper');
+const { setSessionCookie, clearSessionCookie } = require('../utils/cookieHelper');
 
 // ==========================================
 // 1. CUSTOMER AUTHENTICATION (Phone + PIN)
@@ -112,6 +113,9 @@ router.post('/customer/register', async (req, res) => {
       { expiresIn: '24h' }
     );
 
+    // Set secure HTTP-only session cookie
+    setSessionCookie(res, token, 'kaamsetu_session');
+
     res.status(201).json({
       success: true,
       message: 'अकाउंट सफलतापूर्वक बन गया!',
@@ -187,6 +191,9 @@ router.post('/customer/login', async (req, res) => {
       JWT_SECRET,
       { expiresIn: '24h' }
     );
+
+    // Set secure HTTP-only session cookie
+    setSessionCookie(res, token, 'kaamsetu_session');
 
     res.json({
       success: true,
@@ -339,6 +346,10 @@ router.post('/worker/login', async (req, res) => {
       { expiresIn: '24h' }
     );
 
+    // Set secure HTTP-only session cookies
+    setSessionCookie(res, token, 'kaamsetu_worker_session');
+    setSessionCookie(res, token, 'kaamsetu_session');
+
     const safeWorker = worker.toObject();
     delete safeWorker.pin;
 
@@ -404,6 +415,10 @@ router.post('/worker/set-pin', async (req, res) => {
       { expiresIn: '24h' }
     );
 
+    // Set secure HTTP-only session cookies
+    setSessionCookie(res, token, 'kaamsetu_worker_session');
+    setSessionCookie(res, token, 'kaamsetu_session');
+
     const safeWorker = worker.toObject();
     delete safeWorker.pin;
 
@@ -456,4 +471,15 @@ router.patch('/worker/availability', verifyToken, requireWorker, async (req, res
   }
 });
 
+// POST /api/auth/logout - Invalidate all session cookies
+router.post('/logout', (req, res) => {
+  clearSessionCookie(res, 'kaamsetu_session');
+  clearSessionCookie(res, 'kaamsetu_worker_session');
+  res.json({
+    success: true,
+    message: 'सफलतापूर्वक लॉगआउट कर दिया गया।'
+  });
+});
+
 module.exports = router;
+

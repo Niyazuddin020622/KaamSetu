@@ -170,6 +170,11 @@ export default function App() {
         emergencyOnly: emergencyOnly ? 'true' : undefined,
         availableOnly: availableOnly ? 'true' : undefined,
         sortBy
+      }, (cached) => {
+        if (cached?.data) {
+          setWorkers(cached.data);
+          setLoading(false); // Instant 0ms render from browser storage
+        }
       });
 
       if (workersRes.success) {

@@ -15,7 +15,8 @@ import {
   updateWorker, 
   deleteWorker, 
   updateBookingStatus, 
-  deleteBooking 
+  deleteBooking,
+  adminLogout 
 } from './api';
 
 // Admin Session Duration (5 Hours)
@@ -59,7 +60,10 @@ export default function App() {
     setTimeout(() => setNotification(''), 3500);
   };
 
-  const handleLogout = (message = '') => {
+  const handleLogout = async (message = '') => {
+    try {
+      await adminLogout();
+    } catch (e) {}
     localStorage.removeItem('kaamsetu_admin_token');
     localStorage.removeItem('kaamsetu_admin_login_time');
     setIsAuthenticated(false);

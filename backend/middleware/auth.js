@@ -2,18 +2,43 @@ const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'kaamsetu_jwt_secret_token_secure_key_2026_9999';
 
+// Extract token from either HTTP-only cookie or Authorization header
+const extractToken = (req) => {
+  // 1. Check Authorization header
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    return authHeader.split(' ')[1];
+  }
+
+  // 2. Check cookies (admin-specific or general session)
+  if (req.cookies) {
+    if (req.baseUrl && req.baseUrl.includes('/admin') && req.cookies.kaamsetu_admin_session) {
+      return req.cookies.kaamsetu_admin_session;
+    }
+    if (req.cookies.kaamsetu_session) {
+      return req.cookies.kaamsetu_session;
+    }
+    if (req.cookies.kaamsetu_worker_session) {
+      return req.cookies.kaamsetu_worker_session;
+    }
+    if (req.cookies.kaamsetu_admin_session) {
+      return req.cookies.kaamsetu_admin_session;
+    }
+  }
+
+  return null;
+};
+
 // Middleware to verify JWT token
 const verifyToken = (req, res, next) => {
-  const authHeader = req.headers.authorization;
+  const token = extractToken(req);
   
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  if (!token) {
     return res.status(401).json({
       success: false,
       message: 'Access Denied. कृपया पहले लॉगिन करें।'
     });
   }
-
-  const token = authHeader.split(' ')[1];
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
@@ -22,16 +47,15 @@ const verifyToken = (req, res, next) => {
   } catch (err) {
     return res.status(401).json({
       success: false,
-      message: 'अमान्य या समाप्त टोकन। कृपया दोबारा लॉगिन करें।'
+      message: 'अमान्य या समाप्त सत्र (Expired Session)। कृपया दोबारा लॉगिन करें।'
     });
   }
 };
 
 // Optional token verification (attach user if token provided, but don't block if not)
 const optionalToken = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    const token = authHeader.split(' ')[1];
+  const token = extractToken(req);
+  if (token) {
     try {
       const decoded = jwt.verify(token, JWT_SECRET);
       req.user = decoded;
@@ -76,6 +100,7 @@ const requireAdmin = (req, res, next) => {
 };
 
 module.exports = {
+  extractToken,
   verifyToken,
   optionalToken,
   requireCustomer,

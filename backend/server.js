@@ -68,12 +68,27 @@ app.use('/api/auth/customer/login', authLimiter);
 app.use('/api/auth/worker/login', authLimiter);
 app.use('/api/admin/login', authLimiter);
 
+const cookieParser = require('cookie-parser');
+
 // Middlewares
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173,http://127.0.0.1:5174').split(',').map(s => s.trim());
+
 app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, or same-origin)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
+      return callback(null, true);
+    }
+    return callback(null, true); // Fallback allow in dev
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
 }));
+
+// Cookie Parser for Industrial Session Storage
+app.use(cookieParser(process.env.COOKIE_SECRET || 'kaamsetu_cookie_secret_9999'));
 
 // Support up to 10MB payload for worker profile photo uploads
 app.use(express.json({ limit: '10mb' }));

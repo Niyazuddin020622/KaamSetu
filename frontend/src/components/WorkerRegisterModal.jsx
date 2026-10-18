@@ -20,12 +20,12 @@ import { cleanPhoneNumber } from '../utils/phoneHelper';
 const CATEGORIES = TRADE_CATEGORIES;
 
 const PRESET_AVATARS = [
-  { label: 'प्लंबर (Plumber)', url: 'https://images.unsplash.com/photo-1541888946425-d0fbb18f15f6?w=400&auto=format&fit=crop&q=80' },
-  { label: 'वेल्डर (Welder)', url: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&auto=format&fit=crop&q=80' },
-  { label: 'इलेक्ट्रीशियन (Electrician)', url: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400&auto=format&fit=crop&q=80' },
-  { label: 'बढ़ई (Carpenter)', url: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&auto=format&fit=crop&q=80' },
-  { label: 'पेंटर (Painter)', url: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=400&auto=format&fit=crop&q=80' },
-  { label: 'मिस्त्री (Mason)', url: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=400&auto=format&fit=crop&q=80' },
+  { label: 'प्लंबर (Plumber)', url: 'https://images.unsplash.com/photo-1541888946425-d0fbb18f15f6?w=400&auto=format&fit=crop&crop=faces&q=80' },
+  { label: 'वेल्डर (Welder)', url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&crop=faces&q=80' },
+  { label: 'इलेक्ट्रीशियन (Electrician)', url: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400&auto=format&fit=crop&crop=faces&q=80' },
+  { label: 'बढ़ई (Carpenter)', url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&crop=faces&q=80' },
+  { label: 'पेंटर (Painter)', url: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=400&auto=format&fit=crop&crop=faces&q=80' },
+  { label: 'मिस्त्री (Mason)', url: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&auto=format&fit=crop&crop=faces&q=80' },
 ];
 
 export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {

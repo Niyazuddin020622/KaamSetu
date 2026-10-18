@@ -1,0 +1,57 @@
+name: KaamSetu CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  validate-and-build:
+    name: Lint, Test & Build
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: |
+            frontend/package-lock.json
+            admin-dashboard/package-lock.json
+            backend/package-lock.json
+
+      # Backend Validation
+      - name: Install & Validate Backend
+        run: |
+          cd backend
+          npm ci
+          node -e "require('./server.js')" --check
+
+      # Frontend Build
+      - name: Install & Build Frontend
+        run: |
+          cd frontend
+          npm ci
+          npm run build
+
+      # Admin Dashboard Build
+      - name: Install & Build Admin Dashboard
+        run: |
+          cd admin-dashboard
+          npm ci
+          npm run build
+
+      # Docker Compose Config Validation
+      - name: Validate Docker Compose Configuration
+        run: |
+          docker compose config --quiet
+          docker compose -f docker-compose.prod.yml config --quiet

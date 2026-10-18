@@ -1,8 +1,9 @@
 import axios from 'axios';
+import { CacheEngine } from './services/cacheEngine';
 
 // Smart environment detection:
-// When running locally in browser (localhost / 127.0.0.1), automatically connect to local backend (http://localhost:5000/api)
-// When deployed on Vercel / production, connect to VITE_API_BASE_URL (Render backend)
+// When running locally in browser (localhost / 127.0.0.1), connect to local backend (http://localhost:5000/api)
+// When deployed, connect to configured VITE_API_BASE_URL
 const isBrowserLocal = typeof window !== 'undefined' && 
   (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
 
@@ -12,20 +13,19 @@ const API_BASE = isBrowserLocal
 
 export const api = axios.create({
   baseURL: API_BASE,
+  withCredentials: true, // Automatically sends and stores secure HTTP-only cookies
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Attach JWT token automatically based on context (Customer or Worker)
+// Attach JWT token automatically based on context (Dual mode: Cookie + Bearer for backward compatibility)
 api.interceptors.request.use((config) => {
-  // If request config already has an Authorization header, respect it
   if (!config.headers.Authorization) {
     const customerToken = localStorage.getItem('kaamsetu_customer_token');
     const workerToken = localStorage.getItem('kaamsetu_worker_token');
     const adminToken = localStorage.getItem('kaamsetu_admin_token');
     
-    // Prioritize token by endpoint context
     if (config.url && config.url.includes('/admin') && adminToken) {
       config.headers.Authorization = `Bearer ${adminToken}`;
     } else if (config.url && config.url.includes('/worker') && workerToken) {
@@ -42,10 +42,9 @@ api.interceptors.request.use((config) => {
 });
 
 // ==========================================
-// ==========================================
 // SESSION CONFIGURATION (24 HOURS)
 // ==========================================
-export const SESSION_24H_MS = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+export const SESSION_24H_MS = 24 * 60 * 60 * 1000;
 
 export const getValidCustomerSession = () => {
   try {
@@ -53,17 +52,15 @@ export const getValidCustomerSession = () => {
     const userStr = localStorage.getItem('kaamsetu_customer_user');
     const loginTime = localStorage.getItem('kaamsetu_customer_login_time');
 
-    if (!token || !userStr) return null;
+    if (!userStr) return null;
 
     if (loginTime) {
       const elapsed = Date.now() - Number(loginTime);
       if (elapsed > SESSION_24H_MS) {
-        // Expired 24h session - clear
         customerLogout();
         return null;
       }
     } else {
-      // Legacy session without timestamp - set current time
       localStorage.setItem('kaamsetu_customer_login_time', Date.now().toString());
     }
 
@@ -79,17 +76,15 @@ export const getValidWorkerSession = () => {
     const workerStr = localStorage.getItem('kaamsetu_worker_user');
     const loginTime = localStorage.getItem('kaamsetu_worker_login_time');
 
-    if (!token || !workerStr) return null;
+    if (!workerStr) return null;
 
     if (loginTime) {
       const elapsed = Date.now() - Number(loginTime);
       if (elapsed > SESSION_24H_MS) {
-        // Expired 24h session - clear
         workerLogout();
         return null;
       }
     } else {
-      // Legacy session without timestamp - set current time
       localStorage.setItem('kaamsetu_worker_login_time', Date.now().toString());
     }
 
@@ -143,10 +138,14 @@ export const getMySecureBookings = async () => {
   return response.data;
 };
 
-export const customerLogout = () => {
+export const customerLogout = async () => {
+  try {
+    await api.post('/auth/logout');
+  } catch (e) {}
   localStorage.removeItem('kaamsetu_customer_token');
   localStorage.removeItem('kaamsetu_customer_user');
   localStorage.removeItem('kaamsetu_customer_login_time');
+  CacheEngine.invalidate('my_bookings');
 };
 
 // ==========================================
@@ -193,61 +192,89 @@ export const toggleWorkerAvailability = async () => {
   const response = await api.patch('/auth/worker/availability', {}, {
     headers: workerToken ? { Authorization: `Bearer ${workerToken}` } : {}
   });
+  CacheEngine.invalidate('workers');
   return response.data;
 };
 
-export const workerLogout = () => {
+export const workerLogout = async () => {
+  try {
+    await api.post('/auth/logout');
+  } catch (e) {}
   localStorage.removeItem('kaamsetu_worker_token');
   localStorage.removeItem('kaamsetu_worker_user');
   localStorage.removeItem('kaamsetu_worker_login_time');
+  CacheEngine.invalidate('worker_jobs');
 };
 
 // ==========================================
-// 3. WORKERS & BOOKINGS GENERAL API
+// 3. WORKERS & BOOKINGS GENERAL API (WITH BROWSER CACHE)
 // ==========================================
-export const getWorkers = async (params = {}) => {
+export const getWorkers = async (params = {}, onInstantCache = null) => {
+  const paramKey = JSON.stringify(params);
+  const cacheKey = `workers_${paramKey}`;
+
+  // Check instant browser cache
+  const cached = CacheEngine.get(cacheKey, true);
+  if (cached && typeof onInstantCache === 'function') {
+    onInstantCache(cached);
+  }
+
   const response = await api.get('/workers', { params });
+  if (response.data && response.data.success) {
+    CacheEngine.set(cacheKey, response.data, 120); // 2 minutes browser cache
+  }
   return response.data;
 };
 
 export const getWorkerById = async (id) => {
+  const cacheKey = `worker_${id}`;
+  const cached = CacheEngine.get(cacheKey, true);
+  if (cached) return cached;
+
   const response = await api.get(`/workers/${id}`);
+  if (response.data?.success) {
+    CacheEngine.set(cacheKey, response.data, 180);
+  }
   return response.data;
 };
 
 export const registerWorker = async (workerData) => {
   const response = await api.post('/workers', workerData);
+  CacheEngine.invalidate('workers');
+  CacheEngine.invalidate('categories');
   return response.data;
 };
 
 export const updateWorker = async (workerId, data) => {
   const response = await api.put(`/workers/${workerId}`, data);
+  CacheEngine.invalidate(`worker_${workerId}`);
+  CacheEngine.invalidate('workers');
   return response.data;
 };
 
 export const deleteWorker = async (workerId) => {
   const response = await api.delete(`/admin/workers/${workerId}`);
+  CacheEngine.invalidate(`worker_${workerId}`);
+  CacheEngine.invalidate('workers');
   return response.data;
 };
 
 export const addWorkerReview = async (workerId, reviewData) => {
   const response = await api.post(`/workers/${workerId}/reviews`, reviewData);
+  CacheEngine.invalidate(`worker_${workerId}`);
+  CacheEngine.invalidate('workers');
   return response.data;
 };
 
-let categoriesCache = null;
-let categoriesCacheTime = 0;
-const CATEGORIES_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
-
 export const getCategories = async (forceRefresh = false) => {
-  const now = Date.now();
-  if (!forceRefresh && categoriesCache && (now - categoriesCacheTime < CATEGORIES_CACHE_TTL)) {
-    return categoriesCache;
+  const cacheKey = 'categories_all';
+  if (!forceRefresh) {
+    const cached = CacheEngine.get(cacheKey, false);
+    if (cached) return cached;
   }
   const response = await api.get('/categories');
   if (response.data && response.data.success) {
-    categoriesCache = response.data;
-    categoriesCacheTime = now;
+    CacheEngine.set(cacheKey, response.data, 600); // 10 minutes cache for categories
   }
   return response.data;
 };
@@ -257,6 +284,8 @@ export const createBooking = async (bookingData) => {
   const response = await api.post('/bookings', bookingData, {
     headers: customerToken ? { Authorization: `Bearer ${customerToken}` } : {}
   });
+  CacheEngine.invalidate('my_bookings');
+  CacheEngine.invalidate('workers');
   return response.data;
 };
 
@@ -283,11 +312,15 @@ export const getEmployers = async () => {
 
 export const updateBookingStatus = async (id, status, notes = '') => {
   const response = await api.patch(`/bookings/${id}/status`, { status, notes });
+  CacheEngine.invalidate('my_bookings');
+  CacheEngine.invalidate('worker_jobs');
   return response.data;
 };
 
 export const deleteBooking = async (id) => {
   const response = await api.delete(`/bookings/${id}`);
+  CacheEngine.invalidate('my_bookings');
+  CacheEngine.invalidate('worker_jobs');
   return response.data;
 };
 
