@@ -1,0 +1,8 @@
+# robots.txt for KaamSetu
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
+
+Sitemap: https://kaamsetu06.vercel.app/sitemap.xml
+

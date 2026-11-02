@@ -11,8 +11,8 @@ import {
   CheckCircle2, 
   AlertCircle 
 } from 'lucide-react';
-import { registerWorker } from '../api';
-import { handleImageError } from '../utils/imageHelper';
+import { registerWorker, uploadImage } from '../api';
+import { handleImageError, getOptimizedAvatar } from '../utils/imageHelper';
 import { CITIES, getCityAreas, getCityFromPincode } from '../utils/cityMaster';
 import { TRADE_CATEGORIES, getSkillsByCategory } from '../utils/tradeSkills';
 import { cleanPhoneNumber } from '../utils/phoneHelper';
@@ -49,46 +49,66 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
   });
 
   const [loading, setLoading] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [error, setError] = useState('');
   const [registeredSuccess, setRegisteredSuccess] = useState(false);
 
   // File upload handler - compresses camera or gallery picture to max 320x320 JPEG to avoid bloated payloads
-  const handlePhotoUpload = (e) => {
+  const handlePhotoUpload = async (e) => {
     const file = e.target.files[0];
     if (file) {
       if (file.size > 8 * 1024 * 1024) {
         setError('Photo size should be less than 8MB.');
         return;
       }
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const img = document.createElement('img');
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const MAX_DIM = 320;
-          let width = img.width;
-          let height = img.height;
-          if (width > height) {
-            if (width > MAX_DIM) {
-              height = Math.round((height * MAX_DIM) / width);
-              width = MAX_DIM;
+      // Immediate local preview so UI never lags
+      const localPreview = URL.createObjectURL(file);
+      setFormData((prev) => ({ ...prev, avatar: localPreview }));
+      setUploadingImage(true);
+      setError('');
+
+      try {
+        const uploadRes = await uploadImage(file, '/kaamsetu/avatars');
+        if (uploadRes && uploadRes.optimizedUrl) {
+          setFormData((prev) => ({ ...prev, avatar: uploadRes.optimizedUrl }));
+        } else if (uploadRes && uploadRes.url) {
+          setFormData((prev) => ({ ...prev, avatar: uploadRes.url }));
+        }
+      } catch (uploadErr) {
+        console.warn('ImageKit direct upload fallback to canvas:', uploadErr);
+        // Fallback: compress canvas so registration can still proceed
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const img = document.createElement('img');
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const MAX_DIM = 320;
+            let width = img.width;
+            let height = img.height;
+            if (width > height) {
+              if (width > MAX_DIM) {
+                height = Math.round((height * MAX_DIM) / width);
+                width = MAX_DIM;
+              }
+            } else {
+              if (height > MAX_DIM) {
+                width = Math.round((width * MAX_DIM) / height);
+                height = MAX_DIM;
+              }
             }
-          } else {
-            if (height > MAX_DIM) {
-              width = Math.round((width * MAX_DIM) / height);
-              height = MAX_DIM;
-            }
-          }
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
-          setFormData((prev) => ({ ...prev, avatar: compressedDataUrl }));
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+            setFormData((prev) => ({ ...prev, avatar: compressedDataUrl }));
+          };
+          img.src = event.target.result;
         };
-        img.src = event.target.result;
-      };
-      reader.readAsDataURL(file);
+        reader.readAsDataURL(file);
+      } finally {
+        setUploadingImage(false);
+      }
     }
   };
 
@@ -256,12 +276,20 @@ export default function WorkerRegisterModal({ onClose, onWorkerRegistered }) {
               </label>
 
               <div className="flex flex-col xs:flex-row items-start xs:items-center gap-3 sm:gap-4">
-                <img
-                  src={formData.avatar}
-                  alt="Profile Preview"
-                  onError={handleImageError}
-                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover border border-slate-300 shadow-xs bg-white shrink-0"
-                />
+                <div className="relative shrink-0">
+                  <img
+                    src={formData.avatar}
+                    alt="Profile Preview"
+                    onError={handleImageError}
+                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover border border-slate-300 shadow-xs bg-white"
+                  />
+                  {uploadingImage && (
+                    <div className="absolute inset-0 bg-slate-900/70 rounded-xl flex flex-col items-center justify-center text-white text-[10px] font-bold gap-1">
+                      <div className="w-4 h-4 border-2 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
+                      <span>ImageKit...</span>
+                    </div>
+                  )}
+                </div>
 
                 <div className="flex-1 space-y-1.5 sm:space-y-2 w-full min-w-0">
                   <label className="inline-flex items-center justify-center gap-2 px-3 sm:px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer shadow-xs transition-all active:scale-95 w-full xs:w-auto">

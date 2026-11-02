@@ -19,7 +19,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { addWorkerReview, getWorkerHistory } from '../api';
-import { handleImageError } from '../utils/imageHelper';
+import { handleImageError, getOptimizedAvatar } from '../utils/imageHelper';
 import { formatSkill } from '../utils/tradeSkills';
 
 export default function WorkerDetailModal({ 
@@ -144,7 +144,7 @@ export default function WorkerDetailModal({
             {/* Only the avatar pulls up into the banner with -mt-12 */}
             <div className="relative -mt-12 sm:-mt-14 z-20 shrink-0">
               <img
-                src={worker.avatar}
+                src={getOptimizedAvatar(worker.avatar, 300)}
                 alt={worker.name}
                 onError={handleImageError}
                 className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover object-top border-4 border-white shadow-xl bg-white"

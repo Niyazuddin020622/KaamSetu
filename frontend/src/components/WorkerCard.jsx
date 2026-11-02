@@ -10,7 +10,7 @@ import {
   Zap,
   MessageCircle
 } from 'lucide-react';
-import { handleImageError } from '../utils/imageHelper';
+import { handleImageError, getOptimizedAvatar } from '../utils/imageHelper';
 import { formatSkill } from '../utils/tradeSkills';
 
 export default function WorkerCard({ 
@@ -46,7 +46,7 @@ export default function WorkerCard({
         {/* Avatar + Rating */}
         <div className="relative shrink-0 flex flex-col items-center">
           <img
-            src={worker.avatar}
+            src={getOptimizedAvatar(worker.avatar, 200)}
             alt={worker.name}
             onError={handleImageError}
             className="w-14 h-14 rounded-xl object-cover object-top border border-slate-200 bg-slate-100 shadow-xs"
@@ -162,7 +162,7 @@ export default function WorkerCard({
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="relative">
             <img
-              src={worker.avatar}
+              src={getOptimizedAvatar(worker.avatar, 200)}
               alt={worker.name}
               onError={handleImageError}
               className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover object-top border border-slate-200 shadow-xs group-hover:border-slate-400 transition-colors bg-slate-100"

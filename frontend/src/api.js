@@ -336,3 +336,37 @@ export const getAdminStats = async () => {
   const response = await api.get('/admin/stats');
   return response.data;
 };
+
+// ==========================================
+// 5. SECURE IMAGEKIT UPLOAD ENDPOINTS
+// ==========================================
+export const uploadImage = async (fileOrBase64, folder = '/kaamsetu/workers') => {
+  try {
+    if (fileOrBase64 instanceof File || fileOrBase64 instanceof Blob) {
+      const formData = new FormData();
+      formData.append('image', fileOrBase64);
+      formData.append('folder', folder);
+      const response = await api.post('/upload/image', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    } else if (typeof fileOrBase64 === 'string' && fileOrBase64.startsWith('data:')) {
+      const response = await api.post('/upload/image', {
+        imageBase64: fileOrBase64,
+        folder,
+      });
+      return response.data;
+    }
+    return { success: true, url: fileOrBase64, optimizedUrl: fileOrBase64 };
+  } catch (err) {
+    console.error('ImageKit upload error in api.js:', err);
+    throw err;
+  }
+};
+
+export const getImageKitAuth = async () => {
+  const response = await api.get('/upload/imagekit-auth');
+  return response.data;
+};

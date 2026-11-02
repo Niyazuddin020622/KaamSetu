@@ -1,0 +1,18 @@
+{
+  "short_name": "KaamSetu",
+  "name": "KaamSetu - भारत का भरोसेमंद कारीगर नेटवर्क",
+  "description": "Zero Commission Trade Workers Marketplace - Plumbers, Welders, Electricians, Carpenters & More",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192 512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#ffffff",
+  "theme_color": "#0f172a",
+  "display": "standalone",
+  "orientation": "portrait"
+}
+

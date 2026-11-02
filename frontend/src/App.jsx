@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import SEO from './components/SEO';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -12,6 +13,7 @@ import AuthModal from './components/AuthModal';
 import WorkerDashboardModal from './components/WorkerDashboardModal';
 import MobileBottomNav from './components/MobileBottomNav';
 import TrustSection from './components/TrustSection';
+import FAQSection from './components/FAQSection';
 import Footer from './components/Footer';
 import { 
   getWorkers, 
@@ -33,6 +35,8 @@ import {
 } from 'lucide-react';
 
 export default function App() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [workers, setWorkers] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -68,6 +72,45 @@ export default function App() {
   const [toast, setToast] = useState(null);
   const [bookingCount, setBookingCount] = useState(2);
   const [lastBookingPhone, setLastBookingPhone] = useState('');
+
+  
+  // Sync URL route with active city, category, or worker profile
+  useEffect(() => {
+    try {
+      const path = decodeURIComponent(location.pathname);
+      const parts = path.split('/').filter(Boolean);
+      if (parts.length === 0) return;
+
+      if (parts[0] === 'services' && parts[1]) {
+        setSelectedCategory(parts[1]);
+      } else if (parts[0] === 'city' && parts[1]) {
+        setSelectedCity(parts[1]);
+        if (parts[2]) {
+          setSelectedCategory(parts[2]);
+        }
+      } else if (parts[0] === 'worker' && parts[1] && workers.length > 0) {
+        const found = workers.find(w => w._id === parts[1]);
+        if (found) setSelectedWorkerDetail(found);
+      }
+    } catch (e) {
+      console.warn('URL route sync error:', e);
+    }
+  }, [location.pathname, workers]);
+
+  // Android Gesture & Hardware Back-Button Support (Closes open modals instead of exiting app)
+  useEffect(() => {
+    const handlePopState = () => {
+      if (selectedWorkerDetail) setSelectedWorkerDetail(null);
+      else if (selectedWorkerForBooking) setSelectedWorkerForBooking(null);
+      else if (showRegisterModal) setShowRegisterModal(false);
+      else if (showMyBookingsModal) setShowMyBookingsModal(false);
+      else if (showAuthModal) setShowAuthModal(false);
+      else if (showWorkerDashboard) setShowWorkerDashboard(false);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [selectedWorkerDetail, selectedWorkerForBooking, showRegisterModal, showMyBookingsModal, showAuthModal, showWorkerDashboard]);
 
   const showToast = (message, type = 'success') => {
     setToast({ message, type });
@@ -502,6 +545,9 @@ export default function App() {
         }}
         onOpenRegister={() => setShowRegisterModal(true)}
       />
+
+      {/* Frequently Asked Questions (AEO & AI Search Readiness) */}
+      <FAQSection />
 
       {/* Footer */}
       <Footer
